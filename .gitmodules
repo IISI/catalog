@@ -1,0 +1,3 @@
+[submodule "RabbitHQ"]
+	path = RabbitHQ
+	url = git@github.com:IISI/RabbitHQ.git
