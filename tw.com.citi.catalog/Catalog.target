@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.6"?>
+
+<target name="Catalog Target">
+<locations>
+<location path="${eclipse_home}" type="Profile"/>
+<location path="${workspace_loc}/RabbitHQ/libs" type="Directory"/>
+<location includeAllPlatforms="false" includeMode="planner" type="InstallableUnit">
+<unit id="org.eclipse.jetty.sdk.feature.group" version="7.1.6.v20100831"/>
+<repository location="http://download.eclipse.org/releases/helios"/>
+</location>
+</locations>
+<environment>
+<os>win32</os>
+<ws>win32</ws>
+<arch>x86</arch>
+<nl>zh_TW</nl>
+</environment>
+<launcherArgs>
+<vmArgs>-Dosgi.requiredJavaVersion=1.5 -Xms40m -Xmx512m</vmArgs>
+</launcherArgs>
+</target>
