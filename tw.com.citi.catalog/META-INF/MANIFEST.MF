@@ -1,11 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Catalog
-Bundle-SymbolicName: tw.com.citi.catalog
+Bundle-SymbolicName: tw.com.citi.catalog;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: tw.com.citi.catalog.Activator
 Bundle-Vendor: IISI
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ tw.com.iisi.rabbithq,
+ org.eclipse.springframework.util;bundle-version="1.0.3"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

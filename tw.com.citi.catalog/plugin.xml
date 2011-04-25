@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="tw.com.citi.catalog"
+            name="Catalog Category">
+      </category>
+      <view
+            category="tw.com.citi.catalog"
+            class="tw.com.citi.catalog.views.MenuView"
+            icon="icons/sample.gif"
+            id="tw.com.citi.catalog.views.MenuView"
+            name="Catalog Menu">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective id="tw.com.citi.catalog.Perspective" name="Catalog" class="tw.com.citi.catalog.Perspective" fixed="true"></perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor id="tw.com.iisi.rabbithq.editors.MozillaEditor" name="Mozilla" class="org.eclipse.springframework.util.SpringExtensionFactory:mozillaEditor" contributorClass="org.eclipse.ui.part.EditorActionBarContributor"></editor>
+   </extension>
+
+</plugin>

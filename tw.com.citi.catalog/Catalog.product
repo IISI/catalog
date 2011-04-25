@@ -114,6 +114,7 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.jetty.osgi.boot" autoStart="true" startLevel="0" />
       <plugin id="org.springframework.osgi.extender" autoStart="true" startLevel="0" />
+      <plugin id="tw.com.citi.catalog.web" autoStart="true" startLevel="0" />
       <plugin id="tw.com.iisi.rabbithq.web" autoStart="true" startLevel="0" />
    </configurations>
 
