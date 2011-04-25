@@ -42,7 +42,6 @@ public class MenuView extends ViewPart {
     private DrillDownAdapter drillDownAdapter;
     private Action action1;
     private Action action2;
-    private Action doubleClickAction;
     private Action singleClickAction;
 
     /*
@@ -212,7 +211,6 @@ public class MenuView extends ViewPart {
         viewer.setInput(getViewSite());
         makeActions();
         hookContextMenu();
-        hookDoubleClickAction();
         hookSingleClickAction();
         contributeToActionBars();
     }
@@ -278,14 +276,6 @@ public class MenuView extends ViewPart {
         action2.setToolTipText("Action 2 tooltip");
         action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
                 .getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-        doubleClickAction = new Action() {
-            public void run() {
-                ISelection selection = viewer.getSelection();
-                Object obj = ((IStructuredSelection) selection)
-                        .getFirstElement();
-                showMessage("Double-click detected on " + obj.toString());
-            }
-        };
         singleClickAction = new Action() {
 
             @Override
@@ -310,14 +300,6 @@ public class MenuView extends ViewPart {
                     editorPart.getEditorSite().getPage().bringToTop(editorPart);
                 }
             }};
-    }
-
-    private void hookDoubleClickAction() {
-        viewer.addDoubleClickListener(new IDoubleClickListener() {
-            public void doubleClick(DoubleClickEvent event) {
-                doubleClickAction.run();
-            }
-        });
     }
 
     private void hookSingleClickAction() {
