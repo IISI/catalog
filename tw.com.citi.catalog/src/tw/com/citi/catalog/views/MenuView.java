@@ -283,7 +283,7 @@ public class MenuView extends ViewPart {
                 ISelection selection = viewer.getSelection();
                 Object obj = ((IStructuredSelection) selection)
                         .getFirstElement();
-                if (obj instanceof TreeParent)
+                if (obj == null || obj instanceof TreeParent)
                     return;
                 IWorkbenchPage page = MenuView.this.getViewSite().getPage();
                 BrowserEditorInput editorInput = new BrowserEditorInput(
