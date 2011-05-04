@@ -4,10 +4,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link type="text/css" href="css/cupertino/jquery-ui-1.8.11.custom.css" rel="stylesheet" />
+<link type="text/css" href="css/uniform.default.css" rel="stylesheet" media="screen" charset="utf-8" />
 <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js"></script>
+<script type="text/javascript" src="js/jquery.uniform.min.js"></script>
 </head>
 <body>
 <wicket:child />
+<script type="text/javascript">
+$(function() {
+    $("select, input, button").uniform();
+})
+</script>
 </body>
 </html>
