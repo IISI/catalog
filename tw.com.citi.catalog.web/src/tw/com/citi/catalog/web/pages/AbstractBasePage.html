@@ -4,10 +4,29 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link type="text/css" href="css/cupertino/jquery-ui-1.8.11.custom.css" rel="stylesheet" />
+<link type="text/css" href="css/ui.jqgrid.css" rel="stylesheet" media="screen" />
 <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.8.11.custom.min.js"></script>
+<script type="text/javascript" src="js/i18n/grid.locale-en.js"></script>
+<script type="text/javascript" src="js/jquery.jqGrid.min.js"></script>
+<style type="text/css">
+body {
+    font: 62.5% "Trebuchet MS", sans-serif;
+    margin: 50px;
+}
+
+.form {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+</style>
 </head>
 <body>
 <wicket:child />
+<script type="text/javascript">
+$(function() {
+    $('button, input:submit').button();
+});
+</script>
 </body>
 </html>
