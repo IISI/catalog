@@ -22,11 +22,22 @@ body {
 </style>
 </head>
 <body>
-<wicket:child />
 <script type="text/javascript">
 $(function() {
     $('button, input:submit').button();
+    $.extend($.jgrid.defaults, {
+        jsonReader: {
+            page: 'currentPage',
+            total: 'totalPages',
+            records: 'totalRecords',
+            repeatitems: false,
+            cell: '',
+            id: '0'
+        },
+        width: 700
+    });
 });
 </script>
+<wicket:child />
 </body>
 </html>
