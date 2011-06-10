@@ -5,7 +5,7 @@ import java.util.Map;
 
 import tw.com.citi.catalog.web.model.Programmer;
 
-public interface IProgrammerDao {
+public interface IProgrammerDao extends IGenericDao {
 
     long count(Map<String, String> params);
 
