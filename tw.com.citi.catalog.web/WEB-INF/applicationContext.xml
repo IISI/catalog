@@ -4,4 +4,25 @@
     xmlns:osgi="http://www.springframework.org/schema/osgi"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="#{settings.jdbc.driverClassName}"></property>
+        <property name="url" value="#{settings.jdbc.url}"></property>
+        <property name="username" value="#{settings.jdbc.username}"></property>
+        <property name="password" value="#{settings.jdbc.password}"></property>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="programmerDao" class="tw.com.citi.catalog.web.dao.ProgrammerDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="programmerGrid" class="tw.com.citi.catalog.web.grid.ProgrammerGrid">
+        <property name="programmerDao" ref="programmerDao"></property>
+    </bean>
+
 </beans>

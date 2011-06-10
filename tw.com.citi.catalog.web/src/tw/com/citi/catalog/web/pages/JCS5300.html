@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+<title>5300</title>
+</wicket:head>
+<wicket:extend>
+    <h1>5300 Programmer Maintain</h1>
+    <table class="form">
+        <tr>
+            <td>
+                <label for="name">Programmer Name</label>
+            </td>
+            <td>
+                <input type="text" name="name" id="name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="team">Programmer Team</label>
+            </td>
+            <td>
+                <input type="text" name="team" id="team" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="tel">Telephone</label>
+            </td>
+            <td>
+                <input type="text" name="tel" id="tel" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="mobile">Mobile Phone</label>
+            </td>
+            <td>
+                <input type="text" name="mobile" id="mobile" />
+            </td>
+        </tr>
+    </table>
+    <div class="button-bar">
+        <button id="queryButton">Query</button>
+        <button id="addButton">Add</button>
+        <button id="modifyButton">Modify</button>
+        <button id="deleteButton">Delete</button>
+        <button id="resetButton">Reset</button>
+    </div>
+    <table id="list"></table>
+    <div id="pager"></div>
+    <script type="text/javascript">
+    <!--
+        $(function() {
+            $('#queryButton').click(function() {
+                var queryParams = {
+                    name: $('#name').val(),
+                    team: $('#team').val(),
+                    tel: $('#tel').val(),
+                    mobile: $('#mobile').val()
+                };
+                //queryParams.name = $('#name').val();
+                //queryParams.team = $('#team').val();
+                //queryParams.tel = $('#tel').val();
+                //queryParams.mobile = $('#mobile').val();
+                $('#list').jqGrid('setGridParam', {
+                    url: __ajaxHandler,
+                    datatype: 'json',
+                    postData: {
+                        _gridHandler: 'programmerGrid',
+                        queryParams: JSON.stringify(queryParams)
+                        //name: $('#name').val(),
+                        //team: $('#team').val(),
+                        //tel: $('#tel').val(),
+                        //mobile: $('#mobile').val()
+                    }
+                }).trigger('reloadGrid');
+            });
+            
+            $('#list').jqGrid({
+                datatype: 'local',
+                mtype: 'POST',
+                colNames: ['Name', 'Team', 'Telephone', 'Mobile Phone'],
+                colModel: [
+                    {name: 'name', index: 'name', align: 'left', sortable: true},
+                    {name: 'team', index: 'team', align: 'left', sortable: true},
+                    {name: 'tel', index: 'tel', align: 'left', sortable: false},
+                    {name: 'mobile', index: 'mobile', align: 'left', sortable: false}
+                ],
+                pager: '#pager',
+                sortname: 'name',
+                sortorder: 'desc',
+                viewrecords: true,
+                caption: 'Results',
+            });
+            
+            $('#list').jqGrid('navGrid', '#pager', {edit: false, add: false, del: false});
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>

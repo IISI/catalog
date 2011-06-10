@@ -154,15 +154,15 @@ public class MenuView extends ViewPart {
          */
         private void initialize() {
             TreeObject to1 = new TreeObject("Home");
-            TreeObject to2 = new TreeObject("Leaf 2");
-            TreeObject to3 = new TreeObject("Leaf 3");
-            TreeParent p1 = new TreeParent("Parent 1");
+            TreeObject to2 = new TreeObject("JCS5100");
+            TreeObject to3 = new TreeObject("JCS5300");
+            TreeParent p1 = new TreeParent("維護作業");
             p1.addChild(to1);
             p1.addChild(to2);
             p1.addChild(to3);
 
             TreeObject to4 = new TreeObject("Leaf 4");
-            TreeParent p2 = new TreeParent("Parent 2");
+            TreeParent p2 = new TreeParent("SCR 作業");
             p2.addChild(to4);
 
             TreeParent root = new TreeParent("Root");
@@ -189,9 +189,6 @@ public class MenuView extends ViewPart {
         }
     }
 
-    class NameSorter extends ViewerSorter {
-    }
-
     /**
      * The constructor.
      */
@@ -207,7 +204,6 @@ public class MenuView extends ViewPart {
         drillDownAdapter = new DrillDownAdapter(viewer);
         viewer.setContentProvider(new ViewContentProvider());
         viewer.setLabelProvider(new ViewLabelProvider());
-        viewer.setSorter(new NameSorter());
         viewer.setInput(getViewSite());
         makeActions();
         hookContextMenu();
