@@ -59,20 +59,12 @@
                     tel: $('#tel').val(),
                     mobile: $('#mobile').val()
                 };
-                //queryParams.name = $('#name').val();
-                //queryParams.team = $('#team').val();
-                //queryParams.tel = $('#tel').val();
-                //queryParams.mobile = $('#mobile').val();
                 $('#list').jqGrid('setGridParam', {
                     url: __ajaxHandler,
                     datatype: 'json',
                     postData: {
                         _gridHandler: 'programmerGrid',
                         queryParams: JSON.stringify(queryParams)
-                        //name: $('#name').val(),
-                        //team: $('#team').val(),
-                        //tel: $('#tel').val(),
-                        //mobile: $('#mobile').val()
                     }
                 }).trigger('reloadGrid');
             });
