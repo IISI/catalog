@@ -10,11 +10,9 @@ public class Programmer implements Serializable {
 
     private String name;
 
-    private String tel;
+    private String phone;
 
     private String mobile;
-
-    private Long version;
 
     public Long getId() {
         return id;
@@ -40,12 +38,12 @@ public class Programmer implements Serializable {
         this.name = name;
     }
 
-    public String getTel() {
-        return tel;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setTel(String tel) {
-        this.tel = tel;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getMobile() {
@@ -54,14 +52,6 @@ public class Programmer implements Serializable {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 
     @Override

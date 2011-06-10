@@ -25,10 +25,10 @@
         </tr>
         <tr>
             <td>
-                <label for="tel">Telephone</label>
+                <label for="phone">Telephone</label>
             </td>
             <td>
-                <input type="text" name="tel" id="tel" />
+                <input type="text" name="phone" id="phone" />
             </td>
         </tr>
         <tr>
@@ -56,7 +56,7 @@
                 var queryParams = {
                     name: '%' + $('#name').val() + '%',
                     team: '%' + $('#team').val() + '%',
-                    tel: '%' + $('#tel').val() + '%',
+                    tel: '%' + $('#phone').val() + '%',
                     mobile: $('#mobile').val()
                 };
                 $('#list').jqGrid('setGridParam', {
@@ -78,7 +78,7 @@
                     {name: 'id', index: 'id', hidden: true},
                     {name: 'name', index: 'name', align: 'left', sortable: true},
                     {name: 'team', index: 'team', align: 'left', sortable: true},
-                    {name: 'tel', index: 'tel', align: 'left', sortable: false},
+                    {name: 'phone', index: 'phone', align: 'left', sortable: false},
                     {name: 'mobile', index: 'mobile', align: 'left', sortable: false}
                 ],
                 pager: '#pager',

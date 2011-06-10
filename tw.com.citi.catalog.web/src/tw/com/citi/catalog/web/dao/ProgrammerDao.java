@@ -15,7 +15,7 @@ public class ProgrammerDao extends AbstractGenericDao implements IProgrammerDao 
     @Override
     public long count(Map<String, String> params, String[] operators) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT count(*) FROM programmer");
+        sql.append("SELECT COUNT(*) FROM JC_PROGRAMMER");
         String queryString = getQueryString(params, operators);
         if (queryString.trim().length() > 0) {
             sql.append(" WHERE ");
@@ -27,7 +27,7 @@ public class ProgrammerDao extends AbstractGenericDao implements IProgrammerDao 
     @Override
     public List<Programmer> find(Map<String, String> params, String[] operators, String index, String order, long start, long limit) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM programmer");
+        sql.append("SELECT * FROM JC_PROGRAMMER");
         String queryString = getQueryString(params, operators);
         if (queryString.trim().length() > 0) {
             sql.append(" WHERE ");
