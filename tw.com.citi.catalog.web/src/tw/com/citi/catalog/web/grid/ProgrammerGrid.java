@@ -10,14 +10,14 @@ public class ProgrammerGrid extends AbstractGridHandler {
     private IProgrammerDao programmerDao;
 
     @Override
-    List getRows(Map<String, String> params, String index, String order,
-            long start, long limit) {
-        return programmerDao.find(params, index, order, start, limit);
+    List getRows(Map<String, String> params, String[] operators, String index,
+            String order, long start, long limit) {
+        return programmerDao.find(params, operators, index, order, start, limit);
     }
 
     @Override
-    long getCount(Map<String, String> params) {
-        return programmerDao.count(params);
+    long getCount(Map<String, String> params, String[] operators) {
+        return programmerDao.count(params, operators);
     }
 
     public void setProgrammerDao(IProgrammerDao programmerDao) {

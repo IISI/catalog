@@ -13,10 +13,10 @@ import tw.com.citi.catalog.web.model.Programmer;
 public class ProgrammerDao extends AbstractGenericDao implements IProgrammerDao {
 
     @Override
-    public long count(Map<String, String> params) {
+    public long count(Map<String, String> params, String[] operators) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT count(*) FROM programmer");
-        String queryString = getQueryString(params);
+        String queryString = getQueryString(params, operators);
         if (queryString.trim().length() > 0) {
             sql.append(" WHERE ");
             sql.append(queryString);
@@ -25,10 +25,10 @@ public class ProgrammerDao extends AbstractGenericDao implements IProgrammerDao 
     }
 
     @Override
-    public List<Programmer> find(Map<String, String> params, String index, String order, long start, long limit) {
+    public List<Programmer> find(Map<String, String> params, String[] operators, String index, String order, long start, long limit) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM programmer");
-        String queryString = getQueryString(params);
+        String queryString = getQueryString(params, operators);
         if (queryString.trim().length() > 0) {
             sql.append(" WHERE ");
             sql.append(queryString);

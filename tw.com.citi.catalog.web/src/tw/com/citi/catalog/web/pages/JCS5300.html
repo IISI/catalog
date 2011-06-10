@@ -54,9 +54,9 @@
         $(function() {
             $('#queryButton').click(function() {
                 var queryParams = {
-                    name: $('#name').val(),
-                    team: $('#team').val(),
-                    tel: $('#tel').val(),
+                    name: '%' + $('#name').val() + '%',
+                    team: '%' + $('#team').val() + '%',
+                    tel: '%' + $('#tel').val() + '%',
                     mobile: $('#mobile').val()
                 };
                 $('#list').jqGrid('setGridParam', {
@@ -64,7 +64,8 @@
                     datatype: 'json',
                     postData: {
                         _gridHandler: 'programmerGrid',
-                        queryParams: JSON.stringify(queryParams)
+                        queryParams: JSON.stringify(queryParams),
+                        queryOperators: ['like', 'like', 'like', 'equal']
                     }
                 }).trigger('reloadGrid');
             });
@@ -72,8 +73,9 @@
             $('#list').jqGrid({
                 datatype: 'local',
                 mtype: 'POST',
-                colNames: ['Name', 'Team', 'Telephone', 'Mobile Phone'],
+                colNames: ['Id', 'Name', 'Team', 'Telephone', 'Mobile Phone'],
                 colModel: [
+                    {name: 'id', index: 'id', hidden: true},
                     {name: 'name', index: 'name', align: 'left', sortable: true},
                     {name: 'team', index: 'team', align: 'left', sortable: true},
                     {name: 'tel', index: 'tel', align: 'left', sortable: false},

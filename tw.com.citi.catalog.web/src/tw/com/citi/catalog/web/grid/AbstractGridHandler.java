@@ -22,7 +22,11 @@ public abstract class AbstractGridHandler implements IGridHandler {
         String index = params.getString("sidx");
         String order = params.getString("sord");
         Map<String, String> queryParams = gson.fromJson(params.getString("queryParams"), new TypeToken<Map<String, String>>() {}.getType());
-        long count = getCount(queryParams);
+        String[] queryOperators = params.getStringArray("queryOperators[]");
+        if (queryParams.size() != queryOperators.length) {
+            throw new IllegalArgumentException(String.format("There are %d param(s), but have %d operator(s).", queryParams.size(), queryOperators.length));
+        }
+        long count = getCount(queryParams, queryOperators);
         
         long totalPages = 0;
         if (count > 0) {
@@ -39,12 +43,12 @@ public abstract class AbstractGridHandler implements IGridHandler {
         grid.setCurrentPage(page);
         grid.setTotalPages(totalPages);
         grid.setTotalRecords(count);
-        grid.setRows(getRows(queryParams, index, order, start, limit));
+        grid.setRows(getRows(queryParams, queryOperators, index, order, start, limit));
         return new Gson().toJson(grid);
     }
 
-    abstract List getRows(Map<String, String> params, String index, String order, long start, long limit);
+    abstract List getRows(Map<String, String> params, String[] operators, String index, String order, long start, long limit);
 
-    abstract long getCount(Map<String, String> params);
+    abstract long getCount(Map<String, String> params, String[] operators);
 
 }

@@ -1,10 +1,8 @@
 package tw.com.citi.catalog.web.grid;
 
-import java.io.Serializable;
-
 import org.apache.wicket.PageParameters;
 
-public interface IGridHandler extends Serializable {
+public interface IGridHandler {
 
     String handle(PageParameters params);
 
