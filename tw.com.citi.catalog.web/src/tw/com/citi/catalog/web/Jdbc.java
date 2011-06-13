@@ -4,11 +4,11 @@ public class Jdbc {
 
     private String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
-    private String url = "jdbc:sqlserver://192.168.0.1:2360;databaseName=testdb";
+    private String url = "jdbc:sqlserver://192.168.11.17:1433;databaseName=citi_catalog";
 
     private String username = "sa";
 
-    private String password = "p@ssw0rd";
+    private String password = "passw0rd";
 
     public String getDriverClassName() {
         return driverClassName;
