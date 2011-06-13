@@ -77,9 +77,10 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
                 return jdbcTemplate.query(sql.toString(), rowMapper, params);
             }
 
-    @Override
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
+
+    protected abstract String getTableName();
 
 }

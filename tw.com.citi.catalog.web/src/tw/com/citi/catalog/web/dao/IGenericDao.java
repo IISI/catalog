@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import tw.com.citi.catalog.web.model.IModel;
 
 public interface IGenericDao<T extends IModel<ID>, ID extends Serializable> {
@@ -13,9 +11,5 @@ public interface IGenericDao<T extends IModel<ID>, ID extends Serializable> {
     long count(Map<String, String> params, String[] operators);
 
     List<T> find(Map<String, String> params, String[] operators, String index, String order, long start, long limit);
-
-    String getTableName();
-
-    void setDataSource(DataSource dataSource);
 
 }
