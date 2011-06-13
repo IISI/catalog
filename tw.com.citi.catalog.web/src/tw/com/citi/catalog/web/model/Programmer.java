@@ -1,8 +1,6 @@
 package tw.com.citi.catalog.web.model;
 
-import java.io.Serializable;
-
-public class Programmer implements Serializable {
+public class Programmer implements IModel<Long> {
 
     private Long id;
 
@@ -14,10 +12,12 @@ public class Programmer implements Serializable {
 
     private String mobile;
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

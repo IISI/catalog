@@ -1,21 +1,32 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
-public abstract class AbstractGenericDao implements IGenericDao {
+import tw.com.citi.catalog.web.model.IModel;
+
+@Repository
+public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serializable> implements IGenericDao<T, ID> {
+
+    private Class<T> persistenceClass;
 
     protected SimpleJdbcTemplate jdbcTemplate;
 
-    @Override
-    public void setDataSource(DataSource dataSource) {
-        jdbcTemplate = new SimpleJdbcTemplate(dataSource);
+    @SuppressWarnings("unchecked")
+    public AbstractGenericDao() {
+        this.persistenceClass = (Class<T>) ((ParameterizedType) super.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
-    protected String getQueryString(Map<String, String> params, String[] operators) {
+    private String getQueryString(Map<String, String> params, String[] operators) {
         StringBuilder str = new StringBuilder();
         int i = 0;
         for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -37,6 +48,38 @@ public abstract class AbstractGenericDao implements IGenericDao {
             str.delete(str.lastIndexOf("AND"), str.length());
         }
         return str.toString();
+    }
+
+    @Override
+    public long count(Map<String, String> params, String[] operators) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) FROM ").append(getTableName());
+        String queryString = getQueryString(params, operators);
+        if (queryString.trim().length() > 0) {
+            sql.append(" WHERE ");
+            sql.append(queryString);
+        }
+        return jdbcTemplate.queryForLong(sql.toString(), params);
+    }
+
+    @Override
+    public List<T> find(Map<String, String> params, String[] operators, String index, String order,
+            long start, long limit) {
+                StringBuilder sql = new StringBuilder();
+                sql.append("SELECT * FROM ").append(getTableName());
+                String queryString = getQueryString(params, operators);
+                if (queryString.trim().length() > 0) {
+                    sql.append(" WHERE ");
+                    sql.append(queryString);
+                }
+                sql.append(" ORDER BY ").append(index).append(" ").append(order);
+                RowMapper<T> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(this.persistenceClass);
+                return jdbcTemplate.query(sql.toString(), rowMapper, params);
+            }
+
+    @Override
+    public void setDataSource(DataSource dataSource) {
+        jdbcTemplate = new SimpleJdbcTemplate(dataSource);
     }
 
 }
