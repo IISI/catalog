@@ -56,10 +56,10 @@
                 var queryParams = {
                     name: '%' + $('#name').val() + '%',
                     team: '%' + $('#team').val() + '%',
-                    tel: '%' + $('#phone').val() + '%',
+                    phone: '%' + $('#phone').val() + '%',
                     mobile: $('#mobile').val()
                 };
-                $('#list').jqGrid('setGridParam', {
+                grid.jqGrid('setGridParam', {
                     url: __ajaxHandler,
                     datatype: 'json',
                     postData: {
@@ -70,7 +70,35 @@
                 }).trigger('reloadGrid');
             });
             
-            $('#list').jqGrid({
+            $('#addButton').click(function() {
+                var payload = {};
+                payload.actionName = 'add';
+                payload.actionParams = JSON.stringify({
+                    name: $('#name').val(),
+                    team: $('#team').val(),
+                    phone: $('#phone').val(),
+                    mobile: $('#mobile').val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        $('#name,#team,#phone,#mobile').val('');
+                        dialog.html('this is a test').dialog('open');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        dialog.html('error').dialog('open');
+                    }
+                });
+            });
+            
+            $('#resetButton').click(function() {
+                $('#name,#team,#phone,#mobile').val('');
+            });
+            
+            var grid = $('#list').jqGrid({
                 datatype: 'local',
                 mtype: 'POST',
                 colNames: ['Id', 'Name', 'Team', 'Telephone', 'Mobile Phone'],
@@ -88,7 +116,12 @@
                 caption: 'Results',
             });
             
-            $('#list').jqGrid('navGrid', '#pager', {edit: false, add: false, del: false});
+            grid.jqGrid('navGrid', '#pager', {edit: false, add: false, del: false});
+            
+            var dialog = $('<div></div>').dialog({
+                autoOpen: false,
+                title: 'Result'
+            });
         });
     //-->
     </script>

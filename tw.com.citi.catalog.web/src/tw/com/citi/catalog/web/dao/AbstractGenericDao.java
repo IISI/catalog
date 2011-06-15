@@ -7,8 +7,11 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +23,10 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
     private Class<T> persistenceClass;
 
     protected SimpleJdbcTemplate jdbcTemplate;
+
+    protected SimpleJdbcInsert jdbcInsert;
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unchecked")
     public AbstractGenericDao() {
@@ -59,6 +66,7 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
             sql.append(" WHERE ");
             sql.append(queryString);
         }
+        logger.info("count sql = [{}]", sql.toString());
         return jdbcTemplate.queryForLong(sql.toString(), params);
     }
 
@@ -66,19 +74,32 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
     public List<T> find(Map<String, String> params, String[] operators, String index, String order,
             long start, long limit) {
                 StringBuilder sql = new StringBuilder();
-                sql.append("SELECT * FROM ").append(getTableName());
+                sql.append("SELECT * FROM ");
+                sql.append("(SELECT Row_Number() OVER (ORDER BY InnerSub.");
+                sql.append(index).append(" ").append(order);
+                sql.append(") AS RowIndex, InnerSub.* FROM (SELECT * FROM ");
+                sql.append(getTableName());
                 String queryString = getQueryString(params, operators);
                 if (queryString.trim().length() > 0) {
                     sql.append(" WHERE ");
                     sql.append(queryString);
                 }
-                sql.append(" ORDER BY ").append(index).append(" ").append(order);
+                sql.append(") AS InnerSub) AS Sub");
+                sql.append(" WHERE Sub.RowIndex > ").append(start);
+                sql.append(" AND Sub.RowIndex <= ").append(start + limit);
                 RowMapper<T> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(this.persistenceClass);
+                logger.info("find sql = [{}]", sql.toString());
                 return jdbcTemplate.query(sql.toString(), rowMapper, params);
-            }
+    }
+
+    @Override
+    public void create(Map<String, Object> params) {
+        jdbcInsert.execute(params);
+    }
 
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new SimpleJdbcTemplate(dataSource);
+        jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");
     }
 
     protected abstract String getTableName();

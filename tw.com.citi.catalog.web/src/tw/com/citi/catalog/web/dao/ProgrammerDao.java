@@ -5,7 +5,7 @@ import tw.com.citi.catalog.web.model.Programmer;
 public class ProgrammerDao extends AbstractGenericDao<Programmer, Long> implements IProgrammerDao {
 
     @Override
-    public String getTableName() {
+    protected String getTableName() {
         return "JC_PROGRAMMER";
     }
 
