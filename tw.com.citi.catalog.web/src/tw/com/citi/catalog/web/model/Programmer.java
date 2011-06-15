@@ -1,5 +1,8 @@
 package tw.com.citi.catalog.web.model;
 
+import tw.com.citi.catalog.web.annotation.Table;
+
+@Table("JC_PROGRAMMER")
 public class Programmer implements IModel<Long> {
 
     private Long id;

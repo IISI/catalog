@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import tw.com.citi.catalog.web.annotation.Table;
 import tw.com.citi.catalog.web.model.IModel;
 
 @Repository
@@ -102,6 +103,12 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");
     }
 
-    protected abstract String getTableName();
+    private String getTableName() {
+        Table table = this.persistenceClass.getAnnotation(Table.class);
+        if (table != null) {
+            return table.value();
+        }
+        return this.persistenceClass.getSimpleName();
+    }
 
 }
