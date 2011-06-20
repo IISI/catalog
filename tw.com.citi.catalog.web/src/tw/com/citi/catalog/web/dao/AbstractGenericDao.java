@@ -103,7 +103,7 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");
     }
 
-    private String getTableName() {
+    protected String getTableName() {
         Table table = this.persistenceClass.getAnnotation(Table.class);
         if (table != null) {
             return table.value();
