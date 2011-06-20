@@ -2,10 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
-<title>5300</title>
+<title>5400</title>
 </wicket:head>
 <wicket:extend>
-    <h1>5300 Programmer Maintain</h1>
+    <h1>5400 Coordinator Maintain</h1>
     <input type="hidden" id="id" name="id" />
     <table class="form">
         <tr>
@@ -13,7 +13,7 @@
         </tr>
         <tr>
             <td>
-                <label for="name">Programmer Name</label>
+                <label for="name">Coordinator Name</label>
             </td>
             <td>
                 <input type="text" name="name" id="name" maxlength="32"/>
@@ -21,7 +21,7 @@
         </tr>
         <tr>
             <td>
-                <label for="team">Programmer Team</label>
+                <label for="team">Coordinator Team</label>
             </td>
             <td>
                 <input type="text" name="team" id="team" maxlength="32" />
@@ -80,7 +80,7 @@
             saveButton.hide();
             
             function doButtonControl() {
-                $('h1').text('5300 Programmer Maintain');
+                $('h1').text('5400 Coordinator Maintain');
                 var text;
                 if (actionText == 'Query') {
                     text = actionText;
@@ -97,7 +97,7 @@
                     saveButton.hide();
                     queryButton.show();
                 }
-                text && $('h1').text('5300 Programmer Maintain - ' + actionText);
+                text && $('h1').text('5400 Coordinator Maintain - ' + actionText);
             }
             
             var grid = $('#list').jqGrid({
@@ -133,7 +133,7 @@
                     url: __ajaxHandler,
                     datatype: 'json',
                     postData: {
-                        _gridHandler: 'programmerGrid',
+                        _gridHandler: 'coordinatorGrid',
                         queryParams: JSON.stringify(queryParams),
                         queryOperators: ['like', 'like', 'like', 'equal']
                     }
@@ -169,7 +169,7 @@
                     actionText = 'Delete';
                     id.text(grid.getCell(row, 'id'));
                     grid.resetSelection();
-                    confirmDialog.html('Do you want to delete programmer ' + grid.getCell(row, 'name') + ' ?').dialog('open');
+                    confirmDialog.html('Do you want to delete coordinator ' + grid.getCell(row, 'name') + ' ?').dialog('open');
                 } else {
                     dialog.html('Please select a record.').dialog('open');
                 }
@@ -212,7 +212,7 @@
                 }
             });
             
-            function saveProgrammer() {
+            function saveCoordinator() {
                 var payload = {};
                 payload.actionName = actionText;
                 payload.actionParams = JSON.stringify({
@@ -230,7 +230,7 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        dialog.html(actionText + ' Programmer OK.').dialog('open');
+                        dialog.html(actionText + ' Coordinator OK.').dialog('open');
                         grid.trigger('reloadGrid');
                         resetButton.trigger('click');
                     },
@@ -241,7 +241,7 @@
                 });
             }
 
-            function deleteProgrammer() {
+            function deleteCoordinator() {
                 var payload = {};
                 payload.actionName = 'Delete';
                 payload.actionParams = JSON.stringify({
@@ -255,7 +255,7 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        dialog.html(actionText + ' Programmer OK.').dialog('open');
+                        dialog.html(actionText + ' Coordinator OK.').dialog('open');
                         grid.trigger('reloadGrid');
                         resetButton.trigger('click');
                     },
@@ -269,9 +269,9 @@
             function dualControl() {
                 sendDualControl = function() {
                     if ( actionText == 'Create' || actionText == 'Modify' ) {
-                        saveProgrammer();
+                        saveCoordinator();
                     } else if ( actionText == 'Delete' ) {
-                        deleteProgrammer();
+                        deleteCoordinator();
                     }
                 };
                 cancelDualControl = function() {

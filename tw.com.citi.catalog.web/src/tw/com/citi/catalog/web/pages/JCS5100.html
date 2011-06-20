@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <title>5100 Application Maintain</title>
+</wicket:head>
+<wicket:extend>
+    <h1>5100 Application Maintain</h1>
+    <table>
+        <tr>
+            <th align="right">Application ID</th>
+            <td><input id="queryAppId" type="text" maxlength="20" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">Description</th>
+            <td><input id="queryDescription" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <td colspan=2 align="right"><button id="query" />Query</td>
+        </tr>
+    </table>
+    <p />
+    <table id="applicationList"></table>
+    <div id="appPager"></div>
+    <p />
+    <div align="right">
+        <button id="add">Add</button>
+        <button id="modify">Modify</button>
+        <button id="delete">Delete</button>
+    </div>
+    
+    <div id="addModifyAppPanel" title="Add/Modify Application">
+    <table>
+        <tr>
+            <th align="right">Application ID</th>
+            <td><input id="appId" type="text" maxlength="20" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">Description</th>
+            <td><input id="description" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">Application Base Path</th>
+            <td><input id="appBasePath" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <td colspan=2><table id="unitList"></table><div id="unitPager"></div></td>
+        </tr>
+    </table>
+    </div>
+    
+    <div id="addModifyUnitPanel" title="Add/Modify Unit">
+    <table>
+        <tr>
+            <th align="right">Build Unit ID</th>
+            <td><input id="unitId" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">QA Base Path</th>
+            <td>
+                <input id="qaBasePath" type="text" maxlength="256" size="60" />
+                <button id="addQAPath">Add Path</button>
+                <table id="qaPathList"></table><div id="qaPathPager"></div>
+            </td>
+        </tr>
+        <tr>
+            <th align="right">Prod Base Path</th>
+            <td>
+                <input id="prodBasePath" type="text" maxlength="256" size="60" />
+                <button id="addProdPath">Add Path</button>
+                <table id="prodPathList"></table><div id="prodPathPager"></div>
+            </td>
+        </tr>
+    </table>
+    </div>
+    
+    <div id="addQAPathPanel" title="Add QA Path">
+    <table>
+        <tr>
+            <th align="right">Build Unit ID</th>
+            <td><span id="addQAPathUnitId" /></td>
+        </tr>
+        <tr>
+            <th align="right">QA Base Path</th>
+            <td><span id="addQAPathBasePath" /></td>
+        </tr>
+        <tr>
+            <th align="right">QA Source Path</th>
+            <td><input id="qaSourcePath" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">QA Execution Path</th>
+            <td><input id="qaExecutionPath" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">Prod Backup Path</th>
+            <td><input id="prodBackupPath" type="text" maxlength="256" size="60" /></td>
+        </tr>
+    </table>
+    </div>
+    
+    <div id="addProdPathPanel" title="Add Prod Path">
+    <table>
+        <tr>
+            <th align="right">Build Unit ID</th>
+            <td><span id="addProdPathUnitId" /></td>
+        </tr>
+        <tr>
+            <th align="right">Prod Base Path</th>
+            <td><span id="addProdPathBasePath" /></td>
+        </tr>
+        <tr>
+            <th align="right">Prod Source Path</th>
+            <td><input id="prodSourcePath" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <th align="right">Prod Execution Path</th>
+            <td><input id="prodExecutionPath" type="text" maxlength="256" size="60" /></td>
+        </tr>
+    </table>
+    </div>
+    
+    <script type="text/javascript">
+    <!--
+        $(function() {
+            
+            var queryAppId = $('#queryAppId');
+            var queryDescription = $('#queryDescription');
+            
+            var addQAPathPanel = $('#addQAPathPanel').dialog({
+                "width": $(window).width() - 10,
+                "height": $(window).height() - 10,
+                "autoOpen": false,
+                "modal": true,
+                "buttons": {
+                    "Save": function(event, ui){
+                        // TODO
+                    },
+                    "Cancel": function(event, ui){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            var addProdPathPanel = $('#addProdPathPanel').dialog({
+                "width": $(window).width() - 10,
+                "height": $(window).height() - 10,
+                "autoOpen": false,
+                "modal": true,
+                "buttons": {
+                    "Save": function(event, ui){
+                        // TODO
+                    },
+                    "Cancel": function(event, ui){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            var unitId = $('#unitId'); 
+            var qaBasePath = $('#qaBasePath');
+            var prodBasePath = $('#prodBasePath');
+
+            var addQAPathUnitId = $('#addQAPathUnitId');
+            var addQAPathBasePath = $('#addQAPathBasePath');
+            var qaSourcePath = $('#qaSourcePath');
+            var qaExecutionPath = $('#qaExecutionPath');
+            var prodBackupPath = $('#prodBackupPath');
+            var addQAPath = $('#addQAPath').click(function() {
+                var payload = {};
+                payload.actionName = 'addPathCheck';
+                payload.actionParams = JSON.stringify({
+                    unitId: unitId.val(),
+                    basePath: qaBasePath.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data) {
+                        addQAPathUnitId.text(unitId.val());
+                        addQAPathBasePath.text(qaBasePath.val());
+                        qaSourcePath.val(qaBasePath.val() + "\\source\\" + addQAPathUnitId.text());
+                        qaExecutionPath.val(qaBasePath.val() + "\\execution\\" + addQAPathUnitId.text());
+                        prodBackupPath.val(qaBasePath.val() + "\\backup\\" + addQAPathUnitId.text());
+                        addQAPathPanel.dialog('open');
+                    },
+                    error: function(xhr, status, error) {
+                        //TODO
+                    }
+                });
+            }); 
+            
+            var addProdPathUnitId = $('#addProdPathUnitId');
+            var addProdPathBasePath = $('#addProdPathBasePath');
+            var prodSourcePath = $('#prodSourcePath');
+            var prodExecutionPath = $('#prodExecutionPath');
+            var addProdPath = $('#addProdPath').click(function() {
+                var payload = {};
+                payload.actionName = 'addPathCheck';
+                payload.actionParams = JSON.stringify({
+                    unitId: unitId.val(),
+                    basePath: prodBasePath.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data) {
+                        addProdPathUnitId.text(unitId.val());
+                        addProdPathBasePath.text(prodBasePath.val());
+                        prodSourcePath.val(prodBasePath.val() + "\\source\\" + addProdPathUnitId.text());
+                        prodExecutionPath.val(prodBasePath.val() + "\\execution\\" + addProdPathUnitId.text());
+                        addProdPathPanel.dialog('open');
+                    },
+                    error: function(xhr, status, error) {
+                        //TODO
+                    }
+                });
+            }); 
+            
+            var qaPathData = [];
+            var qaPathList = $('#qaPathList').jqGrid({
+                datatype: 'local',
+                data: qaPathData,
+                height: 'auto',
+                autowidth: true,
+                pager: '#qaPathPager',
+                mtype: 'POST',
+                rownumbers: true,
+                rowNum: 10,
+                viewrecords: true,
+                emptyrecords: '查無資料',
+                colModel: [{
+                    label: 'Source Path',
+                    name: 'sourcePath',
+                    sortable: false
+                }, {
+                    label: 'Execution Path',
+                    name: 'ExecutionPath',
+                    sortable: false
+                }, {
+                    label: 'Backup Path',
+                    name: 'backupPath',
+                    sortable: false
+                }]
+            });
+            
+            var prodPathData = [];
+            var prodPathList = $('#prodPathList').jqGrid({
+                datatype: 'local',
+                data: prodPathData,
+                height: 'auto',
+                autowidth: true,
+                pager: '#prodPathPager',
+                mtype: 'POST',
+                rownumbers: true,
+                rowNum: 10,
+                viewrecords: true,
+                emptyrecords: '查無資料',
+                colModel: [{
+                    label: 'Source Path',
+                    name: 'sourcePath',
+                    sortable: false
+                }, {
+                    label: 'Execution Path',
+                    name: 'ExecutionPath',
+                    sortable: false
+                }]
+            });
+            
+            var addModifyUnitPanel = $('#addModifyUnitPanel').dialog({
+                "width": $(window).width() - 10,
+                "height": $(window).height() - 10,
+                "autoOpen": false,
+                "modal": true,
+                "buttons": {
+                    "Save": function(event, ui){
+                        // TODO
+                    },
+                    "Cancel": function(event, ui){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            var unitData = [];
+            var unitList = $('#unitList').jqGrid({
+                caption: 'Build Units',
+                datatype: 'local',
+                data: unitData,
+                height: 'auto',
+                autowidth: true,
+                pager: '#unitPager',
+                mtype: 'POST',
+                rownumbers: true,
+                rowNum: 10,
+                viewrecords: true,
+                sortname: 'unitId',
+                emptyrecords: '查無資料',
+                colModel: [{
+                    label: 'Unit ID',
+                    name: 'unitId',
+                    sortable: false
+                }, {
+                    label: 'QA Source Path',
+                    name: 'qaSourcePath',
+                    sortable: false
+                }, {
+                    label: 'QA Execution Path',
+                    name: 'qaExecutionPath',
+                    sortable: false
+                }, {
+                    label: 'Prod Source Path',
+                    name: 'prodSourcePath',
+                    sortable: false
+                }, {
+                    label: 'Prod Execution Path',
+                    name: 'prodExecutionPath',
+                    sortable: false
+                }, {
+                    label: 'Prod Backup Path',
+                    name: 'prodBackupPath',
+                    sortable: false
+                }]
+            });
+            
+            var addModifyAppPanel = $('#addModifyAppPanel').dialog({
+                "width": $(window).width() - 10,
+                "height": $(window).height() - 10,
+                "autoOpen": false,
+                "modal": true,
+                "buttons": {
+                    "Add Unit": function(event, ui){
+                        addModifyUnitPanel.dialog('open');
+                    },
+                    "Modify Unit": function(event, ui){
+                        // TODO
+                        addModifyUnitPanel.dialog('open');
+                    },
+                    "Delete Unit": function(event, ui){
+                        // TODO
+                    },
+                    "Save App": function(event, ui){
+                        // TODO
+                    },
+                    "Cancel": function(event, ui){
+                        $(this).dialog("close");
+                    }
+                }
+            }).bind("dialogresizestop", function(event, ui){
+                unitList.setGridWidth(addModifyAppPanel.width() - 10);
+            });
+            
+            var results = [];
+            var applicationList = $('#applicationList').jqGrid({
+                caption: 'Application List',
+                datatype: 'local',
+                data: results,
+                autowidth: true,
+                pager: '#appPager',
+                mtype: 'POST',
+                rownumbers: true,
+                rowNum: 10,
+                viewrecords: true,
+                sortname: 'appId',
+                emptyrecords: '查無資料',
+                colModel: [{
+                    label: 'Application ID',
+                    name: 'appId',
+                    sortable: false
+                }, {
+                    label: 'Description',
+                    name: 'description',
+                    sortable: false
+                }, {
+                    label: 'Application Base Path',
+                    name: 'appBasePath',
+                    sortable: false
+                }, {
+                    name: 'id',
+                    hidden: true
+                }]
+            });
+            
+            var query = $('#query').click(function() {
+                var payload = {};
+                payload.actionName = 'query';
+                payload.actionParams = JSON.stringify({
+                    applicationId: queryAppId.val(),
+                    description: '%' + queryDescription.val() + '%'
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data) {
+                        applicationList.clearGridData();
+                        for ( var row in data ) {
+                            applicationList.addRowData(row, data[row]);
+                        }
+                    }
+                });
+            });
+
+            var add = $('#add').click(function() {
+                addModifyAppPanel.dialog('open').trigger("dialogresizestop");
+                unitList.setGridParam('width', $(window).width() - 10).trigger("reloadGrid");
+            });
+
+            var modify = $('#modify').click(function() {
+            });
+
+            var del = $('#delete').click(function() {
+            });
+
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>

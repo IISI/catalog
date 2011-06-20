@@ -22,24 +22,53 @@ body {
 </style>
 </head>
 <body>
-<script type="text/javascript">
-$(function() {
-    $('button, input:submit').button();
-    $.extend($.jgrid.defaults, {
-        jsonReader: {
-            page: 'currentPage',
-            total: 'totalPages',
-            records: 'totalRecords',
-            repeatitems: false,
-            cell: '',
-            id: '0'
-        },
-        rowNum: 10,
-        rowList: [10, 20, 30],
-        width: 700
-    });
-});
-</script>
-<wicket:child />
+    <div id="dualControl" title="Dual Control">
+        <br />Please input checker's ID and Password to authorize.
+        <table>
+            <tr>
+                <td><label for="checkId">ID</label></td>
+                <td><input type="text" name="checkId" id="checkId" /></td>
+            </tr>
+            <tr>
+                <td><label for="checkPwd">Password</label></td>
+                <td><input type="text" name="checkPwd" id="checkPwd" /></td>
+            </tr>
+        </table>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            var sendDualControl;
+            var cancelDualControl;
+            $('#dualControl').dialog({
+                autoOpen: false,
+                modal: true,
+                buttons: {
+                    'Confirm' : function() {
+                        $(this).dialog("close");
+                        window["sendDualControl"]();
+                    },
+                    'Cancel' : function() {
+                        $(this).dialog("close");
+                        window["cancelDualControl"]();
+                    }
+                }
+            });
+            $('button, input:submit').button();
+            $.extend($.jgrid.defaults, {
+                jsonReader : {
+                    page : 'currentPage',
+                    total : 'totalPages',
+                    records : 'totalRecords',
+                    repeatitems : false,
+                    cell : '',
+                    id : '0'
+                },
+                rowNum : 10,
+                rowList : [ 10, 20, 30 ],
+                width : 700
+            });
+        });
+    </script>
+    <wicket:child />
 </body>
 </html>
