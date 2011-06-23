@@ -94,10 +94,10 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
     }
 
     @Override
-    public void create(Map<String, Object> params) {
-        jdbcInsert.execute(params);
+    public Long create(Map<String, Object> params) {
+        return jdbcInsert.executeAndReturnKey(params).longValue();
     }
-
+    
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new SimpleJdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");

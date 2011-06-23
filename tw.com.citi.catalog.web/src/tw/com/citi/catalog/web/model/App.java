@@ -9,6 +9,8 @@ public class App implements IModel<Long> {
     private String appId;
     private String description;
     private String appBasePath;
+    private String pvcsProjDb;
+    private String pvcsProjPath;
 
     @Override
     public Long getId() {
@@ -42,5 +44,21 @@ public class App implements IModel<Long> {
 
     public String getAppBasePath() {
         return appBasePath;
+    }
+
+    public void setPvcsProjDb(String pvcsProjDb) {
+        this.pvcsProjDb = pvcsProjDb;
+    }
+
+    public String getPvcsProjDb() {
+        return pvcsProjDb;
+    }
+
+    public void setPvcsProjPath(String pvcsProjPath) {
+        this.pvcsProjPath = pvcsProjPath;
+    }
+
+    public String getPvcsProjPath() {
+        return pvcsProjPath;
     }
 }

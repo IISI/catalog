@@ -5,13 +5,15 @@ import tw.com.citi.catalog.web.annotation.Table;
 @Table("JC_BUILD_UNIT_PATH")
 public class BuildUnitPath implements IModel<Long> {
 
-    public enum PathType {
-        QA_SOURCE, QA_EXECUTION, PROD_BACKUP, PROD_SOURCE, PROD_EXECUTION
-    }
+    public final static int QA_SOURCE = 0;
+    public final static int QA_EXECUTION = 1;
+    public final static int PROD_BACKUP = 2;
+    public final static int PROD_SOURCE = 3;
+    public final static int PROD_EXECUTION = 4;
 
     private Long id;
     private BuildUnit buildUnit;
-    private PathType pathType;
+    private Integer pathType;
     private String path;
 
     @Override
@@ -32,20 +34,20 @@ public class BuildUnitPath implements IModel<Long> {
         return buildUnit;
     }
 
-    public void setPathType(PathType pathType) {
-        this.pathType = pathType;
-    }
-
-    public PathType getPathType() {
-        return pathType;
-    }
-
     public void setPath(String path) {
         this.path = path;
     }
 
     public String getPath() {
         return path;
+    }
+
+    public void setPathType(Integer pathType) {
+        this.pathType = pathType;
+    }
+
+    public Integer getPathType() {
+        return pathType;
     }
 
 }

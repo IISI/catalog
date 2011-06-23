@@ -2,119 +2,141 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
-    <title>5100 Application Maintain</title>
+    <title>5100</title>
 </wicket:head>
 <wicket:extend>
     <h1>5100 Application Maintain</h1>
-    <table>
+    <input type="hidden" id="id" name="id" />
+    <table class="form">
         <tr>
-            <th align="right">Application ID</th>
+            <td>Application ID</td>
             <td><input id="queryAppId" type="text" maxlength="20" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">Description</th>
+            <td>Description</td>
             <td><input id="queryDescription" type="text" maxlength="256" size="60" /></td>
         </tr>
-        <tr>
-            <td colspan=2 align="right"><button id="query" />Query</td>
-        </tr>
     </table>
-    <p />
+    <br />
+    <div class="button-bar">
+        <button id="query">Query</button>
+    </div>
+    <br />
     <table id="applicationList"></table>
     <div id="appPager"></div>
-    <p />
-    <div align="right">
+    <br />
+    <div>
         <button id="add">Add</button>
         <button id="modify">Modify</button>
         <button id="delete">Delete</button>
     </div>
     
     <div id="addModifyAppPanel" title="Add/Modify Application">
-    <table>
+    <table class="form">
         <tr>
-            <th align="right">Application ID</th>
+            <td>Application ID</td>
             <td><input id="appId" type="text" maxlength="20" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">Description</th>
+            <td>Description</td>
             <td><input id="description" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">Application Base Path</th>
+            <td>Application Base Path</td>
             <td><input id="appBasePath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td colspan=2><table id="unitList"></table><div id="unitPager"></div></td>
+            <td>PVCS Project DB</td>
+            <td><input id="pvcsProjDb" type="text" maxlength="256" size="60" /></td>
+        </tr>
+        <tr>
+            <td>PVCS Project Path</td>
+            <td><input id="pvcsProjPath" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
+    <br />
+    <table id="unitList"></table><div id="unitPager"></div>
     </div>
     
     <div id="addModifyUnitPanel" title="Add/Modify Unit">
-    <table>
+    <table class="form">
         <tr>
-            <th align="right">Build Unit ID</th>
+            <td>Build Unit ID</td>
             <td><input id="unitId" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">QA Base Path</th>
+            <td style="vertical-align:top">QA Base Path</td>
             <td>
                 <input id="qaBasePath" type="text" maxlength="256" size="60" />
-                <button id="addQAPath">Add Path</button>
-                <table id="qaPathList"></table><div id="qaPathPager"></div>
+                <button id="setQAPath">Set Path</button>
+                <table>
+                    <tr>
+                        <td>QA Source Path</td>
+                        <td><label id="qaSourcePathText" /></td>
+                    </tr>
+                    <tr>
+                        <td>QA Execution Path</td>
+                        <td><label id="qaExecutionPathText" /></td>
+                    </tr>
+                    <tr>
+                        <td>Prod Backup Path</td>
+                        <td><label id="prodBackupPathText" /></td>
+                    </tr>
+                </table>
             </td>
         </tr>
         <tr>
-            <th align="right">Prod Base Path</th>
+            <td style="vertical-align:top">Prod Base Path</td>
             <td>
                 <input id="prodBasePath" type="text" maxlength="256" size="60" />
                 <button id="addProdPath">Add Path</button>
-                <table id="prodPathList"></table><div id="prodPathPager"></div>
+                <table id="prodPathList"></table>
             </td>
         </tr>
     </table>
     </div>
     
-    <div id="addQAPathPanel" title="Add QA Path">
-    <table>
+    <div id="setQAPathPanel" title="Set QA Path">
+    <table class="form">
         <tr>
-            <th align="right">Build Unit ID</th>
-            <td><span id="addQAPathUnitId" /></td>
+            <td>Build Unit ID</td>
+            <td><span id="setQAPathUnitId" /></td>
         </tr>
         <tr>
-            <th align="right">QA Base Path</th>
-            <td><span id="addQAPathBasePath" /></td>
+            <td>QA Base Path</td>
+            <td><span id="setQAPathBasePath" /></td>
         </tr>
         <tr>
-            <th align="right">QA Source Path</th>
+            <td>QA Source Path</td>
             <td><input id="qaSourcePath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">QA Execution Path</th>
+            <td>QA Execution Path</td>
             <td><input id="qaExecutionPath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">Prod Backup Path</th>
+            <td>Prod Backup Path</td>
             <td><input id="prodBackupPath" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
     </div>
     
     <div id="addProdPathPanel" title="Add Prod Path">
-    <table>
+    <table class="form">
         <tr>
-            <th align="right">Build Unit ID</th>
+            <td>Build Unit ID</td>
             <td><span id="addProdPathUnitId" /></td>
         </tr>
         <tr>
-            <th align="right">Prod Base Path</th>
+            <td>Prod Base Path</td>
             <td><span id="addProdPathBasePath" /></td>
         </tr>
         <tr>
-            <th align="right">Prod Source Path</th>
+            <td>Prod Source Path</td>
             <td><input id="prodSourcePath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <th align="right">Prod Execution Path</th>
+            <td>Prod Execution Path</td>
             <td><input id="prodExecutionPath" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
@@ -124,149 +146,55 @@
     <!--
         $(function() {
             
+            var id = $('#id');
+            // main page
             var queryAppId = $('#queryAppId');
             var queryDescription = $('#queryDescription');
-            
-            var addQAPathPanel = $('#addQAPathPanel').dialog({
-                "width": $(window).width() - 10,
-                "height": $(window).height() - 10,
-                "autoOpen": false,
-                "modal": true,
-                "buttons": {
-                    "Save": function(event, ui){
-                        // TODO
-                    },
-                    "Cancel": function(event, ui){
-                        $(this).dialog("close");
-                    }
-                }
-            });
-            
-            var addProdPathPanel = $('#addProdPathPanel').dialog({
-                "width": $(window).width() - 10,
-                "height": $(window).height() - 10,
-                "autoOpen": false,
-                "modal": true,
-                "buttons": {
-                    "Save": function(event, ui){
-                        // TODO
-                    },
-                    "Cancel": function(event, ui){
-                        $(this).dialog("close");
-                    }
-                }
-            });
-            
+            // add/modify app
+            var appId = $('#appId');
+            var description = $('#description');
+            var appBasePath = $('#appBasePath');
+            var pvcsProjDb = $('#pvcsProjDb');
+            var pvcsProjPath = $('#pvcsProjPath');
+            // add/modify unit
             var unitId = $('#unitId'); 
             var qaBasePath = $('#qaBasePath');
             var prodBasePath = $('#prodBasePath');
-
-            var addQAPathUnitId = $('#addQAPathUnitId');
-            var addQAPathBasePath = $('#addQAPathBasePath');
+            var qaSourcePathText = $('#qaSourcePathText');
+            var qaExecutionPathText = $('#qaExecutionPathText');
+            var prodBackupPathText = $('#prodBackupPathText');
+            // set qa Path
+            var setQAPathUnitId = $('#setQAPathUnitId');
+            var setQAPathBasePath = $('#setQAPathBasePath');
             var qaSourcePath = $('#qaSourcePath');
             var qaExecutionPath = $('#qaExecutionPath');
             var prodBackupPath = $('#prodBackupPath');
-            var addQAPath = $('#addQAPath').click(function() {
-                var payload = {};
-                payload.actionName = 'addPathCheck';
-                payload.actionParams = JSON.stringify({
-                    unitId: unitId.val(),
-                    basePath: qaBasePath.val()
-                });
-                $.ajax({
-                    url: __ajaxHandler,
-                    dataType: 'json',
-                    data: payload,
-                    success: function(data) {
-                        addQAPathUnitId.text(unitId.val());
-                        addQAPathBasePath.text(qaBasePath.val());
-                        qaSourcePath.val(qaBasePath.val() + "\\source\\" + addQAPathUnitId.text());
-                        qaExecutionPath.val(qaBasePath.val() + "\\execution\\" + addQAPathUnitId.text());
-                        prodBackupPath.val(qaBasePath.val() + "\\backup\\" + addQAPathUnitId.text());
-                        addQAPathPanel.dialog('open');
-                    },
-                    error: function(xhr, status, error) {
-                        //TODO
-                    }
-                });
-            }); 
-            
+            // add prod path
             var addProdPathUnitId = $('#addProdPathUnitId');
             var addProdPathBasePath = $('#addProdPathBasePath');
             var prodSourcePath = $('#prodSourcePath');
             var prodExecutionPath = $('#prodExecutionPath');
-            var addProdPath = $('#addProdPath').click(function() {
-                var payload = {};
-                payload.actionName = 'addPathCheck';
-                payload.actionParams = JSON.stringify({
-                    unitId: unitId.val(),
-                    basePath: prodBasePath.val()
-                });
-                $.ajax({
-                    url: __ajaxHandler,
-                    dataType: 'json',
-                    data: payload,
-                    success: function(data) {
-                        addProdPathUnitId.text(unitId.val());
-                        addProdPathBasePath.text(prodBasePath.val());
-                        prodSourcePath.val(prodBasePath.val() + "\\source\\" + addProdPathUnitId.text());
-                        prodExecutionPath.val(prodBasePath.val() + "\\execution\\" + addProdPathUnitId.text());
-                        addProdPathPanel.dialog('open');
-                    },
-                    error: function(xhr, status, error) {
-                        //TODO
-                    }
-                });
-            }); 
-            
-            var qaPathData = [];
-            var qaPathList = $('#qaPathList').jqGrid({
-                datatype: 'local',
-                data: qaPathData,
-                height: 'auto',
-                autowidth: true,
-                pager: '#qaPathPager',
-                mtype: 'POST',
-                rownumbers: true,
-                rowNum: 10,
-                viewrecords: true,
-                emptyrecords: '查無資料',
-                colModel: [{
-                    label: 'Source Path',
-                    name: 'sourcePath',
-                    sortable: false
-                }, {
-                    label: 'Execution Path',
-                    name: 'ExecutionPath',
-                    sortable: false
-                }, {
-                    label: 'Backup Path',
-                    name: 'backupPath',
-                    sortable: false
-                }]
-            });
-            
-            var prodPathData = [];
+            // dual control
+            var checkerId = $('#checkerId');
+            var checkerPwd = $('#checkerPwd');
+
             var prodPathList = $('#prodPathList').jqGrid({
                 datatype: 'local',
-                data: prodPathData,
-                height: 'auto',
                 autowidth: true,
-                pager: '#prodPathPager',
-                mtype: 'POST',
-                rownumbers: true,
-                rowNum: 10,
                 viewrecords: true,
-                emptyrecords: '查無資料',
+                mtype: 'POST',
                 colModel: [{
                     label: 'Source Path',
                     name: 'sourcePath',
                     sortable: false
                 }, {
                     label: 'Execution Path',
-                    name: 'ExecutionPath',
+                    name: 'executionPath',
                     sortable: false
-                }]
+                }],
+                ondblClickRow : function(rowid) {
+                    prodPathList.delRowData(rowid);
+                }
             });
             
             var addModifyUnitPanel = $('#addModifyUnitPanel').dialog({
@@ -276,7 +204,22 @@
                 "modal": true,
                 "buttons": {
                     "Save": function(event, ui){
-                        // TODO
+                        var unitData = {
+                            unitId: unitId.val(),
+                            qaSourcePath: qaSourcePathText.text(),
+                            qaExecutionPath: qaExecutionPathText.text(),
+                            prodBackupPath: prodBackupPathText.text(),
+                            prodSourcePath: prodPathList.getCol('sourcePath'),
+                            prodExecutionPath: prodPathList.getCol('executionPath')
+                        };
+                        if(unitId.attr('disabled')){
+                            // modify
+                            unitList.setRowData(unitId.val(), unitData);
+                        } else {
+                            // add
+                            unitList.addRowData(unitId.val(), unitData);
+                        }
+                        $(this).dialog("close");
                     },
                     "Cancel": function(event, ui){
                         $(this).dialog("close");
@@ -284,20 +227,14 @@
                 }
             });
             
-            var unitData = [];
             var unitList = $('#unitList').jqGrid({
                 caption: 'Build Units',
                 datatype: 'local',
-                data: unitData,
-                height: 'auto',
                 autowidth: true,
                 pager: '#unitPager',
-                mtype: 'POST',
-                rownumbers: true,
-                rowNum: 10,
                 viewrecords: true,
+                mtype: 'POST',
                 sortname: 'unitId',
-                emptyrecords: '查無資料',
                 colModel: [{
                     label: 'Unit ID',
                     name: 'unitId',
@@ -325,6 +262,8 @@
                 }]
             });
             
+            unitList.jqGrid('navGrid', '#unitPager', {edit: false, add: false, del: false});
+            
             var addModifyAppPanel = $('#addModifyAppPanel').dialog({
                 "width": $(window).width() - 10,
                 "height": $(window).height() - 10,
@@ -333,16 +272,49 @@
                 "buttons": {
                     "Add Unit": function(event, ui){
                         addModifyUnitPanel.dialog('open');
+                        unitId.val('').attr('disabled', false).focus();
+                        qaBasePath.val('');
+                        qaSourcePathText.text('');
+                        qaExecutionPathText.text('');
+                        prodBackupPathText.text('');
+                        prodBasePath.val('');
+                        prodPathList.clearGridData();
                     },
                     "Modify Unit": function(event, ui){
-                        // TODO
-                        addModifyUnitPanel.dialog('open');
+                        var row = unitList.getGridParam('selrow');
+                        if ( row ) {
+                            addModifyUnitPanel.dialog('open');
+                            unitId.val(unitList.getCell(row, 'unitId')).attr('disabled', true);
+                            qaBasePath.val('').focus();
+                            qaSourcePathText.text(unitList.getCell(row, 'qaSourcePath'));
+                            qaExecutionPathText.text(unitList.getCell(row, 'qaExecutionPath'));
+                            prodBackupPathText.text(unitList.getCell(row, 'prodBackupPath'));
+                            prodBasePath.val('');
+                            var prodSourcePaths = unitList.getCell(row, 'prodSourcePath').split(',');
+                            var prodExecutionPaths = unitList.getCell(row, 'prodExecutionPath').split(',');
+                            prodPathList.clearGridData();
+                            for(var i = 0; i < prodSourcePaths.length; i++) {
+                                var pathData = {
+                                    sourcePath: prodSourcePaths[i],
+                                    executionPath: prodExecutionPaths[i]
+                                };
+                                prodPathList.addRowData(i + 1, pathData);
+                            }
+                        } else {
+                            dialog.html('Please select a record.').dialog('open');
+                        }
                     },
                     "Delete Unit": function(event, ui){
-                        // TODO
+                        var row = unitList.getGridParam('selrow');
+                        if ( row ) {
+                            confirmDialogUnit.html('Do you want to delete unit ' + unitList.getCell(row, 'unitId') + ' ?').dialog('open');
+                        } else {
+                            dialog.html('Please select a record.').dialog('open');
+                        }
                     },
                     "Save App": function(event, ui){
-                        // TODO
+                        // TODO 檢核
+                        dualControl();
                     },
                     "Cancel": function(event, ui){
                         $(this).dialog("close");
@@ -352,68 +324,300 @@
                 unitList.setGridWidth(addModifyAppPanel.width() - 10);
             });
             
-            var results = [];
             var applicationList = $('#applicationList').jqGrid({
                 caption: 'Application List',
                 datatype: 'local',
-                data: results,
                 autowidth: true,
                 pager: '#appPager',
-                mtype: 'POST',
-                rownumbers: true,
-                rowNum: 10,
                 viewrecords: true,
-                sortname: 'appId',
-                emptyrecords: '查無資料',
-                colModel: [{
-                    label: 'Application ID',
-                    name: 'appId',
-                    sortable: false
-                }, {
-                    label: 'Description',
-                    name: 'description',
-                    sortable: false
-                }, {
-                    label: 'Application Base Path',
-                    name: 'appBasePath',
-                    sortable: false
-                }, {
-                    name: 'id',
-                    hidden: true
-                }]
+                mtype: 'POST',
+                sortname: 'app_id',
+                colNames: ['Id', 'Application ID', 'Description', 'Application Base Path', 'PVCS Project DB', 'PVCS Project Path'],
+                colModel: [
+                    {name: 'id', index: 'id', hidden: true},
+                    {name: 'appId', index: 'appId', align: 'left', sortable: true},
+                    {name: 'description', index: 'description', align: 'left', sortable: true},
+                    {name: 'appBasePath', index: 'appBasePath', align: 'left', sortable: false},
+                    {name: 'pvcsProjDb', index: 'pvcsProjDb', align: 'left', sortable: false},
+                    {name: 'pvcsProjPath', index: 'pvcsProjPath', align: 'left', sortable: false}
+                ]
             });
             
+            applicationList.jqGrid('navGrid', '#appPager', {edit: false, add: false, del: false});
+            
             var query = $('#query').click(function() {
-                var payload = {};
-                payload.actionName = 'query';
-                payload.actionParams = JSON.stringify({
-                    applicationId: queryAppId.val(),
+                var queryParams = {
+                    app_id: queryAppId.val(),
                     description: '%' + queryDescription.val() + '%'
+                };
+                applicationList.jqGrid('setGridParam', {
+                    url: __ajaxHandler,
+                    datatype: 'json',
+                    postData: {
+                        _gridHandler: 'appGrid',
+                        queryParams: JSON.stringify(queryParams),
+                        queryOperators: ['equal', 'like']
+                    }
+                }).trigger('reloadGrid');
+            });
+            
+            var add = $('#add').click(function() {
+                addModifyAppPanel.dialog('open').trigger("dialogresizestop");
+                actionText = 'Add';
+                id.text('');
+                appId.val('').attr('disabled', false).focus();
+                description.val('');
+                appBasePath.val('');
+                pvcsProjDb.val('');
+                pvcsProjPath.val('');
+                unitList.clearGridData();
+            });
+
+            var modify = $('#modify').click(function() {
+                var row = applicationList.getGridParam('selrow');
+                if ( row ){
+                    addModifyAppPanel.dialog('open').trigger("dialogresizestop");
+                    actionText = 'Modify';
+                    id.text(applicationList.getCell(row, 'id'));
+                    appId.val(applicationList.getCell(row, 'appId')).attr('disabled', true);
+                    description.val(applicationList.getCell(row, 'description')).focus();
+                    appBasePath.val(applicationList.getCell(row, 'appBasePath'));
+                    pvcsProjDb.val(applicationList.getCell(row, 'pvcsProjDb'));
+                    pvcsProjPath.val(applicationList.getCell(row, 'pvcsProjPath'));
+                    unitList.jqGrid('setGridParam', {
+                        url: __ajaxHandler,
+                        datatype: 'json',
+                        postData: {
+                            _gridHandler: 'unitGrid',
+                            queryParams: JSON.stringify({
+                                jc_app_id: applicationList.getCell(row, 'id')
+                            }),
+                            queryOperators: ['equal']
+                        },
+                        width: $(window).width() - 10
+                    }).trigger('reloadGrid');
+                    applicationList.resetSelection();
+                } else {
+                    dialog.html('Please select a record.').dialog('open');
+                }
+            });
+
+            var del = $('#delete').click(function() {
+                var row = applicationList.getGridParam('selrow');
+                if ( row ){
+                    actionText = 'Delete';
+                    id.text(applicationList.getCell(row, 'id'));
+                    applicationList.resetSelection();
+                    confirmDialog.html('Do you want to delete application ' + applicationList.getCell(row, 'appId') + ' ?').dialog('open');
+                } else {
+                    dialog.html('Please select a record.').dialog('open');
+                }
+            });
+
+            var setQAPathPanel = $('#setQAPathPanel').dialog({
+                "width": $(window).width() - 10,
+                "height": $(window).height() - 10,
+                "autoOpen": false,
+                "modal": true,
+                "buttons": {
+                    "Save": function(event, ui){
+                        $(this).dialog("close");
+                        qaSourcePathText.text(qaSourcePath.val());
+                        qaExecutionPathText.text(qaExecutionPath.val());
+                        prodBackupPathText.text(prodBackupPath.val());
+                    },
+                    "Cancel": function(event, ui){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            var addProdPathPanel = $('#addProdPathPanel').dialog({
+                "width": $(window).width() - 10,
+                "height": $(window).height() - 10,
+                "autoOpen": false,
+                "modal": true,
+                "buttons": {
+                    "Save": function(event, ui){
+                        $(this).dialog("close");
+                        var pathData = {
+                            sourcePath: prodSourcePath.val(),
+                            executionPath: prodExecutionPath.val()
+                        };
+                        prodPathList.addRowData(null, pathData);
+                    },
+                    "Cancel": function(event, ui){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            var setQAPath = $('#setQAPath').click(function() {
+                var payload = {};
+                payload.actionName = 'addPathCheck';
+                payload.actionParams = JSON.stringify({
+                    unitId: unitId.val(),
+                    basePath: qaBasePath.val()
                 });
                 $.ajax({
                     url: __ajaxHandler,
                     dataType: 'json',
                     data: payload,
                     success: function(data) {
-                        applicationList.clearGridData();
-                        for ( var row in data ) {
-                            applicationList.addRowData(row, data[row]);
-                        }
+                        setQAPathUnitId.text(unitId.val());
+                        setQAPathBasePath.text(qaBasePath.val());
+                        qaSourcePath.val(qaBasePath.val() + "\\source\\" + setQAPathUnitId.text());
+                        qaExecutionPath.val(qaBasePath.val() + "\\execution\\" + setQAPathUnitId.text());
+                        prodBackupPath.val(qaBasePath.val() + "\\backup\\" + setQAPathUnitId.text());
+                        setQAPathPanel.dialog('open');
+                    },
+                    error: function(xhr, status, error) {
+                        var resp = JSON.parse(xhr.responseText);
+                        dialog.html(resp.message).dialog('open');
                     }
                 });
+            }); 
+            
+            var addProdPath = $('#addProdPath').click(function() {
+                var payload = {};
+                payload.actionName = 'addPathCheck';
+                payload.actionParams = JSON.stringify({
+                    unitId: unitId.val(),
+                    basePath: prodBasePath.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data) {
+                        addProdPathUnitId.text(unitId.val());
+                        addProdPathBasePath.text(prodBasePath.val());
+                        prodSourcePath.val(prodBasePath.val() + "\\source\\" + addProdPathUnitId.text());
+                        prodExecutionPath.val(prodBasePath.val() + "\\execution\\" + addProdPathUnitId.text());
+                        addProdPathPanel.dialog('open');
+                    },
+                    error: function(xhr, status, error) {
+                        var resp = JSON.parse(xhr.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }); 
+            
+            var dialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Result',
+                buttons: {
+                    "Close": function(){
+                        $(this).dialog("close");
+                    }
+                }
             });
 
-            var add = $('#add').click(function() {
-                addModifyAppPanel.dialog('open').trigger("dialogresizestop");
-                unitList.setGridParam('width', $(window).width() - 10).trigger("reloadGrid");
+            var confirmDialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Confirm',
+                buttons: {
+                    'Yes' : function() {
+                        $(this).dialog("close");
+                        dualControl();
+                    },
+                    'Cancel' : function(){
+                        $(this).dialog("close");
+                    }
+                }
             });
-
-            var modify = $('#modify').click(function() {
+            
+            var confirmDialogUnit = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Confirm',
+                buttons: {
+                    'Yes' : function() {
+                        $(this).dialog("close");
+                        var row = unitList.getGridParam('selrow');
+                        unitList.delRowData(row);
+                    },
+                    'Cancel' : function(){
+                        unitList.resetSelection();
+                        $(this).dialog("close");
+                    }
+                }
             });
+            
+            function saveApp() {
+                var payload = {};
+                payload.actionName = actionText;
+                var units = [];
+                var ids = unitList.getDataIDs();
+                for(var i in ids) {
+                    units.push(unitList.getRowData(ids[i]));
+                }
+                payload.actionParams = JSON.stringify({
+                    jcAppId: id.text(), 
+                    appId: appId.val(),
+                    description: description.val(),
+                    appBasePath: appBasePath.val(),
+                    pvcsProjDb: pvcsProjDb.val(),
+                    pvcsProjPath: pvcsProjPath.val(),
+                    units: JSON.stringify(units),
+                    checkerId: checkerId.val(),
+                    checkerPwd: checkerPwd.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        dialog.html(actionText + ' Application OK.').dialog('open');
+                        applicationList.trigger('reloadGrid');
+                        addModifyAppPanel.dialog('close');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
 
-            var del = $('#delete').click(function() {
-            });
+            function deleteApp() {
+                var payload = {};
+                payload.actionName = 'Delete';
+                payload.actionParams = JSON.stringify({
+                    id: id.text(),
+                    checkerId: checkerId.val(),
+                    checkerPwd: checkerPwd.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        dialog.html(actionText + ' Application OK.').dialog('open');
+                        applicationList.trigger('reloadGrid');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
 
+            function dualControl() {
+                sendDualControl = function() {
+                    if ( actionText == 'Add' || actionText == 'Modify' ) {
+                        saveApp();
+                    } else if ( actionText == 'Delete' ) {
+                        deleteApp();
+                    }
+                };
+                cancelDualControl = function() {
+                };
+                $('#dualControl').dialog('open');
+            }
         });
     //-->
     </script>
