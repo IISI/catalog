@@ -286,7 +286,7 @@ public class MenuView extends ViewPart {
                 IWorkbenchPage page = MenuView.this.getViewSite().getPage();
                 BrowserEditorInput editorInput = new BrowserEditorInput(
                         "http://localhost:8080/catalog/app/" + obj.toString());
-                IEditorPart editorPart = page.findEditor(editorInput);
+                IEditorPart editorPart = page.getActiveEditor();
                 if (editorPart == null) {
                     try {
                         page.openEditor(editorInput, MozillaEditor.ID);
@@ -295,7 +295,7 @@ public class MenuView extends ViewPart {
                         e.printStackTrace();
                     }
                 } else {
-                    editorPart.getEditorSite().getPage().bringToTop(editorPart);
+                    ((MozillaEditor) editorPart).getBrowser().setUrl(editorInput.getName());
                 }
             }};
     }
