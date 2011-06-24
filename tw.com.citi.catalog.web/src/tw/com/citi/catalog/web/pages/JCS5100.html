@@ -9,11 +9,11 @@
     <input type="hidden" id="id" name="id" />
     <table class="form">
         <tr>
-            <td>Application ID</td>
+            <td class="formLabel">Application ID</td>
             <td><input id="queryAppId" type="text" maxlength="20" size="60" /></td>
         </tr>
         <tr>
-            <td>Description</td>
+            <td class="formLabel">Description</td>
             <td><input id="queryDescription" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
@@ -34,23 +34,23 @@
     <div id="addModifyAppPanel" title="Add/Modify Application">
     <table class="form">
         <tr>
-            <td>Application ID</td>
+            <td class="formLabel">Application ID</td>
             <td><input id="appId" type="text" maxlength="20" size="60" /></td>
         </tr>
         <tr>
-            <td>Description</td>
+            <td class="formLabel">Description</td>
             <td><input id="description" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td>Application Base Path</td>
+            <td class="formLabel">Application Base Path</td>
             <td><input id="appBasePath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td>PVCS Project DB</td>
+            <td class="formLabel">PVCS Project DB</td>
             <td><input id="pvcsProjDb" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td>PVCS Project Path</td>
+            <td class="formLabel">PVCS Project Path</td>
             <td><input id="pvcsProjPath" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
@@ -61,11 +61,11 @@
     <div id="addModifyUnitPanel" title="Add/Modify Unit">
     <table class="form">
         <tr>
-            <td>Build Unit ID</td>
+            <td class="formLabel">Build Unit ID</td>
             <td><input id="unitId" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td style="vertical-align:top">QA Base Path</td>
+            <td class="formLabel" style="vertical-align:top">QA Base Path</td>
             <td>
                 <input id="qaBasePath" type="text" maxlength="256" size="60" />
                 <button id="setQAPath">Set Path</button>
@@ -86,7 +86,7 @@
             </td>
         </tr>
         <tr>
-            <td style="vertical-align:top">Prod Base Path</td>
+            <td class="formLabel" style="vertical-align:top">Prod Base Path</td>
             <td>
                 <input id="prodBasePath" type="text" maxlength="256" size="60" />
                 <button id="addProdPath">Add Path</button>
@@ -99,23 +99,23 @@
     <div id="setQAPathPanel" title="Set QA Path">
     <table class="form">
         <tr>
-            <td>Build Unit ID</td>
+            <td class="formLabel">Build Unit ID</td>
             <td><span id="setQAPathUnitId" /></td>
         </tr>
         <tr>
-            <td>QA Base Path</td>
+            <td class="formLabel">QA Base Path</td>
             <td><span id="setQAPathBasePath" /></td>
         </tr>
         <tr>
-            <td>QA Source Path</td>
+            <td class="formLabel">QA Source Path</td>
             <td><input id="qaSourcePath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td>QA Execution Path</td>
+            <td class="formLabel">QA Execution Path</td>
             <td><input id="qaExecutionPath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td>Prod Backup Path</td>
+            <td class="formLabel">Prod Backup Path</td>
             <td><input id="prodBackupPath" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
@@ -124,19 +124,19 @@
     <div id="addProdPathPanel" title="Add Prod Path">
     <table class="form">
         <tr>
-            <td>Build Unit ID</td>
+            <td class="formLabel">Build Unit ID</td>
             <td><span id="addProdPathUnitId" /></td>
         </tr>
         <tr>
-            <td>Prod Base Path</td>
+            <td class="formLabel">Prod Base Path</td>
             <td><span id="addProdPathBasePath" /></td>
         </tr>
         <tr>
-            <td>Prod Source Path</td>
+            <td class="formLabel">Prod Source Path</td>
             <td><input id="prodSourcePath" type="text" maxlength="256" size="60" /></td>
         </tr>
         <tr>
-            <td>Prod Execution Path</td>
+            <td class="formLabel">Prod Execution Path</td>
             <td><input id="prodExecutionPath" type="text" maxlength="256" size="60" /></td>
         </tr>
     </table>
