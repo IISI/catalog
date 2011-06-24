@@ -157,11 +157,13 @@ public class MenuView extends ViewPart {
             TreeObject to5100 = new TreeObject("JCS5100");
             TreeObject to5300 = new TreeObject("JCS5300");
             TreeObject to5400 = new TreeObject("JCS5400");
+            TreeObject to1000 = new TreeObject("JCS1000");
             TreeParent p1 = new TreeParent("維護作業");
             p1.addChild(to1);
             p1.addChild(to5100);
             p1.addChild(to5300);
             p1.addChild(to5400);
+            p1.addChild(to1000);
 
             TreeObject to1100 = new TreeObject("JCS1100");
             TreeObject to1200 = new TreeObject("JCS1200");
