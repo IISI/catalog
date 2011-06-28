@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import tw.com.citi.catalog.web.annotation.Mapper;
 import tw.com.citi.catalog.web.annotation.Table;
 import tw.com.citi.catalog.web.model.IModel;
 
@@ -71,33 +72,41 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
         return jdbcTemplate.queryForLong(sql.toString(), params);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public List<T> find(Map<String, String> params, String[] operators, String index, String order,
-            long start, long limit) {
-                StringBuilder sql = new StringBuilder();
-                sql.append("SELECT * FROM ");
-                sql.append("(SELECT Row_Number() OVER (ORDER BY InnerSub.");
-                sql.append(index).append(" ").append(order);
-                sql.append(") AS RowIndex, InnerSub.* FROM (SELECT * FROM ");
-                sql.append(getTableName());
-                String queryString = getQueryString(params, operators);
-                if (queryString.trim().length() > 0) {
-                    sql.append(" WHERE ");
-                    sql.append(queryString);
-                }
-                sql.append(") AS InnerSub) AS Sub");
-                sql.append(" WHERE Sub.RowIndex > ").append(start);
-                sql.append(" AND Sub.RowIndex <= ").append(start + limit);
-                RowMapper<T> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(this.persistenceClass);
-                logger.info("find sql = [{}]", sql.toString());
-                return jdbcTemplate.query(sql.toString(), rowMapper, params);
+    public List<T> find(Map<String, String> params, String[] operators,
+            String index, String order, long start, long limit) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM ");
+        sql.append("(SELECT Row_Number() OVER (ORDER BY InnerSub.");
+        sql.append(index).append(" ").append(order);
+        sql.append(") AS RowIndex, InnerSub.* FROM (SELECT * FROM ");
+        sql.append(getTableName());
+        String queryString = getQueryString(params, operators);
+        if (queryString.trim().length() > 0) {
+            sql.append(" WHERE ");
+            sql.append(queryString);
+        }
+        sql.append(") AS InnerSub) AS Sub");
+        sql.append(" WHERE Sub.RowIndex > ").append(start);
+        sql.append(" AND Sub.RowIndex <= ").append(start + limit);
+        RowMapper rowMapper = getRowMapper();
+        logger.info("find sql = [{}]", sql.toString());
+        return jdbcTemplate.query(sql.toString(), rowMapper, params);
     }
 
     @Override
     public Long create(Map<String, Object> params) {
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
-    
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public List<T> findAll() {
+        RowMapper rowMapper = getRowMapper();
+        return jdbcTemplate.query("SELECT * FROM " + getTableName(), rowMapper);
+    }
+
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new SimpleJdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");
@@ -109,6 +118,21 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
             return table.value();
         }
         return this.persistenceClass.getSimpleName();
+    }
+
+    @SuppressWarnings("rawtypes")
+    private RowMapper getRowMapper() {
+        Mapper mapper = this.persistenceClass.getAnnotation(Mapper.class);
+        try {
+            if (mapper != null) {
+                return mapper.value().newInstance();
+            }
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return ParameterizedBeanPropertyRowMapper.newInstance(this.persistenceClass);
     }
 
 }

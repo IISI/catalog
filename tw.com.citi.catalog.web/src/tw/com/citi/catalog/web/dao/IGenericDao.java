@@ -13,5 +13,7 @@ public interface IGenericDao<T extends IModel<ID>, ID extends Serializable> {
     List<T> find(Map<String, String> params, String[] operators, String index, String order, long start, long limit);
 
     Long create(Map<String, Object> params);
-    
+
+    List<T> findAll();
+
 }
