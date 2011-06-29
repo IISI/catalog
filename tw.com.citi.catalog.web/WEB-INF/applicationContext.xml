@@ -37,6 +37,14 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+    <bean id="scrFileDao" class="tw.com.citi.catalog.web.dao.ScrFileDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="scrDao" class="tw.com.citi.catalog.web.dao.ScrDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
     <bean id="coordinatorGrid" class="tw.com.citi.catalog.web.grid.CoordinatorGrid">
         <property name="coordinatorDao" ref="coordinatorDao"></property>
     </bean>
@@ -52,6 +60,10 @@
     <bean id="unitGrid" class="tw.com.citi.catalog.web.grid.UnitGrid">
         <property name="buildUnitDao" ref="buildUnitDao"></property>
         <property name="buildUnitPathDao" ref="buildUnitPathDao"></property>
+    </bean>
+
+    <bean id="scrFileGrid" class="tw.com.citi.catalog.web.grid.ScrFileGrid">
+        <property name="scrFileDao" ref="scrFileDao"></property>
     </bean>
 
 </beans>
