@@ -6,7 +6,7 @@ import tw.com.citi.catalog.web.annotation.Table;
 public class BuildUnit implements IModel<Long> {
 
     private Long id;
-    private App app;
+    private Long jcAppId;
     private String unitId;
 
     @Override
@@ -19,19 +19,19 @@ public class BuildUnit implements IModel<Long> {
         this.id = id;
     }
 
-    public void setApp(App app) {
-        this.app = app;
-    }
-
-    public App getApp() {
-        return app;
-    }
-
     public void setUnitId(String unitId) {
         this.unitId = unitId;
     }
 
     public String getUnitId() {
         return unitId;
+    }
+
+    public void setJcAppId(Long jcAppId) {
+        this.jcAppId = jcAppId;
+    }
+
+    public Long getJcAppId() {
+        return jcAppId;
     }
 }

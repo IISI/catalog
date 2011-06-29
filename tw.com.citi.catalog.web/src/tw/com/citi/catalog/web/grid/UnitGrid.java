@@ -27,19 +27,19 @@ public class UnitGrid extends AbstractGridHandler {
             BeanUtils.copyProperties(unit, data);
             for (BuildUnitPath path : buildUnitPathDao.findByBuildUnitId(unit.getId())) {
                 switch (path.getPathType()) {
-                case BuildUnitPath.QA_SOURCE:
+                case QA_SOURCE:
                     data.setQaSourcePath(path.getPath());
                     break;
-                case BuildUnitPath.QA_EXECUTION:
+                case QA_EXECUTION:
                     data.setQaExecutionPath(path.getPath());
                     break;
-                case BuildUnitPath.PROD_BACKUP:
+                case PROD_BACKUP:
                     data.setProdBackupPath(path.getPath());
                     break;
-                case BuildUnitPath.PROD_SOURCE:
+                case PROD_SOURCE:
                     data.getProdSourcePath().add(path.getPath());
                     break;
-                case BuildUnitPath.PROD_EXECUTION:
+                case PROD_EXECUTION:
                     data.getProdExecutionPath().add(path.getPath());
                     break;
                 }

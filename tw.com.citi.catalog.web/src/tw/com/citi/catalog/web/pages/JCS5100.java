@@ -12,7 +12,7 @@ import tw.com.citi.catalog.web.dao.IBuildUnitDao;
 import tw.com.citi.catalog.web.dao.IBuildUnitPathDao;
 import tw.com.citi.catalog.web.grid.IGridHandler;
 import tw.com.citi.catalog.web.model.BuildUnit;
-import tw.com.citi.catalog.web.model.BuildUnitPath;
+import tw.com.citi.catalog.web.model.BuildUnitPath.PathType;
 import tw.com.citi.catalog.web.utils.AccessControlUtil;
 
 import com.google.gson.Gson;
@@ -172,25 +172,24 @@ public class JCS5100 extends AbstractBasePage {
         return "";
     }
 
-    private Map<String, Object> createBuildUnitPathMap(Long buildUnitId, Integer pathType, String path) {
+    private Map<String, Object> createBuildUnitPathMap(Long buildUnitId, PathType pathType, String path) {
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("JC_BUILD_UNIT_ID", buildUnitId);
-        m.put("PATH_TYPE", pathType);
+        m.put("PATH_TYPE", pathType.ordinal());
         m.put("PATH", path);
         return m;
     }
 
     private void insertUnitPaths(Long buildUnitId, String qaSourcePath, String qaExecutionPath, String prodBackupPath,
             String[] prodSourcePaths, String[] prodExecutionPaths) {
-        buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, BuildUnitPath.QA_SOURCE, qaSourcePath));
-        buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, BuildUnitPath.QA_EXECUTION, qaExecutionPath));
-        buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, BuildUnitPath.PROD_BACKUP, prodBackupPath));
+        buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, PathType.QA_SOURCE, qaSourcePath));
+        buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, PathType.QA_EXECUTION, qaExecutionPath));
+        buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, PathType.PROD_BACKUP, prodBackupPath));
         for (String prodSourcePath : prodSourcePaths) {
-            buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, BuildUnitPath.PROD_SOURCE, prodSourcePath));
+            buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, PathType.PROD_SOURCE, prodSourcePath));
         }
         for (String prodExecutionPath : prodExecutionPaths) {
-            buildUnitPathDao
-                    .create(createBuildUnitPathMap(buildUnitId, BuildUnitPath.PROD_EXECUTION, prodExecutionPath));
+            buildUnitPathDao.create(createBuildUnitPathMap(buildUnitId, PathType.PROD_EXECUTION, prodExecutionPath));
         }
     }
 }
