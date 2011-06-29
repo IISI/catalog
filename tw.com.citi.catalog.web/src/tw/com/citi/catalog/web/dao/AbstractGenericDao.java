@@ -127,7 +127,7 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
     }
 
     @SuppressWarnings("rawtypes")
-    private RowMapper getRowMapper() {
+    protected RowMapper getRowMapper() {
         Mapper mapper = this.persistenceClass.getAnnotation(Mapper.class);
         try {
             if (mapper != null) {

@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+<title>1000</title>
+</wicket:head>
+<wicket:extend>
+    <h1>1000 SCR Maintain</h1>
+    <input type="hidden" id="id" name="id" />
+    <table class="form">
+        <tr>
+            <td colspan="2"><div id="actionText" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="scrNo">SCR No.</label>
+            </td>
+            <td>
+                <select id="scrNo"></select><button id="queryButton">Query</button>
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="app">Application Id</label>
+            </td>
+            <td>
+                <select id="app"></select>
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="coordinator">Coordinator</label>
+            </td>
+            <td>
+                <select id="coordinator" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="programmer">Programmer</label>
+            </td>
+            <td>
+                <select id="programmer" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="description">Description</label>
+            </td>
+            <td>
+                <input type="text" name="description" id="description" maxlength="20" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="librarian">Librarian</label>
+            </td>
+            <td>
+                <label id="librarian" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="createDateTime">Create DateTime</label>
+            </td>
+            <td>
+                <label id="createDateTime" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="status">Status</label>
+            </td>
+            <td>
+                <label id="status" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="submitDateTime">Submit DateTime</label>
+            </td>
+            <td>
+                <label id="submitDateTime" />
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table id="list"></table>
+    <div id="pager"></div>
+    <br />
+    <div class="button-bar">
+        <button id="createButton">Create</button>
+        <button id="modifyButton">Modify</button>
+        <button id="deleteButton">Delete</button>
+        <button id="saveButton">Save</button>
+        <button id="resetButton">Reset</button>
+        <button id="printButton">Print</button>
+    </div>
+    <script type="text/javascript">
+    <!--
+        $(function() {
+            var queryButton = $('#queryButton');
+            var saveButton = $('#saveButton');
+            var resetButton = $('#resetButton');
+            var printButton = $('#printButton');
+            var createButton = $('#createButton');
+            var modifyButton = $('#modifyButton');
+            var deleteButton = $('#deleteButton');
+            var id = $('#id');
+            var scrNo = $('#scrNo');
+            var scrNoInput = $('#scrNoInput');
+            var app = $('#app');
+            var appInput = $('#appInput');
+            var status = $('#status');
+            var submitDateTime = $('#submitDateTime');
+            var librarian = $('#librarian');
+            var programmer = $('#programmer');
+            var programmerInput = $('#programmerInput');
+            var coordinator = $('#coordinator');
+            var coordinatorInput = $('#coordinatorInput');
+            var createDateTime = $('#createDateTime');
+            var description = $('#description');
+            var checkerId = $('#checkerId');
+            var checkerPwd = $('#checkerPwd');
+            var actionText;
+            
+            saveButton.hide();
+            printButton.hide();
+            modifyButton.hide();
+            deleteButton.hide();
+            loadInitData();
+            
+            function doButtonControl() {
+                $('h1').text('1000 SCR Maintain');
+                var text;
+                scrNo.attr('inoptions', true);
+                if (actionText == 'Query') {
+                    text = actionText;
+                    saveButton.hide();
+                    printButton.show();
+                    modifyButton.show();
+                    deleteButton.show();
+                } else if (actionText == 'Create') {
+                    text = actionText;
+                    scrNo.attr('inoptions', false);
+                    saveButton.show();
+                    queryButton.hide();
+                    printButton.hide();
+                    modifyButton.hide();
+                    deleteButton.hide();
+                } else if ( actionText == 'Modify' ) {
+                    text = actionText;
+                    saveButton.show();
+                    queryButton.hide();
+                    printButton.hide();
+                } else if ( actionText == 'Reset' ) {
+                    saveButton.hide();
+                    queryButton.show();
+                    printButton.hide();
+                    modifyButton.hide();
+                    deleteButton.hide();
+                }
+                text && $('h1').text('1000 SCR Maintain - ' + actionText);
+            }
+            
+            programmer.change(function() {
+                alert('change');
+            });
+            
+            var grid = $('#list').jqGrid({
+                datatype: 'local',
+                mtype: 'POST',
+                colNames: ['Id', 'File Name', 'Build Unit', 'File Size', 'Date Time'],
+                colModel: [
+                    {name: 'id', index: 'id', hidden: true},
+                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
+                    {name: 'buildUnit', index: 'buildUnit', align: 'left', sortable: true},
+                    {name: 'fileSize', index: 'fileSize', align: 'right', sortable: false},
+                    {name: 'dateTime', index: 'dateTime', align: 'left', sortable: false}
+                ],
+                pager: '#pager',
+                sortname: 'id',
+                sortorder: 'desc',
+                viewrecords: true,
+                caption: 'SCR File List',
+            });
+            
+            grid.jqGrid('navGrid', '#pager', {edit: false, add: false, del: false});
+            
+            queryButton.click(function() {
+                actionText = 'Query';
+                doButtonControl('Query');
+                var payload = {};
+                payload.actionName = actionText;
+                payload.actionParams = JSON.stringify({
+                    id: scrNo.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // TODO 
+                        id.text(data.id);
+                        app.val(data.jcAppId);
+                        coordinator.val(data.jcCoordinatorId);
+                        programmer.val(data.jcProgrammerId);
+                        description.val(data.description);
+                        librarian.text(data.librarian);
+                        createDateTime.text(data.createTime);
+                        status.text(data.status);
+                        submitDateTime.text(data.processTime);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                        resetButton.trigger('click');
+                    }
+                });
+                grid.jqGrid('setGridParam', {
+                    url: __ajaxHandler,
+                    datatype: 'json',
+                    postData: {
+                        _gridHandler: 'scrFileGrid',
+                        queryParams: JSON.stringify({
+                            id: scrNo.val()
+                        }),
+                        queryOperators: ['equal']
+                    }
+                }).trigger('reloadGrid');
+            });
+            
+            createButton.click(function() {
+                actionText = 'Create';
+                doButtonControl();
+                id.text('');
+                scrNoInput.val('').focus();
+                appInput.val('');
+                status.text('');
+                submitDateTime.text('');
+                librarian.text('');
+                programmerInput.val('');
+                coordinatorInput.val('');
+                createDateTime.text('');
+                description.val('');
+                grid.clearGridData();
+            });
+            
+            modifyButton.click(function() {
+                actionText = 'Modify';
+                doButtonControl();
+                scrNo.attr('disabled', true);
+            });
+            
+            deleteButton.click(function() {
+                actionText = 'Delete';
+                confirmDialog.html('Do you want to delete SCR ' + scrNoInput.val() + ' ?').dialog('open');
+            });
+            
+            saveButton.click(function() {
+                // TODO 檢核
+                dualControl();
+            });
+            
+            resetButton.click(function() {
+                actionText = 'Reset';
+                doButtonControl();
+                scrNo.attr('disabled', false);
+                id.text('');
+                scrNoInput.val('').focus();
+                appInput.val('');
+                status.text('');
+                submitDateTime.text('');
+                librarian.text('');
+                programmerInput.val('');
+                coordinatorInput.val('');
+                createDateTime.text('');
+                description.val('');
+                grid.clearGridData();
+                loadInitData();
+            });
+            
+            var dialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Result',
+                buttons: {
+                    "Close": function(){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            var confirmDialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Confirm',
+                buttons: {
+                    'Yes' : function() {
+                        $(this).dialog("close");
+                        dualControl();
+                    },
+                    'Cancel' : function(){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            function saveScr() {
+                var payload = {};
+                payload.actionName = actionText;
+                payload.actionParams = JSON.stringify({
+                    id: id.text(),
+                    scr_no: scrNoInput.val(),
+                    jc_app_id: app.val(),
+                    librarian: librarian.val(),
+                    jc_programmer_id: programmer.val(),
+                    jc_coordinator_id: coordinator.val(),
+                    description: description.val(),
+                    checkerId: checkerId.val(),
+                    checkerPwd: checkerPwd.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        dialog.html(actionText + ' SCR OK.').dialog('open');
+                        resetButton.trigger('click');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+            
+            function deleteScr() {
+                var payload = {};
+                payload.actionName = 'Delete';
+                payload.actionParams = JSON.stringify({
+                    id: id.text(),
+                    checkerId: checkerId.val(),
+                    checkerPwd: checkerPwd.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        dialog.html(actionText + ' SCR OK.').dialog('open');
+                        grid.trigger('reloadGrid');
+                        resetButton.trigger('click');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+
+            function dualControl() {
+                sendDualControl = function() {
+                    if ( actionText == 'Create' || actionText == 'Modify' ) {
+                        saveScr();
+                    } else if ( actionText == 'Delete' ) {
+                        deleteScr();
+                    }
+                };
+                cancelDualControl = function() {
+                    resetButton.trigger('click');
+                };
+                $('#dualControl').dialog('open');
+            }
+            
+            function loadInitData() {
+                var payload = {};
+                payload.actionName = 'Init';
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // set scr list
+                        var scrNoList;
+                        var appList;
+                        var coordinatorList;
+                        var programmerList;
+                        scrNoList += '<option value=""></option>';
+                        for(var id in data.scrList) {
+                            var rec = data.scrList[id];
+                            scrNoList += '<option value="' + rec.id + '">' + rec.scrNo + '</option>';
+                        }
+                        scrNo.html(scrNoList);
+                        // set app list
+                        appList += '<option value=""></option>';
+                        for(var id in data.appList) {
+                            var rec = data.appList[id];
+                            appList += '<option value="' + rec.id + '">' + rec.appId + '</option>';
+                        }
+                        app.html(appList);
+                        // TODO set programmer list
+                        coordinatorList += '<option value=""></option>';
+                        for(var id in data.coordinatorList) {
+                            var rec = data.coordinatorList[id];
+                            coordinatorList += '<option value="' + rec.id + '">' + rec.name + '</option>';
+                        }
+                        coordinator.html(coordinatorList);
+                        // TODO set coordinator list
+                        programmerList += '<option value=""></option>';
+                        for(var id in data.programmerList) {
+                            var rec = data.programmerList[id];
+                            programmerList += '<option value="' + rec.id + '">' + rec.name + '</option>';
+                        }
+                        programmer.html(programmerList);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>
