@@ -1,8 +1,11 @@
 package tw.com.citi.catalog.web.model;
 
+import tw.com.citi.catalog.web.annotation.Mapper;
 import tw.com.citi.catalog.web.annotation.Table;
+import tw.com.citi.catalog.web.mapper.BuildUnitPathMapper;
 
 @Table("JC_BUILD_UNIT_PATH")
+@Mapper(BuildUnitPathMapper.class)
 public class BuildUnitPath implements IModel<Long> {
 
     public enum PathType {
@@ -10,7 +13,7 @@ public class BuildUnitPath implements IModel<Long> {
     }
 
     private Long id;
-    private BuildUnit buildUnit;
+    private Long buildUnit;
     private PathType pathType;
     private String path;
 
@@ -24,20 +27,12 @@ public class BuildUnitPath implements IModel<Long> {
         this.id = id;
     }
 
-    public void setBuildUnit(BuildUnit buildUnit) {
+    public void setBuildUnit(Long buildUnit) {
         this.buildUnit = buildUnit;
     }
 
-    public BuildUnit getBuildUnit() {
+    public Long getBuildUnit() {
         return buildUnit;
-    }
-
-    public void setPathType(PathType pathType) {
-        this.pathType = pathType;
-    }
-
-    public PathType getPathType() {
-        return pathType;
     }
 
     public void setPath(String path) {
@@ -46,6 +41,14 @@ public class BuildUnitPath implements IModel<Long> {
 
     public String getPath() {
         return path;
+    }
+
+    public void setPathType(PathType pathType) {
+        this.pathType = pathType;
+    }
+
+    public PathType getPathType() {
+        return pathType;
     }
 
 }

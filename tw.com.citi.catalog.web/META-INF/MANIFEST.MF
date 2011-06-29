@@ -26,4 +26,6 @@ Require-Bundle: org.apache.wicket.wicket;bundle-version="1.4.15",
  org.springframework.transaction;bundle-version="3.0.5",
  org.springframework.context;bundle-version="3.0.5",
  org.springframework.core;bundle-version="3.0.5",
- org.slf4j.api;bundle-version="1.5.11"
+ org.slf4j.api;bundle-version="1.5.11",
+ org.apache.commons.beanutils;bundle-version="1.8.3",
+ org.springframework.beans;bundle-version="3.0.5"

@@ -2,9 +2,12 @@ package tw.com.citi.catalog.web.model;
 
 import java.sql.Timestamp;
 
+import tw.com.citi.catalog.web.annotation.Mapper;
 import tw.com.citi.catalog.web.annotation.Table;
+import tw.com.citi.catalog.web.mapper.ScrMapper;
 
 @Table("JC_SCR")
+@Mapper(ScrMapper.class)
 public class Scr implements IModel<Long> {
 
     public enum Status {
@@ -13,12 +16,12 @@ public class Scr implements IModel<Long> {
 
     private Long id;
     private String scrNo;
-    private App app;
+    private Long jcAppId;
     private Timestamp createTime;
     private Status status;
     private Timestamp processTime;
-    private Coordinator coordinator;
-    private Programmer programmer;
+    private Long jcCoordinatorId;
+    private Long jcProgrammerId;
     private String description;
     private Long registerCount;
 
@@ -40,12 +43,12 @@ public class Scr implements IModel<Long> {
         return scrNo;
     }
 
-    public void setApp(App app) {
-        this.app = app;
+    public void setJcAppId(Long id) {
+        this.jcAppId = id;
     }
 
-    public App getApp() {
-        return app;
+    public Long getJcAppId() {
+        return this.jcAppId;
     }
 
     public void setCreateTime(Timestamp createTime) {
@@ -72,20 +75,20 @@ public class Scr implements IModel<Long> {
         return processTime;
     }
 
-    public void setCoordinator(Coordinator coordinator) {
-        this.coordinator = coordinator;
+    public void setJcCoordinatorId(Long id) {
+        this.jcCoordinatorId = id;
     }
 
-    public Coordinator getCoordinator() {
-        return coordinator;
+    public Long getJcCoordinatorId() {
+        return this.jcCoordinatorId;
     }
 
-    public void setProgrammer(Programmer programmer) {
-        this.programmer = programmer;
+    public void setJcProgrammerId(Long id) {
+        this.jcProgrammerId = id;
     }
 
-    public Programmer getProgrammer() {
-        return programmer;
+    public Long getJcProgrammerId() {
+        return this.jcProgrammerId;
     }
 
     public void setDescription(String description) {

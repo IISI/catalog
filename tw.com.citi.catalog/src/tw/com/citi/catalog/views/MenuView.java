@@ -154,18 +154,36 @@ public class MenuView extends ViewPart {
          */
         private void initialize() {
             TreeObject to1 = new TreeObject("Home");
-            TreeObject to2 = new TreeObject("JCS5100");
-            TreeObject to3 = new TreeObject("JCS5300");
-            TreeObject to54 = new TreeObject("JCS5400");
+            TreeObject to5100 = new TreeObject("JCS5100");
+            TreeObject to5300 = new TreeObject("JCS5300");
+            TreeObject to5400 = new TreeObject("JCS5400");
+            TreeObject to1000 = new TreeObject("JCS1000");
             TreeParent p1 = new TreeParent("維護作業");
             p1.addChild(to1);
-            p1.addChild(to2);
-            p1.addChild(to3);
-            p1.addChild(to54);
+            p1.addChild(to5100);
+            p1.addChild(to5300);
+            p1.addChild(to5400);
+            p1.addChild(to1000);
 
-            TreeObject to4 = new TreeObject("Leaf 4");
+            TreeObject to1100 = new TreeObject("JCS1100");
+            TreeObject to1200 = new TreeObject("JCS1200");
+            TreeObject to1300 = new TreeObject("JCS1300");
+            TreeObject to1400 = new TreeObject("JCS1400");
+            TreeObject to1500 = new TreeObject("JCS1500");
+            TreeObject to1600 = new TreeObject("JCS1600");
+            TreeObject to1700 = new TreeObject("JCS1700");
+            TreeObject to1800 = new TreeObject("JCS1800");
+            TreeObject to4300 = new TreeObject("JCS4300");
             TreeParent p2 = new TreeParent("SCR 作業");
-            p2.addChild(to4);
+            p2.addChild(to1100);
+            p2.addChild(to1200);
+            p2.addChild(to1300);
+            p2.addChild(to1400);
+            p2.addChild(to1500);
+            p2.addChild(to1600);
+            p2.addChild(to1700);
+            p2.addChild(to1800);
+            p2.addChild(to4300);
 
             TreeParent root = new TreeParent("Root");
             root.addChild(p1);
@@ -286,7 +304,7 @@ public class MenuView extends ViewPart {
                 IWorkbenchPage page = MenuView.this.getViewSite().getPage();
                 BrowserEditorInput editorInput = new BrowserEditorInput(
                         "http://localhost:8080/catalog/app/" + obj.toString());
-                IEditorPart editorPart = page.findEditor(editorInput);
+                IEditorPart editorPart = page.getActiveEditor();
                 if (editorPart == null) {
                     try {
                         page.openEditor(editorInput, MozillaEditor.ID);
@@ -295,7 +313,7 @@ public class MenuView extends ViewPart {
                         e.printStackTrace();
                     }
                 } else {
-                    editorPart.getEditorSite().getPage().bringToTop(editorPart);
+                    ((MozillaEditor) editorPart).getBrowser().setUrl(editorInput.getName());
                 }
             }};
     }
