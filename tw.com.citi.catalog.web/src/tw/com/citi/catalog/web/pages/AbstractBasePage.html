@@ -52,14 +52,31 @@ input {
     </div>
     <script type="text/javascript">
         (function( $ ) {
+            var originalVal = $.fn.val;
+            $.fn.val = function(value) {
+                if (this[0]) {
+                    var item = this[0];
+                    if(item.nodeName.toLowerCase() == 'select') {
+                        if (typeof value != 'undefined') {
+                            // setter invoked, do processing
+                            for(var v in item.children) {
+                                if(value == item.children[v].value) {
+                                    $('#' + item.id + 'Input').val(item.children[v].text);
+                                }
+                            }
+                        }
+                    }
+                }
+                return originalVal.apply(this, arguments);
+            };
             // autocomplete combox from jqueryui example
             $.widget( "ui.combobox", {
                 _create: function() {
                     var self = this,
-                        select = this.element.hide(),
+                        select = this.element.hide().attr('inoptions', true),
                         selected = select.children( ":selected" ),
                         value = selected.val() ? selected.text() : "";
-                    var input = this.input = $( "<input>" )
+                    var input = this.input = $( "<input id='" + select.attr('id') + "Input'>" )
                         .insertAfter( select )
                         .val( value )
                         .autocomplete({
@@ -100,8 +117,10 @@ input {
                                     });
                                     if ( !valid ) {
                                         // remove invalid value, as it didn't match anything
-                                        $( this ).val( "" );
-                                        select.val( "" );
+                                        if(select.attr('inoptions') == 'true'){
+                                            $( this ).val( "" );
+                                            select.val( "" );
+                                        }
                                         input.data( "autocomplete" ).term = "";
                                         return false;
                                     }
