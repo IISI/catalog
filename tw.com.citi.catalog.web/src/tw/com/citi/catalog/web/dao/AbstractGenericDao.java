@@ -107,6 +107,12 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
         return jdbcTemplate.query("SELECT * FROM " + getTableName(), rowMapper);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public T findById(ID id) {
+        return (T) jdbcTemplate.queryForObject("SELECT * FROM " + getTableName() + " WHERE id = ?", getRowMapper(), id);
+    }
+
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new SimpleJdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");

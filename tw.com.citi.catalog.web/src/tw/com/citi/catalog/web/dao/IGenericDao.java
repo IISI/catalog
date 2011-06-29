@@ -16,4 +16,6 @@ public interface IGenericDao<T extends IModel<ID>, ID extends Serializable> {
 
     List<T> findAll();
 
+    T findById(ID id);
+
 }
