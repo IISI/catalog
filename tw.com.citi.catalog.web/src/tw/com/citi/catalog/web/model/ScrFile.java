@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 import tw.com.citi.catalog.web.annotation.Table;
 
-@Table("JC_SCR")
+@Table("JC_SCR_FILE")
 public class ScrFile implements IModel<Long> {
 
     public enum FileType {
