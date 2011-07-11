@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <title>1200</title>
+</wicket:head>
+<wicket:extend>
+    <h1>1200 Move File from RD to QA</h1>
+    <input type="hidden" id="id" name="id" />
+    <table class="form">
+        <tr>
+            <td class="formLabel"><label for="scrNo">SCR No.</label></td>
+            <td><select id="scrNo"></select></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="appId">Application ID</label></td>
+            <td><label id="appId" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="status">Status</label></td>
+            <td><label id="status" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="buildUnit">Build Unit</label></td>
+            <td><select id="buildUnit"></select></td>
+        </tr>
+    </table>
+    <br />
+    <table class="form">
+        <tr>
+            <td style="width: 40%">
+                <div>RD Path:<label id="rdPath" /></div>
+            </td>
+            <td style="width: 20%"></td>
+            <td style="width: 40%">
+                <div>QA Source Path:<label id="qaSourcePath" /></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table id="copyFrom"></table>
+                <div id="copyFromPager"></div></td>
+            <td>
+                <div class="move-button" style="font-size: 0.8em">
+                    <button id="addAllButton">Add All &gt;&gt;</button>
+                    <p />
+                    <button id="addButton">Add &gt;</button>
+                    <p />
+                    <button id="removeButton">&lt; Remove</button>
+                    <p />
+                    <button id="removeAllButton">&lt;&lt; Remove All</button>
+                </div></td>
+            <td>
+                <table id="copyTo"></table>
+                <div id="copyToPager"></div></td>
+        </tr>
+    </table>
+    <br />
+    <div class="button-bar">
+        <button id="moveButton">Move</button>
+    </div>
+    <br />
+    <script type="text/javascript">
+    <!--
+        $(function() {
+            var scrNo = $('#scrNo');
+            var appId = $('#appId');
+            var status = $('#status');
+            var buildUnit = $('#buildUnit');
+            var rdPath = $('#rdPath');
+            var qaSourcePath = $('#qaSourcePath');
+            var addAllButton = $('#addAllButton');
+            var addButton = $('#addButton');
+            var removeButton = $('#removeButton');
+            var removeAllButton = $('#removeAllButton');
+            var moveButton = $('#moveButton');
+
+            var checkerId = $('#checkerId');
+            var checkerPwd = $('#checkerPwd');
+            var actionText;
+            
+            $('.move-button').find('button').css('width', '100%');
+            loadInitData();
+            
+            addAllButton.click(function() {
+                var len = copyFrom.getGridParam("reccount");
+                for(var i = len-1; i >= 0; i--) {
+                    copyTo.addRowData(copyFrom.getDataIDs()[i], copyFrom.getRowData(copyFrom.getDataIDs()[i]));
+                    copyFrom.delRowData(copyFrom.getDataIDs()[i]);
+                }
+            });
+            
+            addButton.click(function() {
+                var rows = copyFrom.getGridParam('selarrrow');
+                if (rows.length > 0) {
+                    var len = rows.length;
+                    for(var i = len-1; i >= 0; i--) {
+                        copyTo.addRowData(rows[i], copyFrom.getRowData(rows[i]));
+                        copyFrom.delRowData(rows[i]);
+                    }
+                } else {
+                    dialog.html('Please select records to add.').dialog('open');
+                }
+            });
+            
+            removeButton.click(function() {
+                var rows = copyTo.getGridParam('selarrrow');
+                if (rows.length > 0) {
+                    var len = rows.length;
+                    for(var i = len-1; i >= 0; i--) {
+                        copyFrom.addRowData(rows[i], copyTo.getRowData(rows[i]));
+                        copyTo.delRowData(rows[i]);
+                    }
+                } else {
+                    dialog.html('Please select records to remove.').dialog('open');
+                }
+            });
+            
+            removeAllButton.click(function() {
+                var len = copyTo.getGridParam("reccount");
+                for(var i = len-1; i >= 0; i--) {
+                    copyFrom.addRowData(copyTo.getDataIDs()[i], copyTo.getRowData(copyTo.getDataIDs()[i]));
+                    copyTo.delRowData(copyTo.getDataIDs()[i]);
+                }
+            });
+            
+            moveButton.click(function() {
+                var len = copyTo.getGridParam("reccount");
+                if (len > 0) {
+                    dualControl();
+                } else {
+                    dialog.html('Please add records to QA source path list.').dialog('open');
+                }
+            });
+            
+            scrNo.combobox({
+                selected: function(event, ui) {
+                    var payload = {};
+                    payload.actionName = 'Query';
+                    payload.actionParams = JSON.stringify({
+                        id: scrNo.val()
+                    });
+                    $.ajax({
+                        url: __ajaxHandler,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: payload,
+                        success: function(data, textStatus, jqXHR) {
+                            var buildUnitList;
+                            appId.text(data.appId);
+                            status.text(data.status);
+                            //set build unit option
+                            buildUnitList += '<option value=""></option><option value="all">Select All Build Units</option>';
+                            for(var id in data.buildUnits) {
+                                var rec = data.buildUnits[id];
+                                buildUnitList += '<option value="' + rec.id + '">' + rec.unitId + '</option>';
+                            }
+                            buildUnit.html(buildUnitList);
+                            // set rd path
+                            rdPath.text(data.rdPath);
+                            // set qa source path
+                            qaSourcePath.text(data.qaSourcePath);
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            var resp = JSON.parse(jqXHR.responseText);
+                            dialog.html(resp.message).dialog('open');
+                        }
+                    });
+                }
+            });
+            
+            buildUnit.combobox({
+                selected: function(event, ui) {
+                    copyFrom.clearGridData();
+                    var payload = {};
+                    payload.actionName = 'GetFiles';
+                    payload.actionParams = JSON.stringify({
+                        scrId: scrNo.val(),
+                        buildUnitId: buildUnit.val()
+                    });
+                    $.ajax({
+                        url: __ajaxHandler,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: payload,
+                        success: function(data, textStatus, jqXHR) {
+                            // set qa source path
+                            var paths = "";
+                            qaSourcePath.text(data.qaSourcePath);
+                            rdPath.text(data.rdPath);
+                            // set file
+                            for(var index in data.files) {
+                                var file = data.files[index];
+                                var scrFile = {
+                                    id: file.id,
+                                    fileName: file.fileName,
+                                    filePath: file.filePath,
+                                    fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
+                                };
+                                copyFrom.addRowData(file.id, scrFile);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            var resp = JSON.parse(jqXHR.responseText);
+                            dialog.html(resp.message).dialog('open');
+                        }
+                    });
+                }
+            });
+            
+            var copyFrom = $('#copyFrom').jqGrid({
+                multiselect: 'true',
+                datatype: 'local',
+                mtype: 'POST',
+                width: $(window).width() * 0.4,
+                colNames: ['Id', 'Path', 'Name', 'Status'],
+                colModel: [
+                    {name: 'id', index: 'id', hidden: true},
+                    {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
+                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
+                    {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
+                ],
+                pager: '#pager',
+                sortname: 'name',
+                sortorder: 'desc',
+                viewrecords: true,
+                caption: 'From',
+            }).hideCol('cb');
+            
+            copyFrom.jqGrid('navGrid', '#copyFromPager', {edit: false, add: false, del: false});
+            
+            var copyTo = $('#copyTo').jqGrid({
+                multiselect: 'true',
+                datatype: 'local',
+                mtype: 'POST',
+                width: $(window).width() * 0.4,
+                colNames: ['Id', 'Path', 'Name', 'Status'],
+                colModel: [
+                    {name: 'id', index: 'id', hidden: true},
+                    {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
+                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
+                    {name: 'fileStatus', index: 'fileStatus', hidden: true}
+                ],
+                pager: '#pager',
+                sortname: 'name',
+                sortorder: 'desc',
+                viewrecords: true,
+                caption: 'To',
+            }).hideCol('cb');
+            
+            copyTo.jqGrid('navGrid', '#copyToPager', {edit: false, add: false, del: false});
+            
+            var dialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Result',
+                buttons: {
+                    "Close": function(){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            function dualControl() {
+                sendDualControl = function() {
+                    moveFiles();
+                };
+                cancelDualControl = function() {
+                };
+                $('#dualControl').dialog('open');
+            }
+            
+            function moveFiles() {
+                var payload = {};
+                payload.actionName = 'Move';
+                var files = [];
+                var ids = copyTo.getDataIDs();
+                for(var i in ids) {
+                    files.push(copyTo.getRowData(ids[i]));
+                }
+                payload.actionParams = JSON.stringify({
+                    scrId: scrNo.val(),
+                    buildUnitId: buildUnit.val(),
+                    files: JSON.stringify(files), 
+                    checkerId: checkerId.val(),
+                    checkerPwd: checkerPwd.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // TODO success
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+
+            function loadInitData() {
+                var payload = {};
+                payload.actionName = 'Init';
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // set scr list
+                        var scrNoList;
+                        for(var id in data.scrList) {
+                            var rec = data.scrList[id];
+                            scrNoList += '<option value="' + rec.id + '">' + rec.scrNo + '</option>';
+                        }
+                        scrNo.html(scrNoList);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>
