@@ -34,4 +34,36 @@ public class BuildUnit implements IModel<Long> {
     public Long getJcAppId() {
         return jcAppId;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((jcAppId == null) ? 0 : jcAppId.hashCode());
+        result = prime * result + ((unitId == null) ? 0 : unitId.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BuildUnit other = (BuildUnit) obj;
+        if (jcAppId == null) {
+            if (other.jcAppId != null)
+                return false;
+        } else if (!jcAppId.equals(other.jcAppId))
+            return false;
+        if (unitId == null) {
+            if (other.unitId != null)
+                return false;
+        } else if (!unitId.equals(other.unitId))
+            return false;
+        return true;
+    }
+
 }

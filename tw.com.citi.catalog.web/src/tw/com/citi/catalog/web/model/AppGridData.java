@@ -3,7 +3,8 @@ package tw.com.citi.catalog.web.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnitGridData extends BuildUnit {
+public class AppGridData extends App {
+    private String appBasePath;
     private String qaSourcePath;
     private String qaExecutionPath;
     private String prodBackupPath;
@@ -48,6 +49,14 @@ public class UnitGridData extends BuildUnit {
 
     public void setProdExecutionPath(List<String> prodExecutionPath) {
         this.prodExecutionPath = prodExecutionPath;
+    }
+
+    public void setAppBasePath(String appBasePath) {
+        this.appBasePath = appBasePath;
+    }
+
+    public String getAppBasePath() {
+        return appBasePath;
     }
 
 }

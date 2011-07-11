@@ -5,16 +5,16 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import tw.com.citi.catalog.web.model.BuildUnitPath;
-import tw.com.citi.catalog.web.model.BuildUnitPath.PathType;
+import tw.com.citi.catalog.web.model.AppPath;
+import tw.com.citi.catalog.web.model.AppPath.PathType;
 
-public class BuildUnitPathMapper implements RowMapper<BuildUnitPath> {
+public class AppPathMapper implements RowMapper<AppPath> {
 
     @Override
-    public BuildUnitPath mapRow(ResultSet rs, int rowNum) throws SQLException {
-        BuildUnitPath buildUnitPath = new BuildUnitPath();
+    public AppPath mapRow(ResultSet rs, int rowNum) throws SQLException {
+        AppPath buildUnitPath = new AppPath();
         buildUnitPath.setId(rs.getLong("ID"));
-        buildUnitPath.setBuildUnit(rs.getLong("JC_BUILD_UNIT_ID"));
+        buildUnitPath.setJcAppId(rs.getLong("JC_APP_ID"));
         buildUnitPath.setPathType(PathType.values()[rs.getInt("PATH_TYPE")]);
         buildUnitPath.setPath(rs.getString("PATH"));
         return buildUnitPath;

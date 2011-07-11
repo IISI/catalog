@@ -2,18 +2,18 @@ package tw.com.citi.catalog.web.model;
 
 import tw.com.citi.catalog.web.annotation.Mapper;
 import tw.com.citi.catalog.web.annotation.Table;
-import tw.com.citi.catalog.web.mapper.BuildUnitPathMapper;
+import tw.com.citi.catalog.web.mapper.AppPathMapper;
 
-@Table("JC_BUILD_UNIT_PATH")
-@Mapper(BuildUnitPathMapper.class)
-public class BuildUnitPath implements IModel<Long> {
+@Table("JC_APP_PATH")
+@Mapper(AppPathMapper.class)
+public class AppPath implements IModel<Long> {
 
     public enum PathType {
-        QA_SOURCE, QA_EXECUTION, PROD_BACKUP, PROD_SOURCE, PROD_EXECUTION
+        QA_SOURCE, QA_EXECUTION, PROD_BACKUP, PROD_SOURCE, PROD_EXECUTION, APP_BASE
     }
 
     private Long id;
-    private Long buildUnit;
+    private Long jcAppId;
     private PathType pathType;
     private String path;
 
@@ -25,14 +25,6 @@ public class BuildUnitPath implements IModel<Long> {
     @Override
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setBuildUnit(Long buildUnit) {
-        this.buildUnit = buildUnit;
-    }
-
-    public Long getBuildUnit() {
-        return buildUnit;
     }
 
     public void setPath(String path) {
@@ -49,6 +41,39 @@ public class BuildUnitPath implements IModel<Long> {
 
     public PathType getPathType() {
         return pathType;
+    }
+
+    public void setJcAppId(Long jcAppId) {
+        this.jcAppId = jcAppId;
+    }
+
+    public Long getJcAppId() {
+        return jcAppId;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((path == null) ? 0 : path.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AppPath other = (AppPath) obj;
+        if (path == null) {
+            if (other.path != null)
+                return false;
+        } else if (!path.equals(other.path))
+            return false;
+        return true;
     }
 
 }

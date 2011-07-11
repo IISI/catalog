@@ -29,6 +29,10 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+    <bean id="appPathDao" class="tw.com.citi.catalog.web.dao.AppPathDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
     <bean id="buildUnitDao" class="tw.com.citi.catalog.web.dao.BuildUnitDao">
         <property name="dataSource" ref="dataSource"></property>
     </bean>
@@ -51,6 +55,7 @@
 
     <bean id="appGrid" class="tw.com.citi.catalog.web.grid.AppGrid">
         <property name="appDao" ref="appDao"></property>
+        <property name="appPathDao" ref="appPathDao"></property>
     </bean>
 
     <bean id="unitGrid" class="tw.com.citi.catalog.web.grid.UnitGrid">

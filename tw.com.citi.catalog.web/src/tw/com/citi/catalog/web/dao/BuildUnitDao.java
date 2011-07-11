@@ -12,14 +12,6 @@ import tw.com.citi.catalog.web.model.BuildUnit;
 public class BuildUnitDao extends AbstractGenericDao<BuildUnit, Long> implements IBuildUnitDao {
 
     @Override
-    public List<BuildUnit> findUnitGridData(Map params) {
-        RowMapper<BuildUnit> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(BuildUnit.class);
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_APP_ID = :jc_app_id");
-        return super.jdbcTemplate.query(sql.toString(), rowMapper, params);
-    }
-
-    @Override
     public boolean isBuildUnitExist(String appId, String unitId) {
         return (findUnique(appId, unitId) != null);
     }
@@ -35,5 +27,26 @@ public class BuildUnitDao extends AbstractGenericDao<BuildUnit, Long> implements
         params.put("unitId", unitId);
         List<BuildUnit> results = super.jdbcTemplate.query(sql.toString(), rowMapper, params);
         return (results != null && results.size() > 0) ? results.get(0) : null;
+    }
+
+    @Override
+    public List<BuildUnit> findByAppId(Long appId) {
+        Map params = new HashMap();
+        params.put("jc_app_id", appId);
+        RowMapper<BuildUnit> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(BuildUnit.class);
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_APP_ID = :jc_app_id");
+        return super.jdbcTemplate.query(sql.toString(), rowMapper, params);
+    }
+
+    @Override
+    public void delete(List<BuildUnit> buildUnits) {
+        for (BuildUnit unit : buildUnits) {
+            StringBuilder sql = new StringBuilder();
+            Map params = new HashMap();
+            params.put("id", unit.getId());
+            sql.append("DELETE FROM ").append(getTableName()).append(" WHERE ID=:id");
+            super.jdbcTemplate.update(sql.toString(), params);
+        }
     }
 }
