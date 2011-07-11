@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
             sql.append("SELECT * FROM ").append(getTableName())
                     .append(" WHERE JC_SCR_ID=:scrId AND FILE_TYPE=" + FileType.SOURCE.ordinal());
             List<ScrFile> list = super.jdbcTemplate.query(sql.toString(), rowMapper, params);
-            return (list == null || list.size() == 0) ? null : list;
+            return (list == null || list.size() == 0) ? new ArrayList<ScrFile>() : list;
         }
     }
 
@@ -39,7 +40,7 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
             sql.append("SELECT * FROM ").append(getTableName())
                     .append(" WHERE JC_BUILD_UNIT_ID=:buildUnitId AND FILE_TYPE=" + FileType.SOURCE.ordinal());
             List<ScrFile> list = super.jdbcTemplate.query(sql.toString(), rowMapper, params);
-            return (list == null || list.size() == 0) ? null : list;
+            return (list == null || list.size() == 0) ? new ArrayList<ScrFile>() : list;
         }
     }
 }

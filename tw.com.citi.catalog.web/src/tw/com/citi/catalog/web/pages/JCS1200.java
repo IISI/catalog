@@ -161,8 +161,7 @@ public class JCS1200 extends AbstractBasePage {
             String rdPath = appPaths.get(PathType.APP_BASE) + "\\RD";
             String qaSourcePath = appPaths.get(PathType.QA_SOURCE);
             // TODO check 檔案是否真的存在 rdPath
-            for (int i = 0; i < files.size(); i++) {
-                ScrFile file = files.get(i);
+            for(ScrFile file : files) {
                 try {
                     if (FileUtil.exist(rdPath + "\\" + file.getFilePath(), file.getFileName())) {
                         file.setFileStatus(FileStatus.EXIST);
