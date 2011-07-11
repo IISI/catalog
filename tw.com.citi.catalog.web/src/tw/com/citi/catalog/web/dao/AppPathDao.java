@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,13 +72,22 @@ public class AppPathDao extends AbstractGenericDao<AppPath, Long> implements IAp
     }
 
     @Override
-    public Map<PathType, String> getAppPathsByAppId(Long appId) {
-        // TODO Auto-generated method stub
+    public Map<PathType, Object> getAppPathsByAppId(Long appId) {
         List<AppPath> appPaths = findByAppId(appId);
-        Map<PathType, String> results = new HashMap<PathType, String>();
+        Map<PathType, Object> results = new HashMap<PathType, Object>();
+        List<String> prodSourcePaths = new ArrayList<String>();
+        List<String> prodExecutionPaths = new ArrayList<String>();
         for (AppPath appPath : appPaths) {
-            results.put(appPath.getPathType(), appPath.getPath());
+            if(PathType.PROD_SOURCE == appPath.getPathType()) {
+                prodSourcePaths.add(appPath.getPath());
+            } else if(PathType.PROD_EXECUTION == appPath.getPathType()) {
+                prodExecutionPaths.add(appPath.getPath());
+            } else {
+                results.put(appPath.getPathType(), appPath.getPath());
+            }
         }
+        results.put(PathType.PROD_SOURCE, prodSourcePaths);
+        results.put(PathType.PROD_EXECUTION, prodExecutionPaths);
         return results;
     }
 

@@ -217,6 +217,20 @@ public class FileUtil {
         return file;
     }
 
+    public static List<FileObject> listBatchFiles(String filePath) throws FileSystemException {
+        List<FileObject> files = new ArrayList<FileObject>();
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
+        FileObject[] allFiles = folder.getChildren();
+        for (FileObject file : allFiles) {
+            String fileName = file.getName().getBaseName();
+            String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+            if ("bat".equalsIgnoreCase(extension)) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
     private static String replaceSlash(String path) {
         return path.replace("\\", "/");
     }

@@ -27,5 +27,5 @@ public interface IAppPathDao extends IGenericDao<AppPath, Long> {
     
     AppPath findUnique(String path);
     
-    Map<PathType, String> getAppPathsByAppId(Long appId);
+    Map<PathType, Object> getAppPathsByAppId(Long appId);
 }

@@ -2,10 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
-    <title>1200</title>
+    <title>1600</title>
 </wicket:head>
 <wicket:extend>
-    <h1>1200 Move File from RD to QA</h1>
+    <h1>1600 Move File from QA to PROD</h1>
     <input type="hidden" id="id" name="id" />
     <table class="form">
         <tr>
@@ -29,11 +29,15 @@
     <table class="form">
         <tr>
             <td style="width: 40%">
-                <div>RD Path:<label id="rdPath" /></div>
+                <div>QA Source Path:<label id="qaSourcePath" /></div>
+                <div>QA Execution Path:<label id="qaExecutionPath" /></div>
             </td>
             <td style="width: 20%"></td>
             <td style="width: 40%">
-                <div>QA Source Path:<label id="qaSourcePath" /></div>
+                <div>PROD Source Path:</div>
+                <div><label id="prodSourcePaths" /></div>
+                <div>PROD Execution Path:</div>
+                <div><label id="prodExecutionPaths" /></div>
             </td>
         </tr>
         <tr>
@@ -67,8 +71,10 @@
             var appId = $('#appId');
             var status = $('#status');
             var buildUnit = $('#buildUnit');
-            var rdPath = $('#rdPath');
             var qaSourcePath = $('#qaSourcePath');
+            var qaExecutionPath = $('#qaExecutionPath');
+            var prodSourcePaths = $('#prodSourcePaths');
+            var prodExecutionPaths = $('#prodExecutionPaths');
             var addAllButton = $('#addAllButton');
             var addButton = $('#addButton');
             var removeButton = $('#removeButton');
@@ -129,7 +135,7 @@
                 if (len > 0) {
                     dualControl();
                 } else {
-                    dialog.html('Please add records to QA source path.').dialog('open');
+                    dialog.html('Please add records to PROD path.').dialog('open');
                 }
             });
             
@@ -156,10 +162,21 @@
                                 buildUnitList += '<option value="' + rec.id + '">' + rec.unitId + '</option>';
                             }
                             buildUnit.html(buildUnitList);
-                            // set rd path
-                            rdPath.text(data.rdPath);
-                            // set qa source path
+                            // set qa path
                             qaSourcePath.text(data.qaSourcePath);
+                            qaExecutionPath.text(data.qaExecutionPath);
+                            // set prod paths
+                            var paths = "";
+                            prodSourcePaths.text("");
+                            for(var path in data.prodSourcePaths) {
+                                paths = data.prodSourcePaths[path];
+                                prodSourcePaths.append(paths + "<br />");
+                            }
+                            prodExecutionPaths.text("");
+                            for(var path in data.prodExecutionPaths) {
+                                paths = data.prodExecutionPaths[path];
+                                prodExecutionPaths.append(paths + "<br />");
+                            }
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
                             var resp = JSON.parse(jqXHR.responseText);
@@ -184,10 +201,22 @@
                         dataType: 'json',
                         data: payload,
                         success: function(data, textStatus, jqXHR) {
-                            // set qa source path
+                            var unitId = data.unitId;
+                            // set qa path
+                            qaSourcePath.text(data.qaSourcePath + unitId);
+                            qaExecutionPath.text(data.qaExecutionPath + unitId);
+                            // set prod paths
                             var paths = "";
-                            qaSourcePath.text(data.qaSourcePath);
-                            rdPath.text(data.rdPath);
+                            prodSourcePaths.text("");
+                            for(var path in data.prodSourcePaths) {
+                                paths = data.prodSourcePaths[path] + unitId;
+                                prodSourcePaths.append(paths + "<br />");
+                            }
+                            prodExecutionPaths.text("");
+                            for(var path in data.prodExecutionPaths) {
+                                paths = data.prodExecutionPaths[path] + unitId;
+                                prodExecutionPaths.append(paths + "<br />");
+                            }
                             // set file
                             for(var index in data.files) {
                                 var file = data.files[index];
@@ -195,6 +224,7 @@
                                     id: file.id,
                                     fileName: file.fileName,
                                     filePath: file.filePath,
+                                    fileType: file.fileType,
                                     fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
                                 };
                                 copyFrom.addRowData(file.id, scrFile);
@@ -213,11 +243,12 @@
                 datatype: 'local',
                 mtype: 'POST',
                 width: $(window).width() * 0.4,
-                colNames: ['Id', 'Path', 'Name', 'Status'],
+                colNames: ['Id', 'Path', 'Name', 'Type', 'Status'],
                 colModel: [
                     {name: 'id', index: 'id', hidden: true},
                     {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
                     {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
+                    {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
                 pager: '#pager',
@@ -234,11 +265,12 @@
                 datatype: 'local',
                 mtype: 'POST',
                 width: $(window).width() * 0.4,
-                colNames: ['Id', 'Path', 'Name', 'Status'],
+                colNames: ['Id', 'Path', 'Name', 'Type', 'Status'],
                 colModel: [
                     {name: 'id', index: 'id', hidden: true},
                     {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
                     {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
+                    {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', hidden: true}
                 ],
                 pager: '#pager',

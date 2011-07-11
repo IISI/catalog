@@ -2,10 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
-    <title>1200</title>
+    <title>1300</title>
 </wicket:head>
 <wicket:extend>
-    <h1>1200 Move File from RD to QA</h1>
+    <h1>1300 Compile</h1>
     <input type="hidden" id="id" name="id" />
     <table class="form">
         <tr>
@@ -21,6 +21,14 @@
             <td><label id="status" /></td>
         </tr>
         <tr>
+            <td class="formLabel"><label for="qaSourcePath">QA Source Path</label></td>
+            <td><label id="qaSourcePath" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="mappingLocalPath">Mapping Local Path</label></td>
+            <td><label id="mappingLocalPath" /></td>
+        </tr>
+        <tr>
             <td class="formLabel"><label for="buildUnit">Build Unit</label></td>
             <td><select id="buildUnit"></select></td>
         </tr>
@@ -29,18 +37,9 @@
     <table class="form">
         <tr>
             <td style="width: 40%">
-                <div>RD Path:<label id="rdPath" /></div>
-            </td>
-            <td style="width: 20%"></td>
-            <td style="width: 40%">
-                <div>QA Source Path:<label id="qaSourcePath" /></div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table id="copyFrom"></table>
-                <div id="copyFromPager"></div></td>
-            <td>
+                <table id="batchList"></table>
+                <div id="batchListPager"></div></td>
+            <td style="width: 20%">
                 <div class="move-button" style="font-size: 0.8em">
                     <button id="addAllButton">Add All &gt;&gt;</button>
                     <p />
@@ -50,14 +49,14 @@
                     <p />
                     <button id="removeAllButton">&lt;&lt; Remove All</button>
                 </div></td>
-            <td>
-                <table id="copyTo"></table>
-                <div id="copyToPager"></div></td>
+            <td style="width: 40%">
+                <table id="compileList"></table>
+                <div id="compileListPager"></div></td>
         </tr>
     </table>
     <br />
     <div class="button-bar">
-        <button id="moveButton">Move</button>
+        <button id="compileButton">Compile</button>
     </div>
     <br />
     <script type="text/javascript">
@@ -69,11 +68,12 @@
             var buildUnit = $('#buildUnit');
             var rdPath = $('#rdPath');
             var qaSourcePath = $('#qaSourcePath');
+            var mappingLocalPath = $('#mappingLocalPath');
             var addAllButton = $('#addAllButton');
             var addButton = $('#addButton');
             var removeButton = $('#removeButton');
             var removeAllButton = $('#removeAllButton');
-            var moveButton = $('#moveButton');
+            var compileButton = $('#compileButton');
 
             var checkerId = $('#checkerId');
             var checkerPwd = $('#checkerPwd');
@@ -83,20 +83,20 @@
             loadInitData();
             
             addAllButton.click(function() {
-                var len = copyFrom.getGridParam("reccount");
+                var len = batchList.getGridParam("reccount");
                 for(var i = len-1; i >= 0; i--) {
-                    copyTo.addRowData(copyFrom.getDataIDs()[i], copyFrom.getRowData(copyFrom.getDataIDs()[i]));
-                    copyFrom.delRowData(copyFrom.getDataIDs()[i]);
+                    compileList.addRowData(batchList.getDataIDs()[i], batchList.getRowData(batchList.getDataIDs()[i]));
+                    batchList.delRowData(batchList.getDataIDs()[i]);
                 }
             });
             
             addButton.click(function() {
-                var rows = copyFrom.getGridParam('selarrrow');
+                var rows = batchList.getGridParam('selarrrow');
                 if (rows.length > 0) {
                     var len = rows.length;
                     for(var i = len-1; i >= 0; i--) {
-                        copyTo.addRowData(rows[i], copyFrom.getRowData(rows[i]));
-                        copyFrom.delRowData(rows[i]);
+                        compileList.addRowData(rows[i], batchList.getRowData(rows[i]));
+                        batchList.delRowData(rows[i]);
                     }
                 } else {
                     dialog.html('Please select records to add.').dialog('open');
@@ -104,12 +104,12 @@
             });
             
             removeButton.click(function() {
-                var rows = copyTo.getGridParam('selarrrow');
+                var rows = compileList.getGridParam('selarrrow');
                 if (rows.length > 0) {
                     var len = rows.length;
                     for(var i = len-1; i >= 0; i--) {
-                        copyFrom.addRowData(rows[i], copyTo.getRowData(rows[i]));
-                        copyTo.delRowData(rows[i]);
+                        batchList.addRowData(rows[i], compileList.getRowData(rows[i]));
+                        compileList.delRowData(rows[i]);
                     }
                 } else {
                     dialog.html('Please select records to remove.').dialog('open');
@@ -117,19 +117,19 @@
             });
             
             removeAllButton.click(function() {
-                var len = copyTo.getGridParam("reccount");
+                var len = compileList.getGridParam("reccount");
                 for(var i = len-1; i >= 0; i--) {
-                    copyFrom.addRowData(copyTo.getDataIDs()[i], copyTo.getRowData(copyTo.getDataIDs()[i]));
-                    copyTo.delRowData(copyTo.getDataIDs()[i]);
+                    batchList.addRowData(compileList.getDataIDs()[i], compileList.getRowData(compileList.getDataIDs()[i]));
+                    compileList.delRowData(compileList.getDataIDs()[i]);
                 }
             });
             
-            moveButton.click(function() {
-                var len = copyTo.getGridParam("reccount");
+            compileButton.click(function() {
+                var len = compileList.getGridParam("reccount");
                 if (len > 0) {
                     dualControl();
                 } else {
-                    dialog.html('Please add records to QA source path.').dialog('open');
+                    dialog.html('Please add records to compile list.').dialog('open');
                 }
             });
             
@@ -171,7 +171,7 @@
             
             buildUnit.combobox({
                 selected: function(event, ui) {
-                    copyFrom.clearGridData();
+                    batchList.clearGridData();
                     var payload = {};
                     payload.actionName = 'GetFiles';
                     payload.actionParams = JSON.stringify({
@@ -197,7 +197,7 @@
                                     filePath: file.filePath,
                                     fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
                                 };
-                                copyFrom.addRowData(file.id, scrFile);
+                                batchList.addRowData(file.id, scrFile);
                             }
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
@@ -208,47 +208,41 @@
                 }
             });
             
-            var copyFrom = $('#copyFrom').jqGrid({
+            var batchList = $('#batchList').jqGrid({
                 multiselect: 'true',
                 datatype: 'local',
                 mtype: 'POST',
                 width: $(window).width() * 0.4,
-                colNames: ['Id', 'Path', 'Name', 'Status'],
+                colNames: ['Batch File Name'],
                 colModel: [
-                    {name: 'id', index: 'id', hidden: true},
-                    {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
-                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
-                    {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
+                    {name: 'batchFileName', index: 'batchFileName', align: 'left', sortable: true}
                 ],
                 pager: '#pager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
-                caption: 'From',
+                caption: 'Batch List',
             }).hideCol('cb');
             
-            copyFrom.jqGrid('navGrid', '#copyFromPager', {edit: false, add: false, del: false});
+            batchList.jqGrid('navGrid', '#batchListPager', {edit: false, add: false, del: false});
             
-            var copyTo = $('#copyTo').jqGrid({
+            var compileList = $('#compileList').jqGrid({
                 multiselect: 'true',
                 datatype: 'local',
                 mtype: 'POST',
                 width: $(window).width() * 0.4,
-                colNames: ['Id', 'Path', 'Name', 'Status'],
+                colNames: ['Batch File Name'],
                 colModel: [
-                    {name: 'id', index: 'id', hidden: true},
-                    {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
-                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
-                    {name: 'fileStatus', index: 'fileStatus', hidden: true}
+                    {name: 'batchFileName', index: 'batchFileName', align: 'left', sortable: true}
                 ],
                 pager: '#pager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
-                caption: 'To',
+                caption: 'Compile List',
             }).hideCol('cb');
             
-            copyTo.jqGrid('navGrid', '#copyToPager', {edit: false, add: false, del: false});
+            compileList.jqGrid('navGrid', '#compileListPager', {edit: false, add: false, del: false});
             
             var dialog = $('<div></div>').dialog({
                 autoOpen: false,
@@ -263,20 +257,20 @@
 
             function dualControl() {
                 sendDualControl = function() {
-                    moveFiles();
+                    compile();
                 };
                 cancelDualControl = function() {
                 };
                 $('#dualControl').dialog('open');
             }
             
-            function moveFiles() {
+            function compile() {
                 var payload = {};
-                payload.actionName = 'Move';
+                payload.actionName = 'Compile';
                 var files = [];
-                var ids = copyTo.getDataIDs();
+                var ids = compileList.getDataIDs();
                 for(var i in ids) {
-                    files.push(copyTo.getRowData(ids[i]));
+                    files.push(compileList.getRowData(ids[i]));
                 }
                 payload.actionParams = JSON.stringify({
                     scrId: scrNo.val(),

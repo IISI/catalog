@@ -27,7 +27,7 @@ import tw.com.citi.catalog.web.utils.FileUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class JCS1200 extends AbstractBasePage {
+public class JCS1600 extends AbstractBasePage {
 
     @SpringBean(name = "appDao")
     private IAppDao appDao;
@@ -84,12 +84,10 @@ public class JCS1200 extends AbstractBasePage {
         List<BuildUnit> units = buildUnitDao.findByAppId(scr.getJcAppId());
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("appId", app.getAppId());
-        if (appPaths.containsKey(PathType.APP_BASE)) {
-            data.put("rdPath", appPaths.get(PathType.APP_BASE) + "\\RD");
-        }
-        if (appPaths.containsKey(PathType.QA_SOURCE)) {
-            data.put("qaSourcePath", appPaths.get(PathType.QA_SOURCE));
-        }
+        data.put("qaSourcePath", appPaths.get(PathType.QA_SOURCE));
+        data.put("qaExecutionPath", appPaths.get(PathType.QA_EXECUTION));
+        data.put("prodSourcePaths", appPaths.get(PathType.PROD_SOURCE));
+        data.put("prodExecutionPaths", appPaths.get(PathType.PROD_EXECUTION));
         data.put("status", scr.getStatus());
         data.put("buildUnits", units);
         return gson.toJson(data);
@@ -177,8 +175,11 @@ public class JCS1200 extends AbstractBasePage {
             }
             // get QA SOURCE PATH
             Map<String, Object> data = new HashMap<String, Object>();
-            data.put("rdPath", rdPath + buildUnit);
-            data.put("qaSourcePath", qaSourcePath + buildUnit);
+            data.put("unitId", buildUnit);
+            data.put("qaSourcePath", appPaths.get(PathType.QA_SOURCE));
+            data.put("qaExecutionPath", appPaths.get(PathType.QA_EXECUTION));
+            data.put("prodSourcePaths", appPaths.get(PathType.PROD_SOURCE));
+            data.put("prodExecutionPaths", appPaths.get(PathType.PROD_EXECUTION));
             data.put("files", files);
             return gson.toJson(data);
         } else {
