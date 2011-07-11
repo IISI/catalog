@@ -1,0 +1,231 @@
+package tw.com.citi.catalog.web.utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.apache.commons.vfs.FileFilter;
+import org.apache.commons.vfs.FileFilterSelector;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
+import org.apache.commons.vfs.provider.local.LocalFileSystem;
+
+import tw.com.citi.catalog.web.Settings;
+import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
+
+public class FileUtil {
+
+    private static Settings settings;
+    private static FileSystemManager fsManager;
+    private static FileSystemOptions opts;
+    private static final int BUFF_SIZE = 100000;
+    private static final byte[] buffer = new byte[BUFF_SIZE];
+    private static boolean init = false;
+
+    static {
+        try {
+            settings = new Settings();
+            String functionalId = settings.getJcifs().getFunctionalId();
+            StringTokenizer st = new StringTokenizer(functionalId, ";");
+            String domain = null;
+            String id = "";
+            if (st.countTokens() == 2) {
+                // 代表有domain
+                domain = st.nextToken();
+                id = st.nextToken();
+            } else {
+                id = st.nextToken();
+            }
+            StaticUserAuthenticator auth = new StaticUserAuthenticator(domain, id, getPassword(settings.getJcifs()
+                    .getFunctionalPwd()));
+            opts = new FileSystemOptions();
+            DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
+            fsManager = new OSGiFileSystemManager();
+            ((OSGiFileSystemManager) fsManager).init();
+            jcifs.Config.setProperty("jcifs.netbios.wins", settings.getJcifs().getJcifsNetbiosWins());
+            init = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SecurityException("Load folder settings error.", e);
+        }
+    }
+
+    private static String getPassword(String password) throws Exception {
+        return "";
+        // return PasswordUtil.decodePwd(password);
+    }
+
+    public static void copyFile(FileObject source, FileObject target, String prefix, String suffix,
+            String[] sourceFileNames) throws FileSystemException {
+        List<FileObject> files = new ArrayList<FileObject>();
+        if (sourceFileNames == null || sourceFileNames.length == 0) {
+            // 全部複製
+            FileObject[] objects = source.getChildren();
+            files.addAll(Arrays.asList(objects));
+        } else {
+            for (String fileName : sourceFileNames) {
+                FileObject file = fsManager.resolveFile(source, fileName);
+                if (file != null) {
+                    files.add(file);
+                }
+            }
+        }
+        if (files != null && files.size() != 0) {
+            final List<String> accept = new ArrayList<String>();
+            for (FileObject file : files) {
+                accept.add(file.getName().getBaseName());
+            }
+            FileFilterSelector ffs = new FileFilterSelector(new FileFilter() {
+                @Override
+                public boolean accept(FileSelectInfo info) {
+                    if (accept.contains(info.getFile().getName().getBaseName())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            target.copyFrom(source, ffs);
+            if (prefix != null || suffix != null) {
+                // 修改檔名
+                if (target.getFileSystem() instanceof LocalFileSystem) {
+                    List<File> targetFiles = new ArrayList<File>();
+                    for (String fileName : sourceFileNames) {
+                        File file = new File(target.getURL().getFile() + "/" + fileName);
+                        if (file != null && file.exists()) {
+                            targetFiles.add(file);
+                        }
+                    }
+                    if (targetFiles != null || targetFiles.size() > 0) {
+                        for (File file : targetFiles) {
+                            String baseName = file.getName();
+                            String extensions = baseName.indexOf(".") > 0 ? baseName.substring(baseName.indexOf("."))
+                                    : "";
+                            String fileName = baseName.indexOf(".") > 0 ? baseName.substring(0,
+                                    baseName.indexOf(".") - 1) : baseName;
+                            StringBuffer newName = new StringBuffer();
+                            newName = newName.append(prefix == null ? "" : prefix).append(fileName)
+                                    .append(suffix == null ? "" : suffix).append(extensions);
+                            file.renameTo(new File(target.getURL().getFile() + "/" + newName.toString()));
+                        }
+                    }
+                } else {
+                    List<FileObject> targetFiles = new ArrayList<FileObject>();
+                    for (String fileName : sourceFileNames) {
+                        FileObject file = fsManager.resolveFile(target, fileName);
+                        if (file != null) {
+                            targetFiles.add(file);
+                        }
+                    }
+                    if (targetFiles != null || targetFiles.size() > 0) {
+                        for (FileObject file : targetFiles) {
+                            String baseName = file.getName().getBaseName();
+                            String extensions = baseName.indexOf(".") > 0 ? baseName.substring(baseName.indexOf("."))
+                                    : "";
+                            String fileName = baseName.indexOf(".") > 0 ? baseName.substring(0,
+                                    baseName.indexOf(".") - 1) : baseName;
+                            StringBuffer newName = new StringBuffer();
+                            newName = newName.append(prefix == null ? "" : prefix).append(fileName)
+                                    .append(suffix == null ? "" : suffix).append(extensions);
+                            FileObject temp = fsManager.resolveFile(target, newName.toString());
+                            temp.createFile();
+                            file.moveTo(temp);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void copyFile(String sourceFolder, String targetFolder, String prefix, String suffix,
+            String[] sourceFileNames) throws FileSystemException {
+        if (sourceFolder == null) {
+            throw new IllegalArgumentException("input source folder is invalid.");
+        }
+        if (targetFolder == null) {
+            throw new IllegalArgumentException("input target folder is invalid.");
+        }
+        FileObject source = fsManager.resolveFile("smb:" + replaceSlash(sourceFolder), opts);
+        FileObject target = fsManager.resolveFile("smb:" + replaceSlash(targetFolder), opts);
+        copyFile(source, target, prefix, suffix, sourceFileNames);
+    }
+
+    public static void copyFile(String sourceFolder, String targetFolder, String[] sourceFileNames)
+            throws FileSystemException {
+        copyFile(sourceFolder, targetFolder, null, null, sourceFileNames);
+    }
+
+    public static void uploadFile(InputStream in, String path, String fileName) throws IOException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
+        FileObject file = fsManager.resolveFile(folder, fileName);
+        file.createFile();
+        OutputStream out = null;
+        try {
+            out = file.getContent().getOutputStream(false);
+            while (true) {
+                synchronized (buffer) {
+                    int amountRead = in.read(buffer);
+                    if (amountRead == -1) {
+                        break;
+                    }
+                    out.write(buffer, 0, amountRead);
+                }
+            }
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+            if (out != null) {
+                out.close();
+            }
+        }
+    }
+
+    public static boolean exist(String path, String fileName) throws FileSystemException {
+        boolean tf = false;
+        if (fileName != null) {
+            FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
+            FileObject file = fsManager.resolveFile(folder, fileName);
+            tf = file.exists();
+        }
+        return tf;
+    }
+
+    public static void createFile(String path, String fileName) throws FileSystemException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
+        FileObject file = fsManager.resolveFile(folder, fileName);
+        if (exist(path, fileName)) {
+            file.delete();
+        }
+        file.createFile();
+    }
+
+    public static FileObject getFile(String filePath, String fileName) throws FileSystemException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
+        FileObject file = fsManager.resolveFile(folder, fileName);
+        fsManager.closeFileSystem(folder.getFileSystem());
+        return file;
+    }
+
+    private static String replaceSlash(String path) {
+        return path.replace("\\", "/");
+    }
+
+    public static void setInit(boolean init) {
+        FileUtil.init = init;
+    }
+
+    public static boolean isInit() {
+        return init;
+    }
+}
