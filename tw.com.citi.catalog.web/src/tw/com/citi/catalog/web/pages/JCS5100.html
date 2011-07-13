@@ -213,6 +213,30 @@
                 }
             });
             
+            function addModifyAppCheck() {
+                if('' == appId.val()) {
+                    dialog.html('Please input Application ID.').dialog('open');
+                    return false;
+                }
+                if('' == appBasePath.val()) {
+                    dialog.html('Please input Application Base Path.').dialog('open');
+                    return false;
+                }
+                if('' == qaSourcePathText.text() || '' == qaExecutionPathText.text() || '' == prodBackupPathText.text()) {
+                    dialog.html('Please set QA Path.').dialog('open');
+                    return false;
+                }
+                if(0 == prodPathList.getGridParam("reccount")) {
+                    dialog.html('Please add Prod Path.').dialog('open');
+                    return false;
+                }
+                if('' == pvcsProjDb.val()) {
+                    dialog.html('Please input PVCS Project DB.').dialog('open');
+                    return false;
+                }
+                return true;
+            }
+            
             var addModifyAppPanel = $('#addModifyAppPanel').dialog({
                 "width": $(window).width() - 10,
                 "height": $(window).height() - 10,
@@ -220,8 +244,7 @@
                 "modal": true,
                 "buttons": {
                     "Save App": function(event, ui){
-                        // TODO 檢核
-                        dualControl();
+                        addModifyAppCheck() && dualControl();
                     },
                     "Cancel": function(event, ui){
                         $(this).dialog("close");
@@ -351,6 +374,18 @@
                 "modal": true,
                 "buttons": {
                     "Save": function(event, ui){
+                        if('' == qaSourcePath.val()) {
+                            dialog.html('Please input QA Source Path.').dialog('open');
+                            return;
+                        }
+                        if('' == qaExecutionPath.val()) {
+                            dialog.html('Please input QA Execution Path.').dialog('open');
+                            return;
+                        }
+                        if('' == prodBackupPath.val()) {
+                            dialog.html('Please input Prod Backup Path.').dialog('open');
+                            return;
+                        }
                         $(this).dialog("close");
                         qaSourcePathText.text(qaSourcePath.val());
                         qaExecutionPathText.text(qaExecutionPath.val());
@@ -369,6 +404,22 @@
                 "modal": true,
                 "buttons": {
                     "Save": function(event, ui){
+                        if('' == prodSourcePath.val()) {
+                            dialog.html('Please input Prod Source Path.').dialog('open');
+                            return;
+                        }
+                        if('' == prodExecutionPath.val()) {
+                            dialog.html('Please input Prod Execution Path.').dialog('open');
+                            return;
+                        }
+                        if($.inArray(prodSourcePath.val(), prodPathList.getCol('sourcePath')) != -1) {
+                            dialog.html('Input source path is already exist.').dialog('open');
+                            return;
+                        }
+                        if($.inArray(prodExecutionPath.val(), prodPathList.getCol('executionPath')) != -1) {
+                            dialog.html('Input execution path is already exist.').dialog('open');
+                            return;
+                        }
                         $(this).dialog("close");
                         var pathData = {
                             sourcePath: prodSourcePath.val(),
@@ -384,6 +435,10 @@
             });
             
             addBuildUnit.click(function() {
+                if('' == unitId.val()) {
+                    dialog.html('Please input Unit ID.').dialog('open');
+                    return;
+                }
                 var unit = {
                     unitId: unitId.val()
                 };
@@ -397,6 +452,14 @@
             });
             
             var setQAPath = $('#setQAPath').click(function() {
+                if('' == appId.val()) {
+                    dialog.html('Please input Application ID.').dialog('open');
+                    return;
+                }
+                if('' == qaBasePath.val()) {
+                    dialog.html('Please input QA Base Path.').dialog('open');
+                    return;
+                }
                 var payload = {};
                 payload.actionName = 'addPathCheck';
                 payload.actionParams = JSON.stringify({
@@ -423,6 +486,14 @@
             }); 
             
             var addProdPath = $('#addProdPath').click(function() {
+                if('' == appId.val()) {
+                    dialog.html('Please input Application ID.').dialog('open');
+                    return;
+                }
+                if('' == prodBasePath.val()) {
+                    dialog.html('Please input Prod Base Path.').dialog('open');
+                    return;
+                }
                 var payload = {};
                 payload.actionName = 'addPathCheck';
                 payload.actionParams = JSON.stringify({

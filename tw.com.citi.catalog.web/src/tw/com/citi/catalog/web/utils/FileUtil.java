@@ -52,7 +52,9 @@ public class FileUtil {
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
             fsManager = new OSGiFileSystemManager();
             ((OSGiFileSystemManager) fsManager).init();
-            jcifs.Config.setProperty("jcifs.netbios.wins", settings.getJcifs().getJcifsNetbiosWins());
+            if (!"".equalsIgnoreCase(settings.getJcifs().getJcifsNetbiosWins())) {
+                jcifs.Config.setProperty("jcifs.netbios.wins", settings.getJcifs().getJcifsNetbiosWins());
+            }
             init = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -61,8 +63,7 @@ public class FileUtil {
     }
 
     private static String getPassword(String password) throws Exception {
-        return "";
-        // return PasswordUtil.decodePwd(password);
+        return PasswordUtil.decodePwd(password);
     }
 
     public static void copyFile(FileObject source, FileObject target, String prefix, String suffix,
@@ -201,6 +202,24 @@ public class FileUtil {
         return tf;
     }
 
+    /**
+     * 新增目錄。
+     * 
+     * @param filePath
+     * @throws FileSystemException
+     */
+    public static void createFolder(String filePath) throws FileSystemException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
+        folder.createFolder();
+    }
+
+    /**
+     * 新增一個檔案，若檔案已經存在，會刪除既有檔案。
+     * 
+     * @param path
+     * @param fileName
+     * @throws FileSystemException
+     */
     public static void createFile(String path, String fileName) throws FileSystemException {
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         FileObject file = fsManager.resolveFile(folder, fileName);
@@ -229,6 +248,33 @@ public class FileUtil {
             }
         }
         return files;
+    }
+
+    public static List<FileObject> listFiles(String filePath) throws FileSystemException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
+        return Arrays.asList(folder.getChildren());
+    }
+
+    /**
+     * 判斷是否對傳入路徑有寫入的權限。若有權限且路徑不存在，此路徑會被建立。
+     * 
+     * @param filePath
+     *            欲判斷之路徑
+     * @return 是否有權限寫入
+     */
+    public static boolean writable(String filePath) {
+        boolean tf = true;
+        try {
+            FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
+            String tmpFileName = String.valueOf(System.currentTimeMillis()) + ".tmp";
+            FileObject temp = fsManager.resolveFile(folder, tmpFileName);
+            temp.createFile();
+            temp.delete();
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+            tf = false;
+        }
+        return tf;
     }
 
     private static String replaceSlash(String path) {

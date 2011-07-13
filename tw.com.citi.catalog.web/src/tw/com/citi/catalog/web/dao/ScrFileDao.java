@@ -1,6 +1,7 @@
 package tw.com.citi.catalog.web.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,20 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
             sql.append("SELECT * FROM ").append(getTableName())
                     .append(" WHERE JC_BUILD_UNIT_ID=:buildUnitId AND FILE_TYPE=" + FileType.SOURCE.ordinal());
             List<ScrFile> list = super.jdbcTemplate.query(sql.toString(), rowMapper, params);
+            return (list == null || list.size() == 0) ? new ArrayList<ScrFile>() : list;
+        }
+    }
+
+    @Override
+    public List<ScrFile> findByBuildUnitIds(List<Long> buildUnitIds) {
+        if (buildUnitIds == null || buildUnitIds.size() == 0) {
+            throw new IllegalArgumentException("Cannot find parameter: buildUnitId");
+        } else {
+            RowMapper<ScrFile> rowMapper = getRowMapper();
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_BUILD_UNIT_ID in (:buildUnitId)");
+            List<ScrFile> list = super.namedParameterJdbcTemplate.query(sql.toString(),
+                    Collections.singletonMap("buildUnitId", buildUnitIds), rowMapper);
             return (list == null || list.size() == 0) ? new ArrayList<ScrFile>() : list;
         }
     }

@@ -15,7 +15,7 @@ public class AppDao extends AbstractGenericDao<App, Long> implements IAppDao {
             StringBuilder sql = new StringBuilder();
             sql.append("UPDATE ")
                     .append(getTableName())
-                    .append(" SET DESCRIPTION=:description,APP_BASE_PATH=:appBasePath,PVCS_PROJ_DB=:pvcsProjDb,PVCS_PROJ_PATH=:pvcsProjPath WHERE ID=:id");
+                    .append(" SET DESCRIPTION=:description,PVCS_PROJ_DB=:pvcsProjDb,PVCS_PROJ_PATH=:pvcsProjPath WHERE ID=:id");
             super.jdbcTemplate.update(sql.toString(), params);
         }
     }

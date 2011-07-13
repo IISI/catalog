@@ -29,6 +29,10 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+    <bean id="appFileDao" class="tw.com.citi.catalog.web.dao.AppFileDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
     <bean id="appPathDao" class="tw.com.citi.catalog.web.dao.AppPathDao">
         <property name="dataSource" ref="dataSource"></property>
     </bean>

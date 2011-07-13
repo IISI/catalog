@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -24,6 +25,8 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
 
     private Class<T> persistenceClass;
 
+    protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     protected SimpleJdbcTemplate jdbcTemplate;
 
     protected SimpleJdbcInsert jdbcInsert;
@@ -32,7 +35,8 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
 
     @SuppressWarnings("unchecked")
     public AbstractGenericDao() {
-        this.persistenceClass = (Class<T>) ((ParameterizedType) super.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.persistenceClass = (Class<T>) ((ParameterizedType) super.getClass().getGenericSuperclass())
+                .getActualTypeArguments()[0];
     }
 
     private String getQueryString(Map<String, String> params, String[] operators) {
@@ -74,8 +78,8 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public List<T> find(Map<String, String> params, String[] operators,
-            String index, String order, long start, long limit) {
+    public List<T> find(Map<String, String> params, String[] operators, String index, String order, long start,
+            long limit) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM ");
         sql.append("(SELECT Row_Number() OVER (ORDER BY InnerSub.");
@@ -115,6 +119,7 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
 
     public void setDataSource(DataSource dataSource) {
         jdbcTemplate = new SimpleJdbcTemplate(dataSource);
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(getTableName()).usingGeneratedKeyColumns("id");
     }
 
