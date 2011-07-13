@@ -176,7 +176,14 @@
             });
             
             saveButton.click(function() {
-                // TODO 檢核
+                if('' == name.val()) {
+                    dialog.html('Please input Coordinator Name.').dialog('open');
+                    return;
+                }
+                if('' == team.val()) {
+                    dialog.html('Please input Coordinator Team.').dialog('open');
+                    return;
+                }
                 dualControl();
             });
             

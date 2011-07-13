@@ -1,6 +1,10 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.util.StringUtils;
 
 import tw.com.citi.catalog.web.model.Programmer;
 
@@ -28,6 +32,21 @@ public class ProgrammerDao extends AbstractGenericDao<Programmer, Long> implemen
             StringBuilder sql = new StringBuilder();
             sql.append("DELETE FROM ").append(getTableName()).append(" WHERE ID=:id");
             super.jdbcTemplate.update(sql.toString(), params);
+        }
+    }
+
+    @Override
+    public Programmer findUnique(String name, String team) {
+        if (!StringUtils.hasText(name) || !StringUtils.hasText(team)) {
+            throw new IllegalArgumentException("Cannot find parameter: name or team");
+        } else {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * FROM ").append(getTableName()).append(" WHERE NAME=:name AND TEAM=:team");
+            Map<String, Object> args = new HashMap<String, Object>();
+            args.put("name", name);
+            args.put("team", team);
+            List<Programmer> list = super.jdbcTemplate.query(sql.toString(), getRowMapper(), args);
+            return (list == null || list.size() == 0) ? null : list.get(0);
         }
     }
 

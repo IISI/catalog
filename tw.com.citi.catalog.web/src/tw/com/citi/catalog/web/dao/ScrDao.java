@@ -50,4 +50,22 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
             return (list == null || list.size() == 0) ? null : list.get(0);
         }
     }
+
+    @Override
+    public long countByProgrammerId(Long programmerId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) FROM ").append(getTableName()).append(" WHERE JC_PROGRAMMER_ID=:programmerId");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("programmerId", programmerId);
+        return jdbcTemplate.queryForLong(sql.toString(), params);
+    }
+
+    @Override
+    public long countByCoordinatorId(Long coordinatorId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) FROM ").append(getTableName()).append(" WHERE JC_COORDINATOR_ID=:coordinatorId");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("coordinatorId", coordinatorId);
+        return jdbcTemplate.queryForLong(sql.toString(), params);
+    }
 }

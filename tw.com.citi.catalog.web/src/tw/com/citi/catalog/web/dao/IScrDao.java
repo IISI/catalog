@@ -11,5 +11,9 @@ public interface IScrDao extends IGenericDao<Scr, Long> {
     void delete(Map<String, Object> params);
     
     Scr findById(Long id);
+    
+    long countByProgrammerId(Long programmerId);
+
+    long countByCoordinatorId(Long coordinatorId);
 
 }
