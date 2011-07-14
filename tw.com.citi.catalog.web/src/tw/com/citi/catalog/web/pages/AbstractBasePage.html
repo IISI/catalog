@@ -136,7 +136,7 @@ input {
                             .appendTo( ul );
                     };
     
-                    this.button = $( "<button type='button'>&nbsp;</button>" )
+                    this.button = $( "<button type='button' id='" + select.attr('id') + "Button'>&nbsp;</button>" )
                         .attr( "tabIndex", -1 )
                         .attr( "title", "Show All Items" )
                         .insertAfter( input )

@@ -2,86 +2,52 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
-<title>1000</title>
+    <title>1000</title>
 </wicket:head>
 <wicket:extend>
     <h1>1000 SCR Maintain</h1>
     <input type="hidden" id="id" name="id" />
     <table class="form">
         <tr>
-            <td colspan="2"><div id="actionText" /></td>
-        </tr>
-        <tr>
-            <td class="formLabel">
-                <label for="scrNo">SCR No.</label>
-            </td>
-            <td>
-                <select id="scrNo"></select><button id="queryButton">Query</button>
+            <td colspan="2"><div id="actionText" />
             </td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="app">Application Id</label>
-            </td>
-            <td>
-                <select id="app"></select>
-            </td>
+            <td class="formLabel"><label for="scrNo">SCR No.</label></td>
+            <td><select id="scrNo"></select>
+            <button id="queryButton">Query</button></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="coordinator">Coordinator</label>
-            </td>
-            <td>
-                <select id="coordinator" />
-            </td>
+            <td class="formLabel"><label for="app">Application Id</label></td>
+            <td><select id="app"></select></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="programmer">Programmer</label>
-            </td>
-            <td>
-                <select id="programmer" />
-            </td>
+            <td class="formLabel"><label for="coordinator">Coordinator</label></td>
+            <td><select id="coordinator" /></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="description">Description</label>
-            </td>
-            <td>
-                <input type="text" name="description" id="description" maxlength="20" />
-            </td>
+            <td class="formLabel"><label for="programmer">Programmer</label></td>
+            <td><select id="programmer" /></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="librarian">Librarian</label>
-            </td>
-            <td>
-                <label id="librarian" />
-            </td>
+            <td class="formLabel"><label for="description">Description</label></td>
+            <td><input type="text" name="description" id="description" maxlength="20" /></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="createDateTime">Create DateTime</label>
-            </td>
-            <td>
-                <label id="createDateTime" />
-            </td>
+            <td class="formLabel"><label for="librarian">Librarian</label></td>
+            <td><label id="librarian" /></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="status">Status</label>
-            </td>
-            <td>
-                <label id="status" />
-            </td>
+            <td class="formLabel"><label for="createDateTime">Create DateTime</label></td>
+            <td><label id="createDateTime" /></td>
         </tr>
         <tr>
-            <td class="formLabel">
-                <label for="submitDateTime">Submit DateTime</label>
-            </td>
-            <td>
-                <label id="submitDateTime" />
-            </td>
+            <td class="formLabel"><label for="status">Status</label></td>
+            <td><label id="status" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="submitDateTime">Submit DateTime</label></td>
+            <td><label id="submitDateTime" /></td>
         </tr>
     </table>
     <br />
@@ -109,6 +75,7 @@
             var id = $('#id');
             var scrNo = $('#scrNo');
             var scrNoInput = $('#scrNoInput');
+            var scrNoButton = $('#scrNoButton');
             var app = $('#app');
             var appInput = $('#appInput');
             var status = $('#status');
@@ -122,12 +89,14 @@
             var description = $('#description');
             var checkerId = $('#checkerId');
             var checkerPwd = $('#checkerPwd');
+            var grid = $('#list');
             var actionText;
             
             saveButton.hide();
             printButton.hide();
             modifyButton.hide();
             deleteButton.hide();
+            scrNoButton.show();
             loadInitData();
             
             function doButtonControl() {
@@ -140,6 +109,8 @@
                     printButton.show();
                     modifyButton.show();
                     deleteButton.show();
+                    scrNoButton.show();
+                    $('#gbox_list').show();
                 } else if (actionText == 'Create') {
                     text = actionText;
                     scrNo.attr('inoptions', false);
@@ -148,17 +119,22 @@
                     printButton.hide();
                     modifyButton.hide();
                     deleteButton.hide();
+                    scrNoButton.hide();
+                    $('#gbox_list').hide();
                 } else if ( actionText == 'Modify' ) {
                     text = actionText;
                     saveButton.show();
                     queryButton.hide();
                     printButton.hide();
+                    scrNoButton.hide();
                 } else if ( actionText == 'Reset' ) {
                     saveButton.hide();
                     queryButton.show();
                     printButton.hide();
                     modifyButton.hide();
                     deleteButton.hide();
+                    scrNoButton.show();
+                    $('#gbox_list').hide();
                 }
                 text && $('h1').text('1000 SCR Maintain - ' + actionText);
             }
@@ -167,14 +143,14 @@
                 alert('change');
             });
             
-            var grid = $('#list').jqGrid({
+            grid.jqGrid({
                 datatype: 'local',
                 mtype: 'POST',
                 colNames: ['Id', 'File Name', 'Build Unit', 'File Size', 'Date Time'],
                 colModel: [
                     {name: 'id', index: 'id', hidden: true},
-                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
-                    {name: 'buildUnit', index: 'buildUnit', align: 'left', sortable: true},
+                    {name: 'fullPathName', index: 'fullPathName', align: 'left', sortable: true},
+                    {name: 'unitId', index: 'unitId', align: 'left', sortable: true},
                     {name: 'fileSize', index: 'fileSize', align: 'right', sortable: false},
                     {name: 'dateTime', index: 'dateTime', align: 'left', sortable: false}
                 ],
@@ -182,12 +158,18 @@
                 sortname: 'id',
                 sortorder: 'desc',
                 viewrecords: true,
-                caption: 'SCR File List',
+                caption: 'SCR File List'
             });
             
             grid.jqGrid('navGrid', '#pager', {edit: false, add: false, del: false});
             
+            $('#gbox_list').hide();
+            
             queryButton.click(function() {
+                if('' == scrNo.val()) {
+                    dialog.html('Please select a SCR No.').dialog('open');
+                    return;
+                }
                 actionText = 'Query';
                 doButtonControl('Query');
                 var payload = {};
@@ -201,7 +183,6 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        // TODO 
                         id.text(data.id);
                         app.val(data.jcAppId);
                         coordinator.val(data.jcCoordinatorId);
@@ -224,7 +205,7 @@
                     postData: {
                         _gridHandler: 'scrFileGrid',
                         queryParams: JSON.stringify({
-                            id: scrNo.val()
+                            jc_scr_id: scrNo.val()
                         }),
                         queryOperators: ['equal']
                     }
@@ -250,7 +231,7 @@
             modifyButton.click(function() {
                 actionText = 'Modify';
                 doButtonControl();
-                scrNo.attr('disabled', true);
+                scrNoInput.attr('disabled', true);
             });
             
             deleteButton.click(function() {
@@ -259,14 +240,29 @@
             });
             
             saveButton.click(function() {
-                // TODO 檢核
+                if('' == scrNo.val()) {
+                    dialog.html('Please select a SCR No.').dialog('open');
+                    return;
+                }
+                if('' == app.val()) {
+                    dialog.html('Please select a Application Id.').dialog('open');
+                    return;
+                }
+                if('' == coordinator.val()) {
+                    dialog.html('Please select a Coordinator.').dialog('open');
+                    return;
+                }
+                if('' == programmer.val()) {
+                    dialog.html('Please select a Programmer.').dialog('open');
+                    return;
+                }
                 dualControl();
             });
             
             resetButton.click(function() {
                 actionText = 'Reset';
                 doButtonControl();
-                scrNo.attr('disabled', false);
+                scrNoInput.attr('disabled', false);
                 id.text('');
                 scrNoInput.val('').focus();
                 appInput.val('');

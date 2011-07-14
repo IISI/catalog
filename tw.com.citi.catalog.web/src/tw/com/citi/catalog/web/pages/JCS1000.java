@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.util.StringUtils;
 
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.ICoordinatorDao;
@@ -79,12 +80,26 @@ public class JCS1000 extends AbstractBasePage {
         }
         String jcAppId = (String) dataMap.get("jc_app_id");
         String scrNo = (String) dataMap.get("scr_no");
-        String librarian = (String) dataMap.get("librarian");
         String programmer = (String) dataMap.get("jc_programmer_id");
         String coordinator = (String) dataMap.get("jc_coordinator_id");
-        String description = (String) dataMap.get("description");
-        // TODO check
-        // TODO put created value
+        // check
+        if (!StringUtils.hasText(scrNo)) {
+            throw new IllegalArgumentException("Please select a SCR No.");
+        }
+        if (!StringUtils.hasText(jcAppId)) {
+            throw new IllegalArgumentException("Please select a Application Id.");
+        }
+        if (!StringUtils.hasText(coordinator)) {
+            throw new IllegalArgumentException("Please select a Coordinator.");
+        }
+        if (!StringUtils.hasText(programmer)) {
+            throw new IllegalArgumentException("Please select a Programmer.");
+        }
+        // unique check
+        if (scrDao.findByScrNo(scrNo) != null) {
+            throw new IllegalStateException("SCR No. : " + scrNo + " is already exist.");
+        }
+        // put created value
         Date now = new Date();
         dataMap.put("create_time", now);
         dataMap.put("status", Status.CREATE.ordinal());
@@ -99,14 +114,33 @@ public class JCS1000 extends AbstractBasePage {
         if (!AccessControlUtil.authenticateCBCUser(dataMap)) {
             throw new IllegalArgumentException("Authentication fail");
         }
-        String id = (String) dataMap.get("id");
         String jcAppId = (String) dataMap.get("jc_app_id");
         String scrNo = (String) dataMap.get("scr_no");
-        String librarian = (String) dataMap.get("librarian");
         String programmer = (String) dataMap.get("jc_programmer_id");
         String coordinator = (String) dataMap.get("jc_coordinator_id");
-        String description = (String) dataMap.get("description");
-        // TODO check
+        // check
+        if (!StringUtils.hasText(scrNo)) {
+            throw new IllegalArgumentException("Please select a SCR No.");
+        }
+        if (!StringUtils.hasText(jcAppId)) {
+            throw new IllegalArgumentException("Please select a Application Id.");
+        }
+        if (!StringUtils.hasText(coordinator)) {
+            throw new IllegalArgumentException("Please select a Coordinator.");
+        }
+        if (!StringUtils.hasText(programmer)) {
+            throw new IllegalArgumentException("Please select a Programmer.");
+        }
+        // SCR Status 為 CREATE 時才能改 app。
+        String id = (String) dataMap.get("id");
+        if (!StringUtils.hasText(id)) {
+            throw new IllegalArgumentException("Cannot find parameter: id");
+        }
+        Long scrId = Long.parseLong(id);
+        Scr scr = scrDao.findById(scrId);
+        if (scr != null && Status.CREATE != scr.getStatus() && scr.getJcAppId() != Long.parseLong(jcAppId)) {
+            throw new IllegalStateException("SCR's APP can be modified only when STATUS is CREATE.");
+        }
         scrDao.updateBasicInfo(dataMap);
         return "";
     }
@@ -115,19 +149,30 @@ public class JCS1000 extends AbstractBasePage {
         if (!AccessControlUtil.authenticateCBCUser(dataMap)) {
             throw new IllegalArgumentException("Authentication fail");
         }
-        scrDao.delete(dataMap);
+        // check
+        String id = (String) dataMap.get("id");
+        if (!StringUtils.hasText(id)) {
+            throw new IllegalArgumentException("Cannot find parameter: id");
+        }
+        Long scrId = Long.parseLong(id);
+        Scr scr = scrDao.findById(scrId);
+        // SCR Status 為 CREATE or MOVE_TO_PROD 時才能刪除。
+        if (scr != null && (Status.MOVE_TO_PROD == scr.getStatus() || Status.CREATE == scr.getStatus())) {
+            scrDao.delete(dataMap);
+        } else {
+            throw new IllegalStateException("Selected SCR cannot be deleted. SCR Status is "
+                    + scr.getStatus().toString() + ".");
+        }
         return "";
     }
 
     private String init(Map dataMap) {
-        List<Scr> scrList = scrDao
-                .find(new HashMap<String, String>(), new String[] {}, "", "SCR_NO", 0, Long.MAX_VALUE);
-        List<App> appList = appDao
-                .find(new HashMap<String, String>(), new String[] {}, "", "APP_ID", 0, Long.MAX_VALUE);
-        List<Coordinator> coordinatorList = coordinatorDao.find(new HashMap<String, String>(), new String[] {}, "",
-                "NAME", 0, Long.MAX_VALUE);
-        List<Programmer> programmerList = programmerDao.find(new HashMap<String, String>(), new String[] {}, "",
-                "NAME", 0, Long.MAX_VALUE);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("deleted", "0");
+        List<Scr> scrList = scrDao.find(params, new String[] { "equal" }, "", "SCR_NO", 0, Long.MAX_VALUE);
+        List<App> appList = appDao.findAll();
+        List<Coordinator> coordinatorList = coordinatorDao.findAll();
+        List<Programmer> programmerList = programmerDao.findAll();
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("scrList", scrList);
         data.put("appList", appList);
@@ -138,7 +183,7 @@ public class JCS1000 extends AbstractBasePage {
 
     private String query(Map dataMap) {
         String sId = (String) dataMap.get("id");
-        if(sId == null || "".equals(sId.trim())) {
+        if (sId == null || "".equals(sId.trim())) {
             throw new IllegalArgumentException("Please select a SCR No.");
         }
         Scr scr = scrDao.findById(Long.parseLong((String) dataMap.get("id")));

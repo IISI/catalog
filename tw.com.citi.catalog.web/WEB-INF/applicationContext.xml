@@ -68,6 +68,7 @@
 
     <bean id="scrFileGrid" class="tw.com.citi.catalog.web.grid.ScrFileGrid">
         <property name="scrFileDao" ref="scrFileDao"></property>
+        <property name="buildUnitDao" ref="buildUnitDao"></property>
     </bean>
 
 </beans>
