@@ -100,6 +100,39 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
     }
 
     @Override
+    public List<T> find(Map<String, String> params, String[] operators, List<String> indexes, String order, long start,
+            long limit) {
+        if (indexes.size() == 1) {
+            return this.find(params, operators, indexes.get(0), order, start, limit);
+        } else {
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT * FROM ");
+            sql.append("(SELECT Row_Number() OVER (ORDER BY ");
+            for (int i = 0; i < indexes.size(); i++) {
+                String index = indexes.get(i);
+                sql.append("InnerSub.").append(index);
+                if (i != indexes.size() - 1) {
+                    sql.append(", ");
+                }
+            }
+            sql.append(" ").append(order);
+            sql.append(") AS RowIndex, InnerSub.* FROM (SELECT * FROM ");
+            sql.append(getTableName());
+            String queryString = getQueryString(params, operators);
+            if (queryString.trim().length() > 0) {
+                sql.append(" WHERE ");
+                sql.append(queryString);
+            }
+            sql.append(") AS InnerSub) AS Sub");
+            sql.append(" WHERE Sub.RowIndex > ").append(start);
+            sql.append(" AND Sub.RowIndex <= ").append(start + limit);
+            RowMapper rowMapper = getRowMapper();
+            logger.info("find sql = [{}]", sql.toString());
+            return jdbcTemplate.query(sql.toString(), rowMapper, params);
+        }
+    }
+
+    @Override
     public Long create(Map<String, Object> params) {
         return jdbcInsert.executeAndReturnKey(params).longValue();
     }
