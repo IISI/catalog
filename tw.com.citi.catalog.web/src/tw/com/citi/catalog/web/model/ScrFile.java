@@ -32,6 +32,9 @@ public class ScrFile implements IModel<Long> {
     private Timestamp lastCompileTime;
     // JCS1200 grid
     private FileStatus fileStatus;
+    // JCS1000 grid
+    private String fullPathName;
+    private String unitId;
 
     @Override
     public Long getId() {
@@ -174,5 +177,21 @@ public class ScrFile implements IModel<Long> {
         } else if (!jcScrId.equals(other.jcScrId))
             return false;
         return true;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
+    }
+
+    public String getUnitId() {
+        return unitId;
+    }
+
+    public void setFullPathName(String fullPathName) {
+        this.fullPathName = fullPathName;
+    }
+
+    public String getFullPathName() {
+        return fullPathName;
     }
 }
