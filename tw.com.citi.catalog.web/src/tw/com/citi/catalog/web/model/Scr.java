@@ -24,6 +24,7 @@ public class Scr implements IModel<Long> {
     private Long jcProgrammerId;
     private String description;
     private Long registerCount;
+    private Boolean deleted;
 
     @Override
     public Long getId() {
@@ -130,6 +131,14 @@ public class Scr implements IModel<Long> {
         } else if (!scrNo.equals(other.scrNo))
             return false;
         return true;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
     }
 
 }

@@ -23,6 +23,7 @@ public class ScrMapper implements RowMapper<Scr> {
         scr.setJcProgrammerId(rs.getLong("JC_PROGRAMMER_ID"));
         scr.setDescription(rs.getNString("DESCRIPTION"));
         scr.setRegisterCount(rs.getLong("REGISTER_COUNT"));
+        scr.setDeleted(rs.getBoolean("DELETED"));
         return scr;
     }
 
