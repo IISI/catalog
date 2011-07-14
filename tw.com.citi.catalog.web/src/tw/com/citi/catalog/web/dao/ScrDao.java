@@ -31,7 +31,7 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
             throw new IllegalArgumentException("Cannot find parameter: id");
         } else {
             StringBuilder sql = new StringBuilder();
-            sql.append("DELETE FROM ").append(getTableName()).append(" WHERE ID=:id");
+            sql.append("UPDATE FROM ").append(getTableName()).append(" SET DELETED=1 WHERE ID=:id");
             super.jdbcTemplate.update(sql.toString(), params);
         }
     }
