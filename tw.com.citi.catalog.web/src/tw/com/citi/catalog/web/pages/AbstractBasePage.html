@@ -204,6 +204,23 @@ input {
                 rowList : [ 10, 20, 30 ],
                 width : 700
             });
+            var processDialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Request In Progress',
+                closeOnEscape: false,
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close').hide();
+                }
+            });
+            $.ajaxSetup({
+                beforeSend: function() {
+                    processDialog.html('Please wait ......').dialog('open');
+                },
+                complete: function() {
+                    processDialog.dialog('close');
+                }
+            });
         });
     </script>
     <wicket:child />
