@@ -78,7 +78,7 @@ public class JCS1300 extends AbstractBasePage {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("appId", app.getAppId());
         if (appPaths.containsKey(PathType.APP_BASE)) {
-            data.put("rdPath", appPaths.get(PathType.APP_BASE) + "\\RD");
+            data.put("rdPath", appPaths.get(PathType.APP_BASE) + "RD\\");
         }
         if (appPaths.containsKey(PathType.QA_SOURCE)) {
             data.put("qaSourcePath", appPaths.get(PathType.QA_SOURCE));

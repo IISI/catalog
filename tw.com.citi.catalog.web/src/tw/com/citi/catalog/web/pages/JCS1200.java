@@ -84,7 +84,7 @@ public class JCS1200 extends AbstractBasePage {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("appId", app.getAppId());
         if (appPaths.containsKey(PathType.APP_BASE)) {
-            data.put("rdPath", appPaths.get(PathType.APP_BASE) + "\\RD");
+            data.put("rdPath", appPaths.get(PathType.APP_BASE) + "RD\\");
         }
         if (appPaths.containsKey(PathType.QA_SOURCE)) {
             data.put("qaSourcePath", appPaths.get(PathType.QA_SOURCE));
@@ -104,16 +104,16 @@ public class JCS1200 extends AbstractBasePage {
         Scr scr = scrDao.findById(scrId);
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         // get source path
-        String rdPath = appPaths.get(PathType.APP_BASE) + "\\RD";
+        String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         // get target path
         List<String> sourceFileNames = new ArrayList<String>();
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
-            sourceFileNames.add(rdPath + "\\" + filePath + "\\" + fileName);
+            sourceFileNames.add(rdPath + filePath + fileName);
             try {
-                FileUtil.copyFile(rdPath + "\\" + filePath, qaSourcePath + "\\" + filePath, new String[] { fileName });
+                FileUtil.copyFile(rdPath + filePath, qaSourcePath + filePath, new String[] { fileName });
             } catch (FileSystemException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e.getMessage(), e);
@@ -140,14 +140,14 @@ public class JCS1200 extends AbstractBasePage {
             BuildUnit unit = buildUnitDao.findById(buildUnitId);
             // get Files in RD_PATH
             files = scrFileDao.findSourceFilesByBuildUnitId(buildUnitId);
-            buildUnit = "\\" + unit.getUnitId();
+            buildUnit = unit.getUnitId() + "\\";
         }
-        String rdPath = appPaths.get(PathType.APP_BASE) + "\\RD";
+        String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         // check 檔案是否真的存在 rdPath
         for (ScrFile file : files) {
             try {
-                if (FileUtil.exist(rdPath + "\\" + file.getFilePath(), file.getFileName())) {
+                if (FileUtil.exist(rdPath + file.getFilePath(), file.getFileName())) {
                     file.setFileStatus(FileStatus.EXIST);
                 } else {
                     file.setFileStatus(FileStatus.NOT_FOUND);

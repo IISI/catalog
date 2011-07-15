@@ -115,10 +115,10 @@ public class JCS5100 extends AbstractBasePage {
     private String add(Map<String, String> dataMap) throws FileSystemException {
         String appId = dataMap.get("appId");
         String description = dataMap.get("description");
-        String appBasePath = dataMap.get("appBasePath");
-        String qaSourcePath = dataMap.get("qaSourcePath");
-        String qaExecutionPath = dataMap.get("qaExecutionPath");
-        String prodBackupPath = dataMap.get("prodBackupPath");
+        String appBasePath = fixPathFormat(dataMap.get("appBasePath"));
+        String qaSourcePath = fixPathFormat(dataMap.get("qaSourcePath"));
+        String qaExecutionPath = fixPathFormat(dataMap.get("qaExecutionPath"));
+        String prodBackupPath = fixPathFormat(dataMap.get("prodBackupPath"));
         String prodPaths = dataMap.get("prodPaths");
         String pvcsProjDb = dataMap.get("pvcsProjDb");
         String pvcsProjPath = dataMap.get("pvcsProjPath");
@@ -139,9 +139,9 @@ public class JCS5100 extends AbstractBasePage {
         List<String> prodSourcePaths = new ArrayList<String>();
         List<String> prodExecutionPaths = new ArrayList<String>();
         for (Map<String, String> prodPathData : prodPathList) {
-            String sourcePath = prodPathData.get("sourcePath");
+            String sourcePath = fixPathFormat(prodPathData.get("sourcePath"));
             prodSourcePaths.add(sourcePath);
-            String executionPath = prodPathData.get("executionPath");
+            String executionPath = fixPathFormat(prodPathData.get("executionPath"));
             prodExecutionPaths.add(executionPath);
         }
         insertAppPaths(jcAppId, appBasePath, qaSourcePath, qaExecutionPath, prodBackupPath, prodSourcePaths,
@@ -161,10 +161,10 @@ public class JCS5100 extends AbstractBasePage {
         Long jcAppId = Long.parseLong(dataMap.get("jcAppId"));
         String appId = dataMap.get("appId");
         String description = dataMap.get("description");
-        String appBasePath = dataMap.get("appBasePath");
-        String qaSourcePath = dataMap.get("qaSourcePath");
-        String qaExecutionPath = dataMap.get("qaExecutionPath");
-        String prodBackupPath = dataMap.get("prodBackupPath");
+        String appBasePath = fixPathFormat(dataMap.get("appBasePath"));
+        String qaSourcePath = fixPathFormat(dataMap.get("qaSourcePath"));
+        String qaExecutionPath = fixPathFormat(dataMap.get("qaExecutionPath"));
+        String prodBackupPath = fixPathFormat(dataMap.get("prodBackupPath"));
         String prodPaths = dataMap.get("prodPaths");
         String pvcsProjDb = dataMap.get("pvcsProjDb");
         String pvcsProjPath = dataMap.get("pvcsProjPath");
@@ -188,11 +188,11 @@ public class JCS5100 extends AbstractBasePage {
         List<String> prodSourcePaths = new ArrayList<String>();
         List<String> prodExecutionPaths = new ArrayList<String>();
         for (Map<String, String> prodPathData : prodPathList) {
-            String sourcePath = prodPathData.get("sourcePath");
+            String sourcePath = fixPathFormat(prodPathData.get("sourcePath"));
             prodSourcePaths.add(sourcePath);
             tmp.setPath(sourcePath);
             appPathToBeDeleted.remove(tmp);
-            String executionPath = prodPathData.get("executionPath");
+            String executionPath = fixPathFormat(prodPathData.get("executionPath"));
             prodExecutionPaths.add(executionPath);
             tmp.setPath(executionPath);
             appPathToBeDeleted.remove(tmp);
@@ -304,4 +304,13 @@ public class JCS5100 extends AbstractBasePage {
             }
         }
     }
+
+    private String fixPathFormat(String path) {
+        String fixedPath = path.replace("/", "\\");
+        if (fixedPath.lastIndexOf('\\') != fixedPath.length() - 1) {
+            fixedPath += "\\";
+        }
+        return fixedPath;
+    }
+
 }
