@@ -77,7 +77,6 @@ public class JCS1200 extends AbstractBasePage {
 
     private String query(Map dataMap) {
         String sId = (String) dataMap.get("id");
-        // TODO check
         Scr scr = scrDao.findById(Long.parseLong(sId));
         App app = appDao.findById(scr.getJcAppId());
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
@@ -97,29 +96,17 @@ public class JCS1200 extends AbstractBasePage {
 
     private String move(Map dataMap) {
         String sScrId = (String) dataMap.get("scrId");
-        String sBuildUnitId = (String) dataMap.get("buildUnitId");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
-        // TODO move file
+        // move file
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
-        Long buildUnitId;
-        String unitId = "";
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
-        if ("all".equalsIgnoreCase(sBuildUnitId)) {
-            // 全選
-            buildUnitId = null;
-        } else {
-            // 指定
-            buildUnitId = Long.parseLong(sBuildUnitId);
-            BuildUnit unit = buildUnitDao.findById(buildUnitId);
-            unitId = "\\" + unit.getUnitId();
-        }
-        // TODO get source path
+        // get source path
         String rdPath = appPaths.get(PathType.APP_BASE) + "\\RD";
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
-        // TODO get target path
+        // get target path
         List<String> sourceFileNames = new ArrayList<String>();
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
@@ -128,8 +115,8 @@ public class JCS1200 extends AbstractBasePage {
             try {
                 FileUtil.copyFile(rdPath + "\\" + filePath, qaSourcePath + "\\" + filePath, new String[] { fileName });
             } catch (FileSystemException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
         return null;
@@ -138,7 +125,6 @@ public class JCS1200 extends AbstractBasePage {
     private String getFiles(Map dataMap) {
         String sScrId = (String) dataMap.get("scrId");
         String sBuildUnitId = (String) dataMap.get("buildUnitId");
-        // TODO check
         Scr scr = scrDao.findById(Long.parseLong(sScrId));
         List<ScrFile> files = new ArrayList<ScrFile>();
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
@@ -156,35 +142,30 @@ public class JCS1200 extends AbstractBasePage {
             files = scrFileDao.findSourceFilesByBuildUnitId(buildUnitId);
             buildUnit = "\\" + unit.getUnitId();
         }
-        if (appPaths.containsKey(PathType.APP_BASE) && appPaths.containsKey(PathType.QA_SOURCE)) {
-            String rdPath = appPaths.get(PathType.APP_BASE) + "\\RD";
-            String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
-            // TODO check 檔案是否真的存在 rdPath
-            for (ScrFile file : files) {
-                try {
-                    if (FileUtil.exist(rdPath + "\\" + file.getFilePath(), file.getFileName())) {
-                        file.setFileStatus(FileStatus.EXIST);
-                    } else {
-                        file.setFileStatus(FileStatus.NOT_FOUND);
-                    }
-                } catch (FileSystemException e) {
-                    e.printStackTrace();
-                    if (e.getCause() instanceof SmbAuthException) {
-                        file.setFileStatus(FileStatus.ACCESS_DENIED);
-                        break;
-                    }
+        String rdPath = appPaths.get(PathType.APP_BASE) + "\\RD";
+        String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
+        // check 檔案是否真的存在 rdPath
+        for (ScrFile file : files) {
+            try {
+                if (FileUtil.exist(rdPath + "\\" + file.getFilePath(), file.getFileName())) {
+                    file.setFileStatus(FileStatus.EXIST);
+                } else {
+                    file.setFileStatus(FileStatus.NOT_FOUND);
+                }
+            } catch (FileSystemException e) {
+                e.printStackTrace();
+                if (e.getCause() instanceof SmbAuthException) {
+                    file.setFileStatus(FileStatus.ACCESS_DENIED);
+                    break;
                 }
             }
-            // get QA SOURCE PATH
-            Map<String, Object> data = new HashMap<String, Object>();
-            data.put("rdPath", rdPath + buildUnit);
-            data.put("qaSourcePath", qaSourcePath + buildUnit);
-            data.put("files", files);
-            return gson.toJson(data);
-        } else {
-            // TODO
-            throw new RuntimeException("");
         }
+        // get QA SOURCE PATH
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("rdPath", rdPath + buildUnit);
+        data.put("qaSourcePath", qaSourcePath + buildUnit);
+        data.put("files", files);
+        return gson.toJson(data);
     }
 
 }
