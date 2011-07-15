@@ -22,18 +22,13 @@ public class AppPathDao extends AbstractGenericDao<AppPath, Long> implements IAp
     }
 
     @Override
-    public List<AppPath> findByScrId(Long scrId, Long buildUnitId, PathType... pathTypes) {
+    public List<AppPath> findByScrId(Long scrId, PathType... pathTypes) {
         RowMapper<AppPath> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(AppPath.class);
         Map<String, Object> args = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM ").append(getTableName());
-        if (buildUnitId == null) {
-            args.put("scrId", scrId);
-            sql.append(" WHERE JC_BUILD_UNIT_ID IN (SELECT ID FROM JC_BUILD_UNIT WHERE JC_APP_ID = (SELECT JC_APP_ID FROM JC_SCR WHERE ID = :scrId))");
-        } else {
-            args.put("buildUnitId", buildUnitId);
-            sql.append(" WHERE JC_BUILD_UNIT_ID = :buildUnitId");
-        }
+        args.put("scrId", scrId);
+        sql.append(" WHERE JC_APP_ID = (SELECT JC_APP_ID FROM JC_SCR WHERE ID = :scrId)");
         if (pathTypes != null) {
             for (int i = 0; i < pathTypes.length; i++) {
                 if (i == 0) {
