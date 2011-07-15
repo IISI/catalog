@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import jcifs.smb.SmbException;
 
 import org.apache.commons.vfs.FileFilter;
 import org.apache.commons.vfs.FileFilterSelector;
@@ -194,10 +197,12 @@ public class FileUtil {
 
     public static boolean exist(String path, String fileName) throws FileSystemException {
         boolean tf = false;
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         if (fileName != null) {
-            FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
             FileObject file = fsManager.resolveFile(folder, fileName);
             tf = file.exists();
+        } else {
+            tf = folder.exists();
         }
         return tf;
     }

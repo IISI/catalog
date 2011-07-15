@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppFileDao;
@@ -198,8 +200,11 @@ public class JCS5100 extends AbstractBasePage {
         // check relation before update db
         if (appPathToBeDeleted.size() > 0) {
             for (AppPath appPath : appPathToBeDeleted) {
-                if (FileUtil.listFiles(appPath.getPath()) != null && FileUtil.listFiles(appPath.getPath()).size() > 0) {
-                    throw new IllegalStateException("Cannot remove prod path, because there are files in it.");
+                String path = appPath.getPath();
+                if (FileUtil.exist(path, null)) {
+                    if (FileUtil.listFiles(path) != null && FileUtil.listFiles(path).size() > 0) {
+                        throw new IllegalStateException("Cannot remove prod path, because there are files in it.");
+                    }
                 }
             }
         }
@@ -247,8 +252,15 @@ public class JCS5100 extends AbstractBasePage {
     }
 
     private String delete(Map dataMap) {
-        // TODO check
-        appDao.delete(dataMap);
+        String sId = (String) dataMap.get("id");
+        if (!StringUtils.hasText(sId)) {
+            throw new IllegalArgumentException("Cannot find parameter: appId");
+        }
+        if (CollectionUtils.isEmpty(appFileDao.findByAppId(Long.parseLong(sId)))) {
+            appDao.delete(dataMap);
+        } else {
+            throw new IllegalStateException("Cannot delete application that already be associated with files.");
+        }
         return "";
     }
 

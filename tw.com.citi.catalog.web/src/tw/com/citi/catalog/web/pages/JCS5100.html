@@ -413,11 +413,11 @@
                             return;
                         }
                         if($.inArray(prodSourcePath.val(), prodPathList.getCol('sourcePath')) != -1) {
-                            dialog.html('Input source path is already exist.').dialog('open');
+                            dialog.html('Input source path already exists.').dialog('open');
                             return;
                         }
                         if($.inArray(prodExecutionPath.val(), prodPathList.getCol('executionPath')) != -1) {
-                            dialog.html('Input execution path is already exist.').dialog('open');
+                            dialog.html('Input execution path already exists.').dialog('open');
                             return;
                         }
                         $(this).dialog("close");
@@ -446,7 +446,7 @@
                     unitList.addRowData(unitId.val(), unit);
                     unitId.val('');
                 } else {
-                    dialog.html('Unit Id: ' + unitId.val() + ' is exist.').dialog('open');
+                    dialog.html('Unit Id: ' + unitId.val() + ' exists.').dialog('open');
                     unitId.val('');
                 }
             });
