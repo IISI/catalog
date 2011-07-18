@@ -9,6 +9,7 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
 
+import tw.com.citi.catalog.util.DateUtil;
 import tw.com.citi.catalog.util.HashUtil;
 import tw.com.iisi.rabbithq.editors.IJavaHandler;
 
@@ -27,7 +28,7 @@ public class SelectFileHandler implements IJavaHandler {
         } catch (UnsupportedEncodingException e) {
             sb.append("\"filename\":\"").append(e.getMessage()).append("\",");
         }
-        sb.append("\"lastModified\":").append(file.lastModified()).append(",");
+        sb.append("\"lastModified\":\"").append(DateUtil.format(file.lastModified())).append("\",");
         sb.append("\"size\":").append(file.length()).append(",");
         try {
             sb.append("\"md5\":\"").append(HashUtil.getMD5Checksum(file)).append("\"");
