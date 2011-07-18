@@ -7,4 +7,6 @@
         <property name="serviceRefs" ref="javaHandlers"></property>
     </bean>
 
+    <bean id="tw.com.citi.catalog.handler.java.SelectFileHandler" class="tw.com.citi.catalog.handler.java.SelectFileHandler"></bean>
+
 </beans>

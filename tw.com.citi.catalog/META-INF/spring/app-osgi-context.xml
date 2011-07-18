@@ -5,4 +5,6 @@
 
     <set id="javaHandlers" interface="tw.com.iisi.rabbithq.editors.IJavaHandler" cardinality="0..N"></set>
 
+    <service ref="tw.com.citi.catalog.handler.java.SelectFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
+
 </beans:beans>
