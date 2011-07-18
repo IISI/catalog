@@ -66,6 +66,7 @@
             var appId = $('#appId');
             var status = $('#status');
             var buildUnit = $('#buildUnit');
+            var buildUnitInput = $('#buildUnitInput');
             var rdPath = $('#rdPath');
             var qaSourcePath = $('#qaSourcePath');
             var mappingLocalPath = $('#mappingLocalPath');
@@ -156,10 +157,14 @@
                                 buildUnitList += '<option value="' + rec.id + '">' + rec.unitId + '</option>';
                             }
                             buildUnit.html(buildUnitList);
-                            // set rd path
-                            rdPath.text(data.rdPath);
+                            compileList.clearGridData();
+                            batchList.clearGridData();
+                            // set mappingLocalPath
+                            mappingLocalPath.text(data.mappingLocalPath);
                             // set qa source path
                             qaSourcePath.text(data.qaSourcePath);
+                            buildUnitInput.val('');
+                            compileButton.show();
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
                             var resp = JSON.parse(jqXHR.responseText);
@@ -171,43 +176,44 @@
             
             buildUnit.combobox({
                 selected: function(event, ui) {
-                    batchList.clearGridData();
-                    var payload = {};
-                    payload.actionName = 'GetFiles';
-                    payload.actionParams = JSON.stringify({
-                        scrId: scrNo.val(),
-                        buildUnitId: buildUnit.val()
-                    });
-                    $.ajax({
-                        url: __ajaxHandler,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: payload,
-                        success: function(data, textStatus, jqXHR) {
-                            // set qa source path
-                            var paths = "";
-                            qaSourcePath.text(data.qaSourcePath);
-                            rdPath.text(data.rdPath);
-                            // set file
-                            for(var index in data.files) {
-                                var file = data.files[index];
-                                var scrFile = {
-                                    id: file.id,
-                                    fileName: file.fileName,
-                                    filePath: file.filePath,
-                                    fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
-                                };
-                                batchList.addRowData(file.id, scrFile);
-                            }
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            var resp = JSON.parse(jqXHR.responseText);
-                            dialog.html(resp.message).dialog('open');
-                        }
-                    });
+                    getFilesInfo();
                 }
             });
             
+			function getFilesInfo() {
+                batchList.clearGridData();
+                var payload = {};
+                payload.actionName = 'GetFiles';
+                payload.actionParams = JSON.stringify({
+                    buildUnitId: buildUnit.val(),
+                    mappingLocalPath: mappingLocalPath.text()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // set qa source path
+                        var paths = "";
+                        qaSourcePath.text(data.qaSourcePath);
+                        rdPath.text(data.rdPath);
+                        // set file
+                        for(var index in data.files) {
+                            var file = data.files[index];
+                            var scrFile = {
+                                batchFileName: file
+                            };
+                            batchList.addRowData(file.id, scrFile);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+			}
+
             var batchList = $('#batchList').jqGrid({
                 multiselect: 'true',
                 datatype: 'local',
@@ -217,7 +223,7 @@
                 colModel: [
                     {name: 'batchFileName', index: 'batchFileName', align: 'left', sortable: true}
                 ],
-                pager: '#pager',
+                pager: '#batchListPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
@@ -235,7 +241,7 @@
                 colModel: [
                     {name: 'batchFileName', index: 'batchFileName', align: 'left', sortable: true}
                 ],
-                pager: '#pager',
+                pager: '#compileListPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
@@ -285,7 +291,7 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        // TODO success
+                        // TODO show report
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var resp = JSON.parse(jqXHR.responseText);
@@ -295,6 +301,7 @@
             }
 
             function loadInitData() {
+                compileButton.hide();
                 var payload = {};
                 payload.actionName = 'Init';
                 $.ajax({
