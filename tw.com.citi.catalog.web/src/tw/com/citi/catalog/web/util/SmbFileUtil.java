@@ -1,4 +1,4 @@
-package tw.com.citi.catalog.web.utils;
+package tw.com.citi.catalog.web.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import org.apache.commons.vfs.provider.local.LocalFileSystem;
 import tw.com.citi.catalog.web.Settings;
 import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
 
-public class FileUtil {
+public class SmbFileUtil {
 
     private static Settings settings;
     private static FileSystemManager fsManager;
@@ -194,10 +194,12 @@ public class FileUtil {
 
     public static boolean exist(String path, String fileName) throws FileSystemException {
         boolean tf = false;
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         if (fileName != null) {
-            FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
             FileObject file = fsManager.resolveFile(folder, fileName);
             tf = file.exists();
+        } else {
+            tf = folder.exists();
         }
         return tf;
     }
@@ -282,7 +284,7 @@ public class FileUtil {
     }
 
     public static void setInit(boolean init) {
-        FileUtil.init = init;
+        SmbFileUtil.init = init;
     }
 
     public static boolean isInit() {

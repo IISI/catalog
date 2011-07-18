@@ -1,4 +1,4 @@
-package tw.com.citi.catalog.web.utils;
+package tw.com.citi.catalog.web.util;
 
 import java.io.Console;
 import java.util.ArrayList;

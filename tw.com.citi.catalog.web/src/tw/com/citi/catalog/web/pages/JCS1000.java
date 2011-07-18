@@ -19,7 +19,7 @@ import tw.com.citi.catalog.web.model.Coordinator;
 import tw.com.citi.catalog.web.model.Programmer;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
-import tw.com.citi.catalog.web.utils.AccessControlUtil;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

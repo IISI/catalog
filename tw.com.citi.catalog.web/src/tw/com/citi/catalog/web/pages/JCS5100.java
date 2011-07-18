@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppFileDao;
@@ -20,8 +22,8 @@ import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.ScrFile;
-import tw.com.citi.catalog.web.utils.AccessControlUtil;
-import tw.com.citi.catalog.web.utils.FileUtil;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
+import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -104,7 +106,7 @@ public class JCS5100 extends AbstractBasePage {
         if (basePath == null || "".equals(basePath.trim())) {
             throw new IllegalArgumentException("Please input base path.");
         }
-        if (!FileUtil.writable(basePath)) {
+        if (!SmbFileUtil.writable(basePath)) {
             throw new IllegalArgumentException("Cannot access base path.");
         }
         return "";
@@ -113,10 +115,10 @@ public class JCS5100 extends AbstractBasePage {
     private String add(Map<String, String> dataMap) throws FileSystemException {
         String appId = dataMap.get("appId");
         String description = dataMap.get("description");
-        String appBasePath = dataMap.get("appBasePath");
-        String qaSourcePath = dataMap.get("qaSourcePath");
-        String qaExecutionPath = dataMap.get("qaExecutionPath");
-        String prodBackupPath = dataMap.get("prodBackupPath");
+        String appBasePath = fixPathFormat(dataMap.get("appBasePath"));
+        String qaSourcePath = fixPathFormat(dataMap.get("qaSourcePath"));
+        String qaExecutionPath = fixPathFormat(dataMap.get("qaExecutionPath"));
+        String prodBackupPath = fixPathFormat(dataMap.get("prodBackupPath"));
         String prodPaths = dataMap.get("prodPaths");
         String pvcsProjDb = dataMap.get("pvcsProjDb");
         String pvcsProjPath = dataMap.get("pvcsProjPath");
@@ -137,9 +139,9 @@ public class JCS5100 extends AbstractBasePage {
         List<String> prodSourcePaths = new ArrayList<String>();
         List<String> prodExecutionPaths = new ArrayList<String>();
         for (Map<String, String> prodPathData : prodPathList) {
-            String sourcePath = prodPathData.get("sourcePath");
+            String sourcePath = fixPathFormat(prodPathData.get("sourcePath"));
             prodSourcePaths.add(sourcePath);
-            String executionPath = prodPathData.get("executionPath");
+            String executionPath = fixPathFormat(prodPathData.get("executionPath"));
             prodExecutionPaths.add(executionPath);
         }
         insertAppPaths(jcAppId, appBasePath, qaSourcePath, qaExecutionPath, prodBackupPath, prodSourcePaths,
@@ -159,10 +161,10 @@ public class JCS5100 extends AbstractBasePage {
         Long jcAppId = Long.parseLong(dataMap.get("jcAppId"));
         String appId = dataMap.get("appId");
         String description = dataMap.get("description");
-        String appBasePath = dataMap.get("appBasePath");
-        String qaSourcePath = dataMap.get("qaSourcePath");
-        String qaExecutionPath = dataMap.get("qaExecutionPath");
-        String prodBackupPath = dataMap.get("prodBackupPath");
+        String appBasePath = fixPathFormat(dataMap.get("appBasePath"));
+        String qaSourcePath = fixPathFormat(dataMap.get("qaSourcePath"));
+        String qaExecutionPath = fixPathFormat(dataMap.get("qaExecutionPath"));
+        String prodBackupPath = fixPathFormat(dataMap.get("prodBackupPath"));
         String prodPaths = dataMap.get("prodPaths");
         String pvcsProjDb = dataMap.get("pvcsProjDb");
         String pvcsProjPath = dataMap.get("pvcsProjPath");
@@ -186,11 +188,11 @@ public class JCS5100 extends AbstractBasePage {
         List<String> prodSourcePaths = new ArrayList<String>();
         List<String> prodExecutionPaths = new ArrayList<String>();
         for (Map<String, String> prodPathData : prodPathList) {
-            String sourcePath = prodPathData.get("sourcePath");
+            String sourcePath = fixPathFormat(prodPathData.get("sourcePath"));
             prodSourcePaths.add(sourcePath);
             tmp.setPath(sourcePath);
             appPathToBeDeleted.remove(tmp);
-            String executionPath = prodPathData.get("executionPath");
+            String executionPath = fixPathFormat(prodPathData.get("executionPath"));
             prodExecutionPaths.add(executionPath);
             tmp.setPath(executionPath);
             appPathToBeDeleted.remove(tmp);
@@ -198,8 +200,11 @@ public class JCS5100 extends AbstractBasePage {
         // check relation before update db
         if (appPathToBeDeleted.size() > 0) {
             for (AppPath appPath : appPathToBeDeleted) {
-                if (FileUtil.listFiles(appPath.getPath()) != null && FileUtil.listFiles(appPath.getPath()).size() > 0) {
-                    throw new IllegalStateException("Cannot remove prod path, because there are files in it.");
+                String path = appPath.getPath();
+                if (SmbFileUtil.exist(path, null)) {
+                    if (SmbFileUtil.listFiles(path) != null && SmbFileUtil.listFiles(path).size() > 0) {
+                        throw new IllegalStateException("Cannot remove prod path, because there are files in it.");
+                    }
                 }
             }
         }
@@ -247,8 +252,15 @@ public class JCS5100 extends AbstractBasePage {
     }
 
     private String delete(Map dataMap) {
-        // TODO check
-        appDao.delete(dataMap);
+        String sId = (String) dataMap.get("id");
+        if (!StringUtils.hasText(sId)) {
+            throw new IllegalArgumentException("Cannot find parameter: appId");
+        }
+        if (CollectionUtils.isEmpty(appFileDao.findByAppId(Long.parseLong(sId)))) {
+            appDao.delete(dataMap);
+        } else {
+            throw new IllegalStateException("Cannot delete application that already be associated with files.");
+        }
         return "";
     }
 
@@ -265,31 +277,40 @@ public class JCS5100 extends AbstractBasePage {
             throws FileSystemException {
         if (appPathDao.findUnique(appBasePath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.APP_BASE, appBasePath));
-            FileUtil.createFolder(appBasePath);
+            SmbFileUtil.createFolder(appBasePath);
         }
         if (appPathDao.findUnique(qaSourcePath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.QA_SOURCE, qaSourcePath));
-            FileUtil.createFolder(qaSourcePath);
+            SmbFileUtil.createFolder(qaSourcePath);
         }
         if (appPathDao.findUnique(qaExecutionPath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.QA_EXECUTION, qaExecutionPath));
-            FileUtil.createFolder(qaExecutionPath);
+            SmbFileUtil.createFolder(qaExecutionPath);
         }
         if (appPathDao.findUnique(prodBackupPath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.PROD_BACKUP, prodBackupPath));
-            FileUtil.createFolder(prodBackupPath);
+            SmbFileUtil.createFolder(prodBackupPath);
         }
         for (String prodSourcePath : prodSourcePaths) {
             if (appPathDao.findUnique(prodSourcePath) == null) {
                 appPathDao.create(createAppPathMap(appId, PathType.PROD_SOURCE, prodSourcePath));
-                FileUtil.createFolder(prodSourcePath);
+                SmbFileUtil.createFolder(prodSourcePath);
             }
         }
         for (String prodExecutionPath : prodExecutionPaths) {
             if (appPathDao.findUnique(prodExecutionPath) == null) {
                 appPathDao.create(createAppPathMap(appId, PathType.PROD_EXECUTION, prodExecutionPath));
-                FileUtil.createFolder(prodExecutionPath);
+                SmbFileUtil.createFolder(prodExecutionPath);
             }
         }
     }
+
+    private String fixPathFormat(String path) {
+        String fixedPath = path.replace("/", "\\");
+        if (fixedPath.lastIndexOf('\\') != fixedPath.length() - 1) {
+            fixedPath += "\\";
+        }
+        return fixedPath;
+    }
+
 }
