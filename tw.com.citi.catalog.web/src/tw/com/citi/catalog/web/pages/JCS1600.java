@@ -22,7 +22,7 @@ import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.model.ScrFile.FileStatus;
-import tw.com.citi.catalog.web.utils.FileUtil;
+import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -68,8 +68,9 @@ public class JCS1600 extends AbstractBasePage {
     }
 
     private String init(Map dataMap) {
-        List<Scr> scrList = scrDao
-                .find(new HashMap<String, String>(), new String[] {}, "", "SCR_NO", 0, Long.MAX_VALUE);
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("deleted", "0");
+        List<Scr> scrList = scrDao.find(params, new String[] { "equal" }, "", "SCR_NO", 0, Long.MAX_VALUE);
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("scrList", scrList);
         return gson.toJson(data);
@@ -124,7 +125,7 @@ public class JCS1600 extends AbstractBasePage {
             String fileName = file.get("fileName");
             sourceFileNames.add(rdPath + filePath + fileName);
             try {
-                FileUtil.copyFile(rdPath + filePath, qaSourcePath + filePath, new String[] { fileName });
+                SmbFileUtil.copyFile(rdPath + filePath, qaSourcePath + filePath, new String[] { fileName });
             } catch (FileSystemException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -160,7 +161,7 @@ public class JCS1600 extends AbstractBasePage {
             // TODO check 檔案是否真的存在 rdPath
             for (ScrFile file : files) {
                 try {
-                    if (FileUtil.exist(rdPath + file.getFilePath(), file.getFileName())) {
+                    if (SmbFileUtil.exist(rdPath + file.getFilePath(), file.getFileName())) {
                         file.setFileStatus(FileStatus.EXIST);
                     } else {
                         file.setFileStatus(FileStatus.NOT_FOUND);

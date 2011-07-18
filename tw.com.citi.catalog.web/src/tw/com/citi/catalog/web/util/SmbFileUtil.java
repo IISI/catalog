@@ -1,16 +1,13 @@
-package tw.com.citi.catalog.web.utils;
+package tw.com.citi.catalog.web.util;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import jcifs.smb.SmbException;
 
 import org.apache.commons.vfs.FileFilter;
 import org.apache.commons.vfs.FileFilterSelector;
@@ -26,7 +23,7 @@ import org.apache.commons.vfs.provider.local.LocalFileSystem;
 import tw.com.citi.catalog.web.Settings;
 import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
 
-public class FileUtil {
+public class SmbFileUtil {
 
     private static Settings settings;
     private static FileSystemManager fsManager;
@@ -287,7 +284,7 @@ public class FileUtil {
     }
 
     public static void setInit(boolean init) {
-        FileUtil.init = init;
+        SmbFileUtil.init = init;
     }
 
     public static boolean isInit() {

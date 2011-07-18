@@ -22,8 +22,8 @@ import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.ScrFile;
-import tw.com.citi.catalog.web.utils.AccessControlUtil;
-import tw.com.citi.catalog.web.utils.FileUtil;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
+import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -106,7 +106,7 @@ public class JCS5100 extends AbstractBasePage {
         if (basePath == null || "".equals(basePath.trim())) {
             throw new IllegalArgumentException("Please input base path.");
         }
-        if (!FileUtil.writable(basePath)) {
+        if (!SmbFileUtil.writable(basePath)) {
             throw new IllegalArgumentException("Cannot access base path.");
         }
         return "";
@@ -201,8 +201,8 @@ public class JCS5100 extends AbstractBasePage {
         if (appPathToBeDeleted.size() > 0) {
             for (AppPath appPath : appPathToBeDeleted) {
                 String path = appPath.getPath();
-                if (FileUtil.exist(path, null)) {
-                    if (FileUtil.listFiles(path) != null && FileUtil.listFiles(path).size() > 0) {
+                if (SmbFileUtil.exist(path, null)) {
+                    if (SmbFileUtil.listFiles(path) != null && SmbFileUtil.listFiles(path).size() > 0) {
                         throw new IllegalStateException("Cannot remove prod path, because there are files in it.");
                     }
                 }
@@ -277,30 +277,30 @@ public class JCS5100 extends AbstractBasePage {
             throws FileSystemException {
         if (appPathDao.findUnique(appBasePath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.APP_BASE, appBasePath));
-            FileUtil.createFolder(appBasePath);
+            SmbFileUtil.createFolder(appBasePath);
         }
         if (appPathDao.findUnique(qaSourcePath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.QA_SOURCE, qaSourcePath));
-            FileUtil.createFolder(qaSourcePath);
+            SmbFileUtil.createFolder(qaSourcePath);
         }
         if (appPathDao.findUnique(qaExecutionPath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.QA_EXECUTION, qaExecutionPath));
-            FileUtil.createFolder(qaExecutionPath);
+            SmbFileUtil.createFolder(qaExecutionPath);
         }
         if (appPathDao.findUnique(prodBackupPath) == null) {
             appPathDao.create(createAppPathMap(appId, PathType.PROD_BACKUP, prodBackupPath));
-            FileUtil.createFolder(prodBackupPath);
+            SmbFileUtil.createFolder(prodBackupPath);
         }
         for (String prodSourcePath : prodSourcePaths) {
             if (appPathDao.findUnique(prodSourcePath) == null) {
                 appPathDao.create(createAppPathMap(appId, PathType.PROD_SOURCE, prodSourcePath));
-                FileUtil.createFolder(prodSourcePath);
+                SmbFileUtil.createFolder(prodSourcePath);
             }
         }
         for (String prodExecutionPath : prodExecutionPaths) {
             if (appPathDao.findUnique(prodExecutionPath) == null) {
                 appPathDao.create(createAppPathMap(appId, PathType.PROD_EXECUTION, prodExecutionPath));
-                FileUtil.createFolder(prodExecutionPath);
+                SmbFileUtil.createFolder(prodExecutionPath);
             }
         }
     }
