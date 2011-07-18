@@ -5,9 +5,11 @@ import java.util.Map;
 
 import org.apache.wicket.PageParameters;
 
+import tw.com.citi.catalog.util.DateUtil;
 import tw.com.citi.catalog.web.GridModel;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public abstract class AbstractGridHandler implements IGridHandler {
@@ -44,7 +46,10 @@ public abstract class AbstractGridHandler implements IGridHandler {
         grid.setTotalPages(totalPages);
         grid.setTotalRecords(count);
         grid.setRows(getRows(queryParams, queryOperators, index, order, start, limit));
-        return new Gson().toJson(grid);
+        
+        GsonBuilder builder = new GsonBuilder();
+        builder.setDateFormat(DateUtil.FORMAT);
+        return builder.create().toJson(grid);
     }
 
     abstract List getRows(Map<String, String> params, String[] operators, String index, String order, long start, long limit);

@@ -11,3 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.springframework.util;bundle-version="1.0.3"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: tw.com.citi.catalog.util
