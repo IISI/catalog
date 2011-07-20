@@ -90,7 +90,7 @@
                     var rowId = copyFrom.getDataIDs()[i];
                     var rowData = copyFrom.getRowData(rowId);
                     var status = rowData.fileStatus;
-                    if ('EXIST' == status) {
+                    if ('EXIST' == status || 'DELETE' == status) {
                         copyTo.addRowData(rowId, rowData);
                         copyFrom.delRowData(rowId);
                     } else {
@@ -111,7 +111,7 @@
                         var rowId = rows[i];
                         var rowData = copyFrom.getRowData(rowId);
                         var status = rowData.fileStatus;
-                        if ('EXIST' == status) {
+                        if ('EXIST' == status || 'DELETE' == status) {
                             copyTo.addRowData(rowId, rowData);
                             copyFrom.delRowData(rowId);
                         } else {

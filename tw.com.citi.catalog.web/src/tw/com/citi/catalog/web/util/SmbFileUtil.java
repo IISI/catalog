@@ -231,6 +231,14 @@ public class SmbFileUtil {
         file.createFile();
     }
 
+    public static void deleteFile(String path, String fileName) throws FileSystemException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
+        FileObject file = fsManager.resolveFile(folder, fileName);
+        if (exist(path, fileName)) {
+            file.delete();
+        }
+    }
+
     public static FileObject getFile(String filePath, String fileName) throws FileSystemException {
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         FileObject file = fsManager.resolveFile(folder, fileName);
