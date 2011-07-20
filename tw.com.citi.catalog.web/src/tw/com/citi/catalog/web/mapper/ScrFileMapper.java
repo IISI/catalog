@@ -25,6 +25,7 @@ public class ScrFileMapper implements RowMapper<ScrFile> {
         scrFile.setLastRegisterTime(rs.getTimestamp("LAST_REGISTER_TIME"));
         scrFile.setJcScrId(rs.getLong("JC_SCR_ID"));
         scrFile.setJcBuildUnitId(rs.getLong("JC_BUILD_UNIT_ID"));
+        scrFile.setDeleted(rs.getBoolean("DELETE"));
         return scrFile;
     }
 

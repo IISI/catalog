@@ -15,7 +15,7 @@ public class ScrFile implements IModel<Long> {
     }
 
     public enum FileStatus {
-        EXIST, NOT_FOUND, ACCESS_DENIED
+        EXIST, NOT_FOUND, ACCESS_DENIED, DELETE
     }
 
     private Long id;

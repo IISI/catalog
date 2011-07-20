@@ -25,6 +25,7 @@ public class AppFileMapper implements RowMapper<AppFile> {
         appFile.setLastRegisterTime(rs.getTimestamp("LAST_REGISTER_TIME"));
         appFile.setJcAppId(rs.getLong("JC_APP_ID"));
         appFile.setJcBuildUnitId(rs.getLong("JC_BUILD_UNIT_ID"));
+        appFile.setDeleted(rs.getBoolean("DELETE"));
         return appFile;
     }
 
