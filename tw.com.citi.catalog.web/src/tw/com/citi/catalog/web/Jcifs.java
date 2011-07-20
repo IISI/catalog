@@ -1,9 +1,9 @@
 package tw.com.citi.catalog.web;
 
 public class Jcifs {
-    private String functionalId = "domain;username";
-    private String functionalPwd = "userpassword";
-    private String jcifsNetbiosWins = "netbioswins";
+    private String functionalId = "CitiTest";
+    private String functionalPwd = "168;199;166;197;164;195;162;193;160;191;158;189;156;187;154;185;152;183;150;181;148;179;146;177;144;243;142;255;140;187;138;0;136;250;134;248;132;195;130;241";
+    private String jcifsNetbiosWins = "";
 
     public void setFunctionalId(String functionalId) {
         this.functionalId = functionalId;
@@ -27,5 +27,21 @@ public class Jcifs {
 
     public String getJcifsNetbiosWins() {
         return jcifsNetbiosWins;
+    }
+
+    public String getDomain() {
+        String domain = "";
+        if (functionalId.indexOf(";") > 0) {
+            domain = functionalId.substring(0, functionalId.indexOf(";"));
+        }
+        return domain;
+    }
+
+    public String getIdWithoutDomain() {
+        String idWithoutDomain = functionalId;
+        if (functionalId.indexOf(";") > 0) {
+            idWithoutDomain = functionalId.substring(functionalId.indexOf(";") + 1);
+        }
+        return idWithoutDomain;
     }
 }
