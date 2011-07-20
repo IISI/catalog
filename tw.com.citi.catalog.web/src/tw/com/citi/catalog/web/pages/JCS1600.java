@@ -78,7 +78,6 @@ public class JCS1600 extends AbstractBasePage {
 
     private String query(Map dataMap) {
         String sId = (String) dataMap.get("id");
-        // TODO check
         Scr scr = scrDao.findById(Long.parseLong(sId));
         App app = appDao.findById(scr.getJcAppId());
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
@@ -96,97 +95,129 @@ public class JCS1600 extends AbstractBasePage {
 
     private String move(Map dataMap) {
         String sScrId = (String) dataMap.get("scrId");
-        String sBuildUnitId = (String) dataMap.get("buildUnitId");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
-        // TODO move file
+        // move file
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
-        Long buildUnitId;
-        String unitId = "";
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
-        if ("all".equalsIgnoreCase(sBuildUnitId)) {
-            // 全選
-            buildUnitId = null;
-        } else {
-            // 指定
-            buildUnitId = Long.parseLong(sBuildUnitId);
-            BuildUnit unit = buildUnitDao.findById(buildUnitId);
-            unitId = unit.getUnitId() + "\\";
-        }
-        // TODO get source path
-        String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
+        // get path
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
-        // TODO get target path
-        List<String> sourceFileNames = new ArrayList<String>();
+        String qaExecutionPath = (String) appPaths.get(PathType.QA_EXECUTION);
+        String prodBackupPath = (String) appPaths.get(PathType.PROD_BACKUP);
+        List<String> prodSourcePath = (List<String>) appPaths.get(PathType.PROD_SOURCE);
+        List<String> prodExecutionPath = (List<String>) appPaths.get(PathType.PROD_EXECUTION);
+        // rename current BACKUP folder
+        try {
+            if (SmbFileUtil.exist(prodBackupPath, null)) {
+                SmbFileUtil.renameTo(
+                        prodBackupPath,
+                        null,
+                        prodBackupPath.trim().substring(0, prodBackupPath.trim().length() - 1) + "_"
+                                + String.valueOf(System.currentTimeMillis()), null);
+            }
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Rename backup folder error. " + e.getMessage(), e);
+        }
+        // 備份現有的 PROD source/execution 到 BACKUP
+        try {
+            if (SmbFileUtil.exist(prodSourcePath.get(0), null)) {
+                SmbFileUtil.copyFile(prodSourcePath.get(0), prodBackupPath + "source\\", null);
+            }
+            if (SmbFileUtil.exist(prodExecutionPath.get(0), null)) {
+                SmbFileUtil.copyFile(prodExecutionPath.get(0), prodBackupPath + "execution\\", null);
+            }
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Backup current PROD folder error. " + e.getMessage(), e);
+        }
+        // 複製 QA source/execution 到 PROD
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
-            sourceFileNames.add(rdPath + filePath + fileName);
+            String fileType = file.get("fileType");
+            String fileStatus = file.get("fileStatus");
             try {
-                SmbFileUtil.copyFile(rdPath + filePath, qaSourcePath + filePath, new String[] { fileName });
+                String qaPath = "";
+                List<String> prodPaths = new ArrayList<String>();
+                if ("SOURCE".equalsIgnoreCase(fileType)) {
+                    qaPath = qaSourcePath;
+                    prodPaths = prodSourcePath;
+                } else {
+                    qaPath = qaExecutionPath;
+                    prodPaths = prodExecutionPath;
+                }
+                if ("DELETE".equalsIgnoreCase(fileStatus)) {
+                    deleteFromProd(filePath, fileName, prodPaths);
+                } else {
+                    copyToProd(qaPath, filePath, fileName, prodPaths);
+                }
+                // TODO PVCS Checkin 處理
             } catch (FileSystemException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
         return null;
     }
 
+    private void copyToProd(String qaPath, String filePath, String fileName, List<String> prodPaths)
+            throws FileSystemException {
+        for (String prodPath : prodPaths) {
+            SmbFileUtil.copyFile(qaPath + filePath, prodPath + filePath, new String[] { fileName });
+        }
+    }
+
+    private void deleteFromProd(String filePath, String fileName, List<String> prodPaths) throws FileSystemException {
+        for (String prodPath : prodPaths) {
+            SmbFileUtil.deleteFile(prodPath + filePath, fileName);
+        }
+    }
+
     private String getFiles(Map dataMap) {
         String sScrId = (String) dataMap.get("scrId");
         String sBuildUnitId = (String) dataMap.get("buildUnitId");
-        // TODO check
         Scr scr = scrDao.findById(Long.parseLong(sScrId));
         List<ScrFile> files = new ArrayList<ScrFile>();
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         Long buildUnitId;
-        String buildUnit = "";
         if ("all".equalsIgnoreCase(sBuildUnitId)) {
             // 全選
             buildUnitId = null;
-            // get Files in RD_PATH
-            files = scrFileDao.findSourceFilesByScrId(Long.parseLong(sScrId));
+            files = scrFileDao.findByScrId(scr.getId());
         } else {
             buildUnitId = Long.parseLong(sBuildUnitId);
             BuildUnit unit = buildUnitDao.findById(buildUnitId);
-            // get Files in RD_PATH
-            files = scrFileDao.findSourceFilesByBuildUnitId(buildUnitId);
-            buildUnit = unit.getUnitId() + "\\";
+            List<Long> ids = new ArrayList<Long>();
+            ids.add(unit.getId());
+            files = scrFileDao.findByBuildUnitIds(ids);
         }
-        if (appPaths.containsKey(PathType.APP_BASE) && appPaths.containsKey(PathType.QA_SOURCE)) {
-            String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
-            String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
-            // TODO check 檔案是否真的存在 rdPath
-            for (ScrFile file : files) {
-                try {
-                    if (SmbFileUtil.exist(rdPath + file.getFilePath(), file.getFileName())) {
+        String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
+        // check 檔案是否真的存在 qaSourcePath
+        for (ScrFile file : files) {
+            try {
+                if (file.getDeleted()) {
+                    file.setFileStatus(FileStatus.DELETE);
+                } else {
+                    if (SmbFileUtil.exist(qaSourcePath + file.getFilePath(), file.getFileName())) {
                         file.setFileStatus(FileStatus.EXIST);
                     } else {
                         file.setFileStatus(FileStatus.NOT_FOUND);
                     }
-                } catch (FileSystemException e) {
-                    e.printStackTrace();
-                    if (e.getCause() instanceof SmbAuthException) {
-                        file.setFileStatus(FileStatus.ACCESS_DENIED);
-                        break;
-                    }
+                }
+            } catch (FileSystemException e) {
+                e.printStackTrace();
+                if (e.getCause() instanceof SmbAuthException) {
+                    file.setFileStatus(FileStatus.ACCESS_DENIED);
+                    break;
                 }
             }
-            // get QA SOURCE PATH
-            Map<String, Object> data = new HashMap<String, Object>();
-            data.put("unitId", buildUnit);
-            data.put("qaSourcePath", appPaths.get(PathType.QA_SOURCE));
-            data.put("qaExecutionPath", appPaths.get(PathType.QA_EXECUTION));
-            data.put("prodSourcePaths", appPaths.get(PathType.PROD_SOURCE));
-            data.put("prodExecutionPaths", appPaths.get(PathType.PROD_EXECUTION));
-            data.put("files", files);
-            return gson.toJson(data);
-        } else {
-            // TODO
-            throw new RuntimeException("");
         }
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("files", files);
+        return gson.toJson(data);
     }
 
 }

@@ -9,6 +9,8 @@ public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
     List<ScrFile> findSourceFilesByScrId(Long scrId);
 
     List<ScrFile> findSourceFilesByBuildUnitId(Long buildUnitId);
-    
+
     List<ScrFile> findByBuildUnitIds(List<Long> buildUnitIds);
+
+    List<ScrFile> findByScrId(Long scrId);
 }

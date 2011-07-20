@@ -287,6 +287,23 @@ public class SmbFileUtil {
         return tf;
     }
 
+    public static void renameTo(String oldPath, String oldName, String newPath, String newName)
+            throws FileSystemException {
+        if (oldName == null) {
+            FileObject sourceFolder = fsManager.resolveFile("smb:" + replaceSlash(oldPath), opts);
+            FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(newPath), opts);
+            folder.createFolder();
+            sourceFolder.moveTo(folder);
+        } else {
+            FileObject sourceFolder = fsManager.resolveFile("smb:" + replaceSlash(oldPath), opts);
+            FileObject sourceFile = fsManager.resolveFile(sourceFolder, oldName);
+            FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(newPath), opts);
+            FileObject temp = fsManager.resolveFile(folder, newName);
+            temp.createFile();
+            sourceFile.moveTo(temp);
+        }
+    }
+
     private static String replaceSlash(String path) {
         return path.replace("\\", "/");
     }

@@ -90,9 +90,20 @@
             
             addAllButton.click(function() {
                 var len = copyFrom.getGridParam("reccount");
+                var errCount = 0;
                 for(var i = len-1; i >= 0; i--) {
-                    copyTo.addRowData(copyFrom.getDataIDs()[i], copyFrom.getRowData(copyFrom.getDataIDs()[i]));
-                    copyFrom.delRowData(copyFrom.getDataIDs()[i]);
+                    var rowId = copyFrom.getDataIDs()[i];
+                    var rowData = copyFrom.getRowData(rowId);
+                    var status = rowData.fileStatus;
+                    if ('EXIST' == status || 'DELETE' == status) {
+                        copyTo.addRowData(rowId, rowData);
+                        copyFrom.delRowData(rowId);
+                    } else {
+                        errCount++;
+                    }
+                }
+                if (errCount > 0) {
+                    dialog.html('Cannot move files which does not exist in QA folder.').dialog('open');
                 }
             });
             
@@ -100,9 +111,20 @@
                 var rows = copyFrom.getGridParam('selarrrow');
                 if (rows.length > 0) {
                     var len = rows.length;
+                    var errCount = 0;
                     for(var i = len-1; i >= 0; i--) {
-                        copyTo.addRowData(rows[i], copyFrom.getRowData(rows[i]));
-                        copyFrom.delRowData(rows[i]);
+                        var rowId = rows[i];
+                        var rowData = copyFrom.getRowData(rowId);
+                        var status = rowData.fileStatus;
+                        if ('EXIST' == status || 'DELETE' == status) {
+                            copyTo.addRowData(rowId, rowData);
+                            copyFrom.delRowData(rowId);
+                        } else {
+                            errCount++;
+                        }
+                    }
+                    if (errCount > 0) {
+                        dialog.html('Cannot move files which does not exist in QA folder').dialog('open');
                     }
                 } else {
                     dialog.html('Please select records to add.').dialog('open');
@@ -201,22 +223,6 @@
                         dataType: 'json',
                         data: payload,
                         success: function(data, textStatus, jqXHR) {
-                            var unitId = data.unitId;
-                            // set qa path
-                            qaSourcePath.text(data.qaSourcePath + unitId);
-                            qaExecutionPath.text(data.qaExecutionPath + unitId);
-                            // set prod paths
-                            var paths = "";
-                            prodSourcePaths.text("");
-                            for(var path in data.prodSourcePaths) {
-                                paths = data.prodSourcePaths[path] + unitId;
-                                prodSourcePaths.append(paths + "<br />");
-                            }
-                            prodExecutionPaths.text("");
-                            for(var path in data.prodExecutionPaths) {
-                                paths = data.prodExecutionPaths[path] + unitId;
-                                prodExecutionPaths.append(paths + "<br />");
-                            }
                             // set file
                             for(var index in data.files) {
                                 var file = data.files[index];
@@ -251,7 +257,7 @@
                     {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
-                pager: '#pager',
+                pager: '#copyFromPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
@@ -271,9 +277,9 @@
                     {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
                     {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
                     {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
-                    {name: 'fileStatus', index: 'fileStatus', hidden: true}
+                    {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
-                pager: '#pager',
+                pager: '#copyToPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
@@ -323,7 +329,7 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        // TODO success
+                        // TODO show report
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var resp = JSON.parse(jqXHR.responseText);
