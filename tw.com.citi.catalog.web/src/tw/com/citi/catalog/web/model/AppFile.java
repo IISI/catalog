@@ -30,6 +30,7 @@ public class AppFile implements IModel<Long> {
     private String fileMd5;
     private Timestamp lastRegisterTime;
     private Timestamp lastCompileTime;
+    private Boolean deleted;
     // JCS1200 grid
     private FileStatus fileStatus;
 
@@ -174,5 +175,13 @@ public class AppFile implements IModel<Long> {
 
     public Long getJcAppId() {
         return jcAppId;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
     }
 }

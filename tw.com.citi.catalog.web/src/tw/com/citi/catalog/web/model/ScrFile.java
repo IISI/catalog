@@ -30,6 +30,7 @@ public class ScrFile implements IModel<Long> {
     private String fileMd5;
     private Timestamp lastRegisterTime;
     private Timestamp lastCompileTime;
+    private Boolean deleted;
     // JCS1200 grid
     private FileStatus fileStatus;
     // JCS1000 grid
@@ -193,5 +194,13 @@ public class ScrFile implements IModel<Long> {
 
     public String getFullPathName() {
         return fullPathName;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
     }
 }
