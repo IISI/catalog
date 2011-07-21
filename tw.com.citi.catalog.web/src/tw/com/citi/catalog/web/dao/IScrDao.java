@@ -3,6 +3,7 @@ package tw.com.citi.catalog.web.dao;
 import java.util.Map;
 
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.model.Scr.Status;
 
 public interface IScrDao extends IGenericDao<Scr, Long> {
 
@@ -18,7 +19,15 @@ public interface IScrDao extends IGenericDao<Scr, Long> {
     long countByProgrammerId(Long programmerId);
 
     long countByCoordinatorId(Long coordinatorId);
-    
+
     Scr findByScrNo(String scrNo);
+
+    /**
+     * 更新 SCR 狀態。
+     * 
+     * @param jcScrId
+     * @param status
+     */
+    void updateStatus(Long jcScrId, Status status);
 
 }

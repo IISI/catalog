@@ -20,6 +20,7 @@ import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.model.ScrFile.FileStatus;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
@@ -123,6 +124,7 @@ public class JCS1200 extends AbstractBasePage {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
+        scrDao.updateStatus(scr.getId(), Status.MOVE_TO_QA);
         return null;
     }
 

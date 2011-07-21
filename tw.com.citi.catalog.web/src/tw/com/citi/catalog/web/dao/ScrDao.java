@@ -1,9 +1,11 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.model.Scr.Status;
 
 public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
 
@@ -55,5 +57,17 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
     public Scr findByScrNo(String scrNo) {
         return (Scr) jdbcTemplate.queryForObject("SELECT * FROM " + getTableName() + " WHERE SCR_NO = ?",
                 getRowMapper(), scrNo);
+    }
+
+    @Override
+    public void updateStatus(Long jcScrId, Status status) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("jcScrId", jcScrId);
+        params.put("status", status.ordinal());
+        params.put("processTime", new Date());
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName())
+                .append(" SET STATUS=:status, PROCESS_TIME=:processTime WHERE ID=:jcScrId");
+        super.jdbcTemplate.update(sql.toString(), params);
     }
 }

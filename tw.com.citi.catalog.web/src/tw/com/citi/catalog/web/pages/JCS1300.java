@@ -19,6 +19,7 @@ import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.util.NetUseUtil;
 
 import com.google.gson.Gson;
@@ -118,6 +119,10 @@ public class JCS1300 extends AbstractBasePage {
 
     private String compile(Map dataMap) {
         // TODO
+        String sScrId = (String) dataMap.get("scrId");
+        Long scrId = Long.parseLong(sScrId);
+        Scr scr = scrDao.findById(scrId);
+        scrDao.updateStatus(scr.getId(), Status.COMPILE);
         return null;
     }
 
