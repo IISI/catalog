@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.jdbc.object.SqlUpdate;
+
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 
@@ -70,4 +72,14 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
                 .append(" SET STATUS=:status, PROCESS_TIME=:processTime WHERE ID=:jcScrId");
         super.jdbcTemplate.update(sql.toString(), params);
     }
+
+    @Override
+    public int update1100(Map<String, Object> params) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET REGISTER_COUNT = :registerCount, STATUS = :status, PROCESS_TIME = :processTime");
+        sql.append(" WHERE ID = :id");
+        return jdbcTemplate.update(sql.toString(), params);
+    }
+
 }

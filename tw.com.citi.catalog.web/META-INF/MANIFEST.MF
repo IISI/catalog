@@ -29,6 +29,7 @@ Require-Bundle: org.apache.wicket.wicket;bundle-version="1.4.15",
  org.slf4j.api;bundle-version="1.5.11",
  org.apache.commons.beanutils;bundle-version="1.8.3",
  org.springframework.beans;bundle-version="3.0.5",
+ org.springframework.batch.infrastructure;bundle-version="2.1.6",
  org.eclipse.core.runtime;bundle-version="3.6.0",
  tw.com.citi.catalog;bundle-version="1.0.0"
 Bundle-ClassPath: WEB-INF/lib/commons-vfs-2.0-20090326.033229-1.jar,

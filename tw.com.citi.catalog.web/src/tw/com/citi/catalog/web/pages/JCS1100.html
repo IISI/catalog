@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+<script type="text/javascript" src="js/url.js"></script>
+<script type="text/javascript" src="js/pagebus-2.0.0.min.js"></script>
+<title>1100</title>
+</wicket:head>
+<wicket:extend>
+    <h1>1100 Register</h1>
+    <div id="queryPanel">
+        <table class="form">
+            <tr>
+                <td colspan="2"><div id="actionText" /></td>
+            </tr>
+            <tr>
+                <td><label for="scrNo">SCR No.</label></td>
+                <td><select id="scrNo" name="scrNo"></select></td>
+            </tr>
+            <tr>
+                <td><label>Application ID</label></td>
+                <td class="appId"></td>
+            </tr>
+            <tr>
+                <td><label>Status</label></td>
+                <td id="status"></td>
+            </tr>
+            <tr>
+                <td><label>Submit Date/Time</label></td>
+                <td id="submitTime"></td>
+            </tr>
+            <tr>
+                <td><label>Librarian</label></td>
+                <td id="librarian"></td>
+            </tr>
+            <tr>
+                <td><label>Coordinator</label></td>
+                <td id="coordinator"></td>
+            </tr>
+            <tr>
+                <td><label>Programmer</label></td>
+                <td id="programmer"></td>
+            </tr>
+            <tr>
+                <td><label>Create Date/Time</label></td>
+                <td id="createTime"></td>
+            </tr>
+            <tr>
+                <td><label>Description</label></td>
+                <td id="description"></td>
+            </tr>
+        </table>
+        <br />
+        <table id="scrList"></table>
+        <div id="scrPager"></div>
+        <br />
+        <table id="regList"></table>
+        <div id="regPager"></div>
+        <br />
+        <div class="button-bar">
+            <button id="importButton" disabled="disabled">Import</button>
+            <button id="addButton" disabled="disabled">Add</button>
+            <button id="modifyButton" disabled="disabled">Modify</button>
+            <button id="removeButton" disabled="disabled">Remove</button>
+            <button id="registerButton" disabled="disabled">Register</button>
+            <button id="printButton" disabled="disabled">Print</button>
+        </div>
+    </div>
+    <div id="addPanel">
+        <table class="form">
+            <tr>
+                <td><label>SCR No.</label></td>
+                <td class="scrNo"></td>
+            </tr>
+            <tr>
+                <td><label>Application ID</label></td>
+                <td class="appId"></td>
+            </tr>
+            <tr>
+                <td><label>Build Unit</label></td>
+                <td><select id="buildUnit"></select></td>
+            </tr>
+            <tr>
+                <td><label>Source File</label></td>
+                <td>
+                    <input id="sourceFile" type="text" readonly="readonly" />
+                    <button id="sourceFileButton">Browse</button>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Source Path</label></td>
+                <td><input id="sourcePath" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>Check In</label></td>
+                <td>
+                    <input type="radio" name="checkin" value="Yes" checked="checked" />Yes
+                    <input type="radio" name="checkin" value="No" />No
+                </td>
+            </tr>
+            <tr>
+                <td><label>Execution Path</label></td>
+                <td><input id="executionPath" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>Execution File Name</label></td>
+                <td><input id="executionFileName" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label>File Date/Time</label></td>
+                <td id="fileDateTime"></td>
+            </tr>
+            <tr>
+                <td><label>File Size</label></td>
+                <td id="fileSize"></td>
+            </tr>
+            <tr>
+                <td><label>Action</label></td>
+                <td>
+                    <input type="radio" name="action" value="New" checked="checked" />New
+                    <input type="radio" name="action" value="Update" />Update
+                    <input type="radio" name="action" value="Delete" />Delete
+                </td>
+            </tr>
+            <tr>
+                <td><label>MD5</label></td>
+                <td id="fileMd5"></td>
+            </tr>
+        </table>
+        <br />
+        <div class="button-bar">
+            <button id="saveAddButton">Save</button>
+            <button id="cancelAddButton">Cancel</button>
+        </div>
+    </div>
+    <div id="importPanel">
+        <table class="form">
+            <tr>
+                <td><label>SCR No.</label></td>
+                <td class="scrNo"></td>
+            </tr>
+            <tr>
+                <td><label>Application ID</label></td>
+                <td class="appId"></td>
+            </tr>
+            <tr>
+                <td><label>Import Change List</label></td>
+                <td>
+                    <input id="changeFile" type="text" readonly="readonly" />
+                    <button id="changeFileButton">Browser</button>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Zip to be imported</label></td>
+                <td>
+                    <input id="zipFile" type="text" readonly="readonly" />
+                    <button id="zipFileButton">Browser</button>
+                    <button id="unzipButton" disabled="disabled">Unzip</button>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Hash Info File</label></td>
+                <td>
+                    <input id="hashFile" type="text" readonly="readonly" />
+                    <button id="hashFileButton">Browser</button>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table id="importList"></table>
+        <div id="importPager"></div>
+        <br />
+        <div class="button-bar">
+            <button id="checkImportButton" disabled="disabled">Check</button>
+            <button id="importImportButton" disabled="disabled">Import</button>
+            <button id="cancelImportButton">Cancel</button>
+        </div>
+    </div>
+    <div id="zipDialog">
+        <table>
+            <tr>
+                <td><label for="zipPassword">Password</label></td>
+                <td><input id="zipPassword" type="password" /></td>
+            </tr>
+        </table>
+    </div>
+    <div id="pvcsDialog">
+        <table>
+            <tr>
+                <td><label for="pvcsUsername">Username</label></td>
+                <td><input id="pvcsUsername" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label for="pvcsPassword">Password</label></td>
+                <td><input id="pvcsPassword" type="password" /></td>
+            </tr>
+        </table>
+    </div>
+    <script type="text/javascript">
+    <!--
+        $(function () {
+            
+            'use strict';
+            
+            function Global() {
+                var scrId = '';
+                var queryView = $('#queryPanel');
+                var addView = $('#addPanel');
+                var importView = $('#importPanel');
+                var messageDialog = $('<div></div>').dialog({autoOpen: false, modal: true});
+                
+                return {
+                    scrId: scrId,
+                    queryView: queryView,
+                    addView: addView,
+                    importView: importView,
+                    messageDialog: messageDialog
+                };
+            }
+            
+            function Query() {
+                var scrNoElement = $('#scrNo');
+                
+                var importButton = $('#importButton');
+                var addButton = $('#addButton');
+                var modifyButton = $('#modifyButton');
+                var removeButton = $('#removeButton');
+                var registerButton = $('#registerButton');
+                var printButton = $('#printButton');
+                
+                var scrGrid = $('#scrList');
+                var regGrid = $('#regList');
+                
+                function initGrid() {
+                    scrGrid.jqGrid({
+                        datatype: 'local',
+                        mtype: 'POST',
+                        colNames: ['Id', 'Name', 'Build Unit', 'File Type', 'Size', 'Date/Time', 'Checkout', 'Last Register'],
+                        colModel: [
+                            {name: 'id', index: 'ID', hidden: true},
+                            {name: 'fullPathName', index: 'FILE_NAME', align: 'left', sortable: true},
+                            {name: 'unitId', index: 'JC_BUILD_UNIT_ID', align: 'left', sortable: true},
+                            {name: 'fileType', index: 'FILE_TYPE', align: 'left', sortable: true},
+                            {name: 'fileSize', index: 'FILE_SIZE', align: 'left', sortable: true},
+                            {name: 'fileDatetime', index: 'FILE_DATETIME', align: 'left', sortable: true},
+                            {name: 'checkout', index: 'CHECKOUT', align: 'left', sortable: false},
+                            {name: 'lastRegisterTime', index: 'LAST_REGISTER_TIME', align: 'left', sortable: false}
+                        ],
+                        pager: '#scrPager',
+                        sortname: 'FILE_NAME',
+                        sortorder: 'asc',
+                        viewrecords: true,
+                        caption: 'SCR File List'
+                    });
+                    scrGrid.jqGrid('navGrid', '#scrPager', {edit: false, add: false, del: false});
+                    
+                    regGrid.jqGrid({
+                        data: [],
+                        datatype: 'local',
+                        mtype: 'POST',
+                        colNames: ['Id', 'Name', 'Build Unit', 'Size', 'Date/Time', 'Action', 'Checkin', 'File MD5', 'Build Unit ID', 'Source Path', 'Source Filename', 'Execution Path', 'Execution Filename', 'Original Source File'],
+                        colModel: [
+                            {name: 'id', hidden: true},
+                            {name: 'fileName', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'buildUnit', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'fileSize', align: 'left', sortable: true, sorttype: 'int'},
+                            {name: 'fileDatetime', align: 'left', sortable: true, sorttype: 'date'},
+                            {name: 'action', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'checkin', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'fileMd5', hidden: true},
+                            {name: 'jcBuildUnitId', hidden: true},
+                            {name: 'sourcePath', hidden: true},
+                            {name: 'sourceFileName', hidden: true},
+                            {name: 'executionPath', hidden: true},
+                            {name: 'executionFileName', hidden: true},
+                            {name: 'orgSourceFile', hidden: true}
+                        ],
+                        pager: '#regPager',
+                        sortname: 'fileName',
+                        sortorder: 'asc',
+                        viewrecords: true,
+                        caption: 'Current Register File List'
+                    });
+                    regGrid.jqGrid('navGrid', '#regPager', {edit: false, add: false, del: false});
+                }
+                
+                function hookButtonEvent() {
+                    importButton.click(function () {
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.importView});
+                    });
+                    addButton.click(function () {
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.addView});
+                    });
+                    modifyButton.click(function () {
+                        var selectedRowId = regGrid.jqGrid('getGridParam', 'selrow');
+                        var row = regGrid.jqGrid('getRowData', selectedRowId);
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.addView, fileData: row})
+                    });
+                    removeButton.click(function () {
+                        var selectedRowId = regGrid.jqGrid('getGridParam', 'selrow');
+                        regGrid.jqGrid('delRowData', selectedRowId);
+                    });
+                    registerButton.click(function () {
+                        $('#dualControl').dialog('open');
+                    });
+                    printButton.click(function () {
+                    });
+                }
+                
+                function initDualControl() {
+                    window.sendDualControl = function () {
+                        var payload = {};
+                        payload.actionName = 'register';
+                        payload.actionParams = {
+                            scrId: global.scrId,
+                            files: JSON.stringify(regGrid.jqGrid('getRowData'))
+                        };
+                        $.ajax({
+                            url: __ajaxHandler,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: payload,
+                            success: function () {
+                                registerButton.button('disable');
+                                regGrid.jqGrid('clearGridData');
+                                reloadScrGrid(global.scrId);
+                            }
+                        });
+                    };
+                    window.cancelDualControl = function () {
+                        
+                    };
+                }
+                
+                function initCombobox() {
+                    scrNoElement.load(__ajaxHandler, {'actionName':'findScrNo'});
+                }
+                
+                function reloadScrGrid(scrId) {
+                    var queryParams = {
+                        jc_scr_id: scrId
+                    };
+                    scrGrid.jqGrid('setGridParam', {
+                        url: __ajaxHandler,
+                        datatype: 'json',
+                        postData: {
+                            _gridHandler: 'scrFileGrid',
+                            queryParams: JSON.stringify(queryParams),
+                            queryOperators: ['equal']
+                        }
+                    }).trigger('reloadGrid');
+                }
+                
+                function hookComboboxEvent() {
+                    scrNoElement.combobox({
+                        selected: function (event, ui) {
+                            //var scrNo = scrNoElement.children(':selected').text();
+                            global.scrId = this.value; // set selected value to global scrId
+                            var payload = {};
+                            payload.actionName = 'getScrInfo';
+                            payload.actionParams = {
+                                scrId: this.value
+                            };
+                            $.ajax({
+                                url: __ajaxHandler,
+                                type: 'POST',
+                                dataType: 'json',
+                                data: payload,
+                                success: function (data) {
+                                    $('.scrNo').text(data.scrNo);
+                                    $('.appId').text(data.appId);
+                                    $('#status').text(data.status);
+                                    $('#submitTime').text(data.submitTime);
+                                    $('#librarian').text(data.librarian);
+                                    $('#coordinator').text(data.coordinator);
+                                    $('#programmer').text(data.programmer);
+                                    $('#createTime').text(data.createTime);
+                                    $('#description').text(data.description);
+                                    reloadScrGrid(global.scrId);
+                                    importButton.button('enable');
+                                    addButton.button('enable');
+                                }
+                            });
+                            regGrid.jqGrid('clearGridData');
+                        }
+                    });
+                }
+                
+                function visit() {
+                    window.scroll(0, 0);
+                    if (regGrid.jqGrid('getRowData').length > 0) {
+                        registerButton.button('enable');
+                    } else {
+                        registerButton.button('disable');
+                    }
+                }
+                
+                function registerEvent() {
+                    PageBus.subscribe('tw.com.citi.catalog.event.changePlaceEvent', this, function (topic, message, subscriberData) {
+                        if (global.queryView === message.place) {
+                            visit();
+                            global.queryView.show();
+                        } else {
+                            global.queryView.hide();
+                        }
+                    }, null);
+                }
+                
+                // initialization
+                (function () {
+                    addButton.hide();
+                    modifyButton.hide();
+                    removeButton.hide();
+                    hookButtonEvent();
+                    initCombobox();
+                    hookComboboxEvent();
+                    initGrid();
+                    registerEvent();
+                    initDualControl();
+                })();
+                
+                return {
+                    regGrid: regGrid
+                };
+            }
+            
+            function Add() {
+                var tempData;
+                
+                var buildUnit = $('#buildUnit');
+                var sourceFile = $('#sourceFile');
+                var sourcePath = $('#sourcePath');
+                var executionPath = $('#executionPath');
+                var executionFileName = $('#executionFileName');
+                var fileDateTime = $('#fileDateTime');
+                var fileSize = $('#fileSize');
+                var fileMd5 = $('#fileMd5');
+                
+                var sourceFileButton = $('#sourceFileButton');
+                var saveAddButton = $('#saveAddButton');
+                var cancelAddButton = $('#cancelAddButton');
+                
+                function loadCombobox() {
+                    $('#buildUnit').load(__ajaxHandler, {actionName: 'findBuildUnit', scrId: global.scrId}, function () {
+                        if (typeof tempData !== 'undefined') {
+                            buildUnit.val(tempData.jcBuildUnitId);
+                            sourceFile.val(tempData.orgSourceFile);
+                            sourcePath.val(tempData.sourcePath);
+                            $('[name="checkin"]').filter('[value=' + tempData.checkin + ']').attr('checked', true);
+                            executionPath.val(tempData.executionPath);
+                            executionFileName.val(tempData.executionFileName);
+                            fileDateTime.text(tempData.fileDatetime);
+                            fileSize.text(tempData.fileSize);
+                            $('[name="action"]').filter('[value=' + tempData.action + ']').attr('checked', true);
+                            fileMd5.text(tempData.fileMd5);
+                        }
+                    });
+                }
+                
+                function hookButtonEvent() {
+                    sourceFileButton.click(function () {
+                        var result = callJava('tw.com.citi.catalog.handler.java.SelectFileHandler');
+                        var file = eval('(' + result + ')');
+                        sourceFile.val(Url.decode(file.filename));
+                        fileDateTime.text(file.lastModified);
+                        fileSize.text(file.size);
+                        fileMd5.text(file.md5);
+                    });
+                    saveAddButton.click(function () {
+                        var tempFilename = sourceFile.val().split('\\').pop();
+                        var rows = query.regGrid.jqGrid('getRowData');
+                        var scrFile = {
+                            fileName: sourcePath.val() + tempFilename,
+                            buildUnit: buildUnit.children(':selected').text(),
+                            fileSize: fileSize.text(),
+                            fileDatetime: fileDateTime.text(),
+                            action: $('[name="action"]:checked').val(),
+                            checkin: $('[name="checkin"]:checked').val(),
+                            fileMd5: fileMd5.text(),
+                            jcBuildUnitId: buildUnit.children(':selected').val(),
+                            sourcePath: sourcePath.val(),
+                            sourceFileName: tempFilename,
+                            executionPath: executionPath.val(),
+                            executionFileName: executionFileName.val(),
+                            orgSourceFile: sourceFile.val()
+                        };
+                        var fileExists;
+                        
+                        if (typeof tempData === 'undefined') { // if add button is clicked on the query page
+                            // check file existence, show error message if exists
+                            for (var i = 0; i < rows.length; i++) {
+                                if (rows[i].fileName === (sourcePath.val() + tempFilename)) {
+                                    global.messageDialog.html('File already exists.').dialog('option', 'title', 'Error').dialog('option', 'buttons', {Ok: function () {$(this).dialog('close');}}).dialog('open');
+                                    return;
+                                }
+                            }
+                            query.regGrid.jqGrid('addRowData', 'fileName', [scrFile]);
+                        } else { // if modify button is clicked on the query page
+                            for (var i = 0; i < rows.length; i++) {
+                                if (rows[i].fileName === tempData.fileName) {
+                                    fileExists = true;
+                                    break;
+                                }
+                            }
+                            if (fileExists) {
+                                query.regGrid.jqGrid('setRowData', tempData.fileName, scrFile);
+                            } else {
+                                throw 'Can not modify file that does not exist.';
+                            }
+                        }
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.queryView});
+                    });
+                    cancelAddButton.click(function () {
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.queryView});
+                    });
+                }
+
+                function visit() {
+                    window.scroll(0, 0);
+                    loadCombobox();
+                }
+                
+                function leave() {
+                    buildUnit.val('');
+                    sourceFile.val('');
+                    sourcePath.val('');
+                    executionPath.val('');
+                    executionFileName.val('');
+                    fileDateTime.text('');
+                    fileSize.text('');
+                    fileMd5.text('');
+                    $('[name="checkin"]').val(['Yes']);
+                    $('[name="action"]').val(['New']);
+                }
+                
+                function registerEvent() {
+                    PageBus.subscribe('tw.com.citi.catalog.event.changePlaceEvent', this, function (topic, message, subscriberData) {
+                        if (global.addView === message.place) {
+                            tempData = message.fileData;
+                            visit();
+                            global.addView.show();
+                        } else {
+                            leave();
+                            global.addView.hide();
+                        }
+                    }, null);
+                }
+                
+                // initialization
+                (function () {
+                    hookButtonEvent();
+                    registerEvent();
+                })();
+                
+                return {};
+            }
+            
+            function Import() {
+                var changeFile = $('#changeFile');
+                var zipFile = $('#zipFile');
+                var hashFile = $('#hashFile');
+                var importGrid = $('#importList');
+                var ready4chk = [false, false, false];
+                var unzipButton = $('#unzipButton');
+                var checkImportButton = $('#checkImportButton');
+                var importImportButton = $('#importImportButton');
+                var zipDialog = $('#zipDialog').dialog({autoOpen: false, modal: true});
+                var pvcsDialog = $('#pvcsDialog').dialog({autoOpen: false, modal: true});
+                
+                function hookButtonEvent() {
+                    $('#changeFileButton').click(function () {
+                        var results = callJava('tw.com.citi.catalog.handler.java.SelectFileHandler');
+                        var file = eval('(' + results + ')');
+                        var filename = Url.decode(file.filename);
+                        changeFile.val(filename);
+                        if (filename.length > 0) {
+                            ready4chk[0] = true;
+                        } else {
+                            ready4chk[0] = false;
+                        }
+                        PageBus.publish('tw.com.citi.catalog.event.changeFileEvent');
+                    });
+                    $('#zipFileButton').click(function () {
+                        var results = callJava('tw.com.citi.catalog.handler.java.SelectFileHandler');
+                        var file = eval('(' + results + ')');
+                        var filename = Url.decode(file.filename)
+                        zipFile.val(filename);
+                        if (filename.length > 0) {
+                            ready4chk[1] = true;
+                        } else {
+                            ready4chk[1] = false;
+                        }
+                        PageBus.publish('tw.com.citi.catalog.event.changeFileEvent');
+                    });
+                    $('#hashFileButton').click(function () {
+                        var results = callJava('tw.com.citi.catalog.handler.java.SelectFileHandler');
+                        var file = eval('(' + results + ')');
+                        var filename = Url.decode(file.filename);
+                        hashFile.val(filename);
+                        if (filename.length > 0) {
+                            ready4chk[2] = true;
+                        } else {
+                            ready4chk[2] = false;
+                        }
+                        PageBus.publish('tw.com.citi.catalog.event.changeFileEvent');
+                    });
+                    unzipButton.click(function () {
+                        zipDialog.dialog('option', 'title', 'Enter zip password')
+                                .dialog('option', 'buttons', {
+                                    Continue: function () {
+                                        var payload = {};
+                                        payload.actionName = 'unzipFile';
+                                        payload.actionParams = {
+                                            zipFile: zipFile.val(),
+                                            zipPassword: $('#zipPassword').val()
+                                        };
+                                        $.ajax({
+                                            url: __ajaxHandler,
+                                            type: 'POST',
+                                            dataType: 'json',
+                                            data: payload,
+                                            success: function (data) {
+                                                if (!data.success) {
+                                                    global.messageDialog.html('Failed to unzip file.').dialog('option', 'title', 'Error').dialog('option', 'buttons', {Ok: function () {$(this).dialog('close');}}).dialog('open');
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                var resp = JSON.parse(jqXHR.responseText);
+                                                global.messageDialog.html(resp.message).dialog('option', 'title', 'Error').dialog('option', 'buttons', {Ok: function () {$(this).dialog('close');}}).dialog('open');
+                                            }
+                                        });
+                                        $(this).dialog('close');
+                                    },
+                                    Cancel: function () {
+                                        $(this).dialog('close');
+                                    }
+                                })
+                                .dialog('open');
+                    });
+                    checkImportButton.click(function () {
+                        pvcsDialog.dialog('option', 'title', 'Enter PVSC username and password')
+                                .dialog('option', 'buttons', {
+                                    Continue: function () {
+                                        var payload = {};
+                                        payload.actionName = 'checkImportFile';
+                                        payload.actionParams = {
+                                            changeFile: changeFile.val(),
+                                            hashFile: hashFile.val(),
+                                            pvcsUsername: $('#pvcsUsername').val(),
+                                            pvcsPassword: $('#pvcsPassword').val(),
+                                            scrId: global.scrId
+                                        };
+                                        $.ajax({
+                                            url: __ajaxHandler,
+                                            type: 'POST',
+                                            dataType: 'json',
+                                            data: payload,
+                                            success: function (data) {
+                                                importGrid.jqGrid('clearGridData');
+                                                importGrid.jqGrid('addRowData', 'fileName', data.files);
+                                                if (data.qualified) {
+                                                    importImportButton.button('enable');
+                                                }
+                                            },
+                                            error: function (jqXHR, textStatus, errorThrown) {
+                                                var resp = JSON.parse(jqXHR.responseText);
+                                                global.messageDialog.html(resp.message).dialog('option', 'title', 'Error').dialog('option', 'buttons', {Ok: function () {$(this).dialog('close');}}).dialog('open');
+                                            }
+                                        });
+                                        $(this).dialog('close');
+                                    },
+                                    Cancel: function () {
+                                        $(this).dialog('close');
+                                    }
+                                })
+                                .dialog('open');
+                    });
+                    importImportButton.click(function () {
+                        var importRows = importGrid.jqGrid('getRowData');
+                        for (var i = 0; i < importRows.length; i++) {
+                            var regRow = query.regGrid.jqGrid('getRowData', importRows[i].fileName);
+                            if (!$.isEmptyObject(regRow)) {
+                                query.regGrid.jqGrid('delRowData', importRows[i].fileName);
+                            }
+                            query.regGrid.jqGrid('addRowData', importRows[i].fileName, importRows[i]);
+                        }
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.queryView});
+                    });
+                    $('#cancelImportButton').click(function () {
+                        PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', {place: global.queryView});
+                    });
+                }
+                
+                function initGrid() {
+                    importGrid.jqGrid({
+                        data: [],
+                        datatype: 'local',
+                        mtype: 'POST',
+                        colNames: ['Id', 'Name', 'Build Unit', 'Size', 'Date/Time', 'Action', 'In Zip', 'MD5', 'Error', 'Check in', 'Source Path', 'Source Filename', 'Execution Path', 'Execution Filename'],
+                        colModel: [
+                            {name: 'id', hidden: true},
+                            {name: 'fileName', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'buildUnit', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'fileSize', align: 'left', sortable: true, sorttype: 'int'},
+                            {name: 'fileDatetime', align: 'left', sortable: true, sorttype: 'date'},
+                            {name: 'action', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'inZip', align: 'left', sortable: true, sorttype: 'text'},
+                            {name: 'fileMd5', align: 'left', sortable: false},
+                            {name: 'error', hidden: true},
+                            {name: 'checkin', hidden: true},
+                            {name: 'sourcePath', hidden: true},
+                            {name: 'sourceFileName', hidden: true},
+                            {name: 'executionPath', hidden: true},
+                            {name: 'executionFileName', hidden: true}
+                        ],
+                        pager: '#importPager',
+                        sortname: 'fileName',
+                        sortorder: 'asc',
+                        viewrecords: true,
+                        caption: 'Files to be imported',
+                        gridComplete: function () {
+                            var rows = $(this).jqGrid('getRowData');
+                            for (var i = 0; i < rows.length; i++) {
+                                if (rows[i].error === 'true') {
+                                    $(this).jqGrid('setRowData', rows[i].fileName, false, {color:'red'});
+                                } else {
+                                    $(this).jqGrid('setRowData', rows[i].fileName, false, {color:'black'});
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                function visit() {
+                }
+                
+                function leave() {
+                    changeFile.val('');
+                    zipFile.val('');
+                    hashFile.val('');
+                    ready4chk = [false, false, false];
+                    importGrid.jqGrid('clearGridData');
+                }
+                
+                function registerEvent() {
+                    PageBus.subscribe('tw.com.citi.catalog.event.changePlaceEvent', this, function (topic, message, subscriberData) {
+                        if (global.importView === message.place) {
+                            visit();
+                            global.importView.show();
+                        } else {
+                            leave();
+                            global.importView.hide();
+                        }
+                    }, null);
+                    PageBus.subscribe('tw.com.citi.catalog.event.changeFileEvent', this, function (topic, message, subscriberData) {
+                        if (eval(ready4chk.join(' && '))) {
+                            checkImportButton.button('enable');
+                            importImportButton.button('disable');
+                        }
+                        if (ready4chk[1] === true) {
+                            unzipButton.button('enable');
+                        } else {
+                            unzipButton.button('disable');
+                        }
+                    }, null);
+                }
+                
+                // initialization
+                (function () {
+                    initGrid();
+                    registerEvent();
+                    hookButtonEvent();
+                })();
+                
+                return {};
+            }
+            
+            var global = new Global();
+            var query = new Query();
+            var add = new Add();
+            var _import = new Import();
+            
+            (function (message) {
+                PageBus.publish('tw.com.citi.catalog.event.changePlaceEvent', message);
+            })({place: global.queryView});
+            
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>
