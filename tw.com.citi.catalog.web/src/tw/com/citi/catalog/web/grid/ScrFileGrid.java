@@ -28,7 +28,7 @@ public class ScrFileGrid extends AbstractGridHandler {
         }
         List<ScrFile> scrFiles = scrFileDao.find(params, operators, indexes, order, start, limit);
         for (ScrFile scrFile : scrFiles) {
-            scrFile.setFullPathName(scrFile.getFilePath() + "\\" + scrFile.getFileName());
+            scrFile.setFullPathName(scrFile.getFilePath() + scrFile.getFileName());
             Long jcBuildUnitId = scrFile.getJcBuildUnitId();
             BuildUnit buildUnit = buildUnitDao.findById(jcBuildUnitId);
             scrFile.setUnitId(buildUnit == null ? "" : buildUnit.getUnitId());
