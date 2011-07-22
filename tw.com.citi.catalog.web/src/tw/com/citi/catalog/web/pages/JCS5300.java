@@ -65,7 +65,7 @@ public class JCS5300 extends AbstractBasePage {
         } else {
             throw new IllegalArgumentException("Authentication fail");
         }
-        return super.handleRequest(params);
+        return null;
     }
 
     private boolean doCheck(String name, String team) {
