@@ -30,4 +30,6 @@ public interface IScrDao extends IGenericDao<Scr, Long> {
      */
     void updateStatus(Long jcScrId, Status status);
 
+    int update1100(Map<String, Object> params);
+
 }

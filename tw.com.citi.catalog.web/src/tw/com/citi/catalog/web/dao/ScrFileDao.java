@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.support.DataAccessUtils;
+
 import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.model.ScrFile.FileType;
 
@@ -67,4 +69,31 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
             return (list == null || list.size() == 0) ? new ArrayList<ScrFile>() : list;
         }
     }
+
+    @Override
+    public ScrFile findByUK(long scrId, String filePath, String fileName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_SCR_ID = :scrId AND FILE_PATH = :filePath AND FILE_NAME = :fileName");
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("scrId", scrId);
+        args.put("filePath", filePath);
+        args.put("fileName", fileName);
+        List<ScrFile> results = jdbcTemplate.query(sb.toString(), getRowMapper(), args);
+        return DataAccessUtils.uniqueResult(results);
+    }
+
+    @Override
+    public int update1100(Map<String, Object> params) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET JC_BUILD_UNIT_ID = :JC_BUILD_UNIT_ID,");
+        sql.append(" FILE_TYPE = :FILE_TYPE, CHECKOUT = :CHECKOUT,");
+        sql.append(" FILE_DATETIME = :FILE_DATETIME,");
+        sql.append(" FILE_SIZE = :FILE_SIZE, FILE_MD5 = :FILE_MD5,");
+        sql.append(" LAST_REGISTER_TIME = :LAST_REGISTER_TIME,");
+        sql.append(" DELETED = :DELETED");
+        sql.append(" WHERE ID = :ID");
+        return 0;
+    }
+
 }

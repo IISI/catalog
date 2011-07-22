@@ -31,12 +31,10 @@ public class BuildUnitDao extends AbstractGenericDao<BuildUnit, Long> implements
 
     @Override
     public List<BuildUnit> findByAppId(Long appId) {
-        Map params = new HashMap();
-        params.put("jc_app_id", appId);
-        RowMapper<BuildUnit> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(BuildUnit.class);
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_APP_ID = :jc_app_id");
-        return super.jdbcTemplate.query(sql.toString(), rowMapper, params);
+        sql.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_APP_ID = ?");
+        logger.info("find sql = [{}]", sql.toString());
+        return super.jdbcTemplate.query(sql.toString(), getRowMapper(), appId);
     }
 
     @Override
@@ -49,4 +47,5 @@ public class BuildUnitDao extends AbstractGenericDao<BuildUnit, Long> implements
             super.jdbcTemplate.update(sql.toString(), params);
         }
     }
+
 }

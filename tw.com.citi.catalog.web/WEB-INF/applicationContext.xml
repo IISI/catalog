@@ -49,6 +49,10 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+    <bean id="registerHistoryDao" class="tw.com.citi.catalog.web.dao.RegisterHistoryDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
     <bean id="coordinatorGrid" class="tw.com.citi.catalog.web.grid.CoordinatorGrid">
         <property name="coordinatorDao" ref="coordinatorDao"></property>
     </bean>
