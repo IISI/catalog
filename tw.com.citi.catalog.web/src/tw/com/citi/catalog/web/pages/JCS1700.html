@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <title>1700</title>
+</wicket:head>
+<wicket:extend>
+    <h1>1700 Rollback Last Production Change</h1>
+    <input type="hidden" id="id" name="id" />
+    <table class="form">
+        <tr>
+            <td class="formLabel"><label for="scrNo">SCR No.</label></td>
+            <td><select id="scrNo"></select></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="appId">Application ID</label></td>
+            <td><label id="appId" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="status">Status</label></td>
+            <td><label id="status" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="prodBackupPath">PROD Backup Path</label></td>
+            <td><label id="prodBackupPath" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="qaSourcePath">QA Source Path</label></td>
+            <td><label id="qaSourcePath" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="qaExecutionPath">QA Execution Path</label></td>
+            <td><label id="qaExecutionPath" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="prodSourcePath">PROD Source Path</label></td>
+            <td><label id="prodSourcePath" /></td>
+        </tr>
+        <tr>
+            <td class="formLabel"><label for="prodExecutionPath">PROD Execution Path</label></td>
+            <td><label id="prodExecutionPath" /></td>
+        </tr>
+    </table>
+    <br />
+    <table id="fileList"></table>
+    <div id="fileListPager"></div>
+    <br />
+    <div class="button-bar">
+        <button id="rollbackButton">Rollback</button>
+    </div>
+    <br />
+    <script type="text/javascript">
+    <!--
+        $(function() {
+            var scrNo = $('#scrNo');
+            var appId = $('#appId');
+            var status = $('#status');
+            var qaSourcePath = $('#qaSourcePath');
+            var qaExecutionPath = $('#qaExecutionPath');
+            var prodBackupPath = $('#prodBackupPath');
+            var rollbackButton = $('#rollbackButton');
+            var prodSourcePath = $('#prodSourcePath');
+            var prodExecutionPath = $('#prodExecutionPath');
+
+            var checkerId = $('#checkerId');
+            var checkerPwd = $('#checkerPwd');
+            var actionText;
+            
+            loadInitData();
+            
+            rollbackButton.click(function() {
+                dualControl();
+            });
+            
+            scrNo.combobox({
+                selected: function(event, ui) {
+                    var payload = {};
+                    payload.actionName = 'Query';
+                    payload.actionParams = JSON.stringify({
+                        id: scrNo.val()
+                    });
+                    $.ajax({
+                        url: __ajaxHandler,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: payload,
+                        success: function(data, textStatus, jqXHR) {
+                            fileList.clearGridData();
+                            appId.text(data.appId);
+                            status.text(data.status);
+                            // set qa path
+                            qaSourcePath.text(data.qaSourcePath);
+                            qaExecutionPath.text(data.qaExecutionPath);
+                            prodBackupPath.text(data.prodBackupPath);
+                            // set prod paths
+                            var paths = "";
+                            prodSourcePath.text("");
+                            for(var path in data.prodSourcePath) {
+                                paths = data.prodSourcePath[path];
+                                prodSourcePath.append(paths + "<br />");
+                            }
+                            prodExecutionPath.text("");
+                            for(var path in data.prodExecutionPath) {
+                                paths = data.prodExecutionPath[path];
+                                prodExecutionPath.append(paths + "<br />");
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            var resp = JSON.parse(jqXHR.responseText);
+                            dialog.html(resp.message).dialog('open');
+                        }
+                    });
+                    payload.actionName = 'GetFiles';
+                    $.ajax({
+                        url: __ajaxHandler,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: payload,
+                        success: function(data, textStatus, jqXHR) {
+                            // set file
+                            for(var index in data.files) {
+                                var file = data.files[index];
+                                var scrFile = {
+                                    id: file.id,
+                                    fileName: file.fileName,
+                                    filePath: file.filePath,
+                                    fileType: file.fileType,
+                                    fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
+                                };
+                                fileList.addRowData(file.id, scrFile);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            var resp = JSON.parse(jqXHR.responseText);
+                            dialog.html(resp.message).dialog('open');
+                        }
+                    });
+                }
+            });
+            
+            var fileList = $('#fileList').jqGrid({
+                multiselect: 'true',
+                datatype: 'local',
+                autowidth: true,
+                mtype: 'POST',
+                width: $(window).width(),
+                colNames: ['Id', 'Path', 'Name', 'Type', 'Status'],
+                colModel: [
+                    {name: 'id', index: 'id', hidden: true},
+                    {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
+                    {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
+                    {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
+                    {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
+                ],
+                pager: '#fileListPager',
+                sortname: 'name',
+                sortorder: 'desc',
+                viewrecords: true,
+                caption: 'Files in PROD Backup Path',
+            }).hideCol('cb');
+            
+            fileList.jqGrid('navGrid', '#fileListPager', {edit: false, add: false, del: false});
+            
+            var dialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Result',
+                buttons: {
+                    "Close": function(){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            function dualControl() {
+                sendDualControl = function() {
+                    rollBack();
+                };
+                cancelDualControl = function() {
+                };
+                $('#dualControl').dialog('open');
+            }
+            
+            function rollBack() {
+                var payload = {};
+                payload.actionName = 'Rollback';
+                var files = [];
+                payload.actionParams = JSON.stringify({
+                    scrId: scrNo.val(),
+                    checkerId: checkerId.val(),
+                    checkerPwd: checkerPwd.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // TODO show report
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+
+            function loadInitData() {
+                var payload = {};
+                payload.actionName = 'Init';
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        // set scr list
+                        var scrNoList;
+                        for(var id in data.scrList) {
+                            var rec = data.scrList[id];
+                            scrNoList += '<option value="' + rec.id + '">' + rec.scrNo + '</option>';
+                        }
+                        scrNo.html(scrNoList);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>
