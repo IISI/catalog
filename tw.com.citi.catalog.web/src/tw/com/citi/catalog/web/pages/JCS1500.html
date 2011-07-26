@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+<title>1500</title>
+</wicket:head>
+<wicket:extend>
+    <h1>1500 Source Compare</h1>
+    <div id="queryPanel">
+        <table class="form">
+            <tr>
+                <td colspan="2"><div id="actionText" /></td>
+            </tr>
+            <tr>
+                <td><label for="scrNo">SCR No.</label></td>
+                <td><select id="scrNo"></select></td>
+            </tr>
+            <tr>
+                <td><label>Application ID</label></td>
+                <td id="appId"></td>
+            </tr>
+            <tr>
+                <td><label>Status</label></td>
+                <td id="status"></td>
+            </tr>
+            <tr>
+                <td><label>Build Unit</label></td>
+                <td><select id="buildUnit"></select></td>
+            </tr>
+            <tr>
+                <td><label>QA Source Path</label></td>
+                <td id="QASourcePath"></td>
+            </tr>
+            <tr>
+                <td><label>Production Source Path</label></td>
+                <td id="prodSourcePath"></td>
+            </tr>
+        </table>
+        <br />
+        <table id="scrList"></table>
+        <div id="scrPager"></div>
+        <br />
+        <div class="button-bar">
+            <button id="compareButton" disabled="disabled">Compare</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+        $(function () {
+            
+            'use strict';
+            
+            function Query() {
+                var scrNoElement = $('#scrNo');
+                var buildUnitElement = $('#buildUnit');
+                var compareButton = $('#compareButton');
+                var scrGrid = $('#scrList');
+                var scrId;
+                
+                function initGrid() {
+                    scrGrid.jqGrid({
+                        datatype: 'local',
+                        mtype: 'POST',
+                        colNames: ['Id', 'Name', 'Build Unit', 'Size', 'Date/Time'],
+                        colModel: [
+                            {name: 'id', index: 'ID', hidden: true},
+                            {name: 'fullPathName', index: 'FILE_NAME', align: 'left', sortable: true},
+                            {name: 'unitId', index: 'JC_BUILD_UNIT_ID', align: 'left', sortable: true},
+                            {name: 'fileSize', index: 'FILE_SIZE', align: 'left', sortable: true},
+                            {name: 'fileDatetime', index: 'FILE_DATETIME', align: 'left', sortable: true}
+                        ],
+                        pager: '#scrPager',
+                        sortname: 'FILE_NAME',
+                        sortorder: 'asc',
+                        viewrecords: true,
+                        caption: 'Execution File List'
+                    });
+                    scrGrid.jqGrid('navGrid', '#scrPager', {edit: false, add: false, del: false});
+                }
+                
+                function hookButtonEvent() {
+                    compareButton.click(function () {
+                        $('#dualControl').dialog('open');
+                    });
+                }
+                
+                function initDualControl() {
+                    window.sendDualControl = function () {
+                        var payload = {};
+                        payload.actionName = 'compare';
+                        payload.actionParams = {
+                        };
+                        $.ajax({
+                            url: __ajaxHandler,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: payload,
+                            success: function () {
+                            }
+                        });
+                    };
+                    window.cancelDualControl = function () {
+                        
+                    };
+                }
+                
+                function reloadScrGrid(scrId, buildUnitId) {
+                    var queryParams = {
+                        jc_scr_id: scrId,
+                        file_type: 0
+                    };
+                    var queryOperators = ['equal', 'equal'];
+                    
+                    if (typeof buildUnitId !== 'undefined') {
+                        queryParams.jc_build_unit_id = buildUnitId;
+                        queryOperators.push('equal');
+                    }
+                    
+                    scrGrid.jqGrid('setGridParam', {
+                        url: __ajaxHandler,
+                        datatype: 'json',
+                        postData: {
+                            _gridHandler: 'scrFileGrid',
+                            queryParams: JSON.stringify(queryParams),
+                            queryOperators: queryOperators
+                        }
+                    }).trigger('reloadGrid');
+                    
+                    // clear queryOperators
+                    scrGrid.jqGrid('getGridParam').postData.queryOperators.length = 0;
+                }
+
+                function initCombobox() {
+                    scrNoElement.load(__ajaxHandler, {'actionName':'findScrNo'});
+                }
+                
+                function hookComboboxEvent() {
+                    scrNoElement.combobox({
+                        selected: function (event, ui) {
+                            scrId = this.value;
+                            var payload = {};
+                            payload.actionName = 'getScrInfo';
+                            payload.actionParams = {
+                                scrId: scrId
+                            };
+                            $.ajax({
+                                url: __ajaxHandler,
+                                type: 'POST',
+                                dataType: 'json',
+                                data: payload,
+                                success: function (data) {
+                                    $('#appId').text(data.appId);
+                                    $('#status').text(data.status);
+                                    $('#QASourcePath').text(data.QASourcePath);
+                                    $('#prodSourcePath').html(data.prodSourcePath)
+                                    reloadScrGrid(scrId);
+                                    buildUnitElement.load(__ajaxHandler, {actionName:'findBuildUnit',actionParams:{scrId:scrId}});
+                                    compareButton.button('enable');
+                                }
+                            });
+                        }
+                    });
+                    
+                    buildUnitElement.combobox({
+                        selected: function (event, ui) {
+                            if (this.value === 'all') {
+                                reloadScrGrid(scrId);
+                            } else {
+                                reloadScrGrid(scrId, this.value);
+                            }
+                        }
+                    });
+                }
+                
+                // initialization
+                (function () {
+                    hookButtonEvent();
+                    initCombobox();
+                    hookComboboxEvent();
+                    initGrid();
+                    initDualControl();
+                })();
+                
+                return {};
+            }
+            
+            (function () {
+                new Query();
+            })();
+            
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>
