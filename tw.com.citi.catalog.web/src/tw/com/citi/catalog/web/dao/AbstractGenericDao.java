@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
@@ -147,7 +148,8 @@ public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serial
     @SuppressWarnings("unchecked")
     @Override
     public T findById(ID id) {
-        return (T) jdbcTemplate.queryForObject("SELECT * FROM " + getTableName() + " WHERE id = ?", getRowMapper(), id);
+        List<T> results = jdbcTemplate.query("SELECT * FROM " + getTableName() + " WHERE id = ?", getRowMapper(), id);
+        return DataAccessUtils.uniqueResult(results);
     }
 
     public void setDataSource(DataSource dataSource) {
