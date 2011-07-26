@@ -38,7 +38,7 @@
         <tr>
             <td style="width: 40%">
                 <table id="batchList"></table>
-                <div id="batchListPager"></div></td>
+            </td>
             <td style="width: 20%">
                 <div class="move-button" style="font-size: 0.8em">
                     <button id="addAllButton">Add All &gt;&gt;</button>
@@ -51,7 +51,7 @@
                 </div></td>
             <td style="width: 40%">
                 <table id="compileList"></table>
-                <div id="compileListPager"></div></td>
+            </td>
         </tr>
     </table>
     <br />
@@ -223,14 +223,11 @@
                 colModel: [
                     {name: 'batchFileName', index: 'batchFileName', align: 'left', sortable: true}
                 ],
-                pager: '#batchListPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
                 caption: 'Batch List',
             }).hideCol('cb');
-            
-            batchList.jqGrid('navGrid', '#batchListPager', {edit: false, add: false, del: false});
             
             var compileList = $('#compileList').jqGrid({
                 multiselect: 'true',
@@ -241,14 +238,11 @@
                 colModel: [
                     {name: 'batchFileName', index: 'batchFileName', align: 'left', sortable: true}
                 ],
-                pager: '#compileListPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
                 caption: 'Compile List',
             }).hideCol('cb');
-            
-            compileList.jqGrid('navGrid', '#compileListPager', {edit: false, add: false, del: false});
             
             var dialog = $('<div></div>').dialog({
                 autoOpen: false,

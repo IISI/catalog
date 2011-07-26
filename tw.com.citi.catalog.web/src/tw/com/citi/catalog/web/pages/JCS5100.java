@@ -106,7 +106,7 @@ public class JCS5100 extends AbstractBasePage {
         if (basePath == null || "".equals(basePath.trim())) {
             throw new IllegalArgumentException("Please input base path.");
         }
-        if (!SmbFileUtil.writable(basePath)) {
+        if (!SmbFileUtil.writeable(basePath)) {
             throw new IllegalArgumentException("Cannot access base path.");
         }
         return "";

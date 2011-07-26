@@ -16,6 +16,7 @@ import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemManager;
 import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.local.LocalFileSystem;
@@ -66,11 +67,49 @@ public class SmbFileUtil {
         return PasswordUtil.decodePwd(password);
     }
 
+    private static List<FileObject> getFiles(FileObject source) throws FileSystemException {
+        List<FileObject> files = new ArrayList<FileObject>();
+        FileObject[] objects = source.getChildren();
+        for (FileObject object : objects) {
+            if (FileType.FOLDER == object.getType()) {
+                files.addAll(getFiles(object));
+            } else {
+                files.add(object);
+            }
+        }
+        return files;
+    }
+
+    public static void copyFolder(String sourceFolder, String targetFolder) throws FileSystemException {
+        FileObject source = fsManager.resolveFile("smb:" + replaceSlash(sourceFolder), opts);
+        List<FileObject> files = new ArrayList<FileObject>();
+        FileObject[] objects = source.getChildren();
+        for (FileObject object : objects) {
+            files.addAll(getFiles(object));
+        }
+        for (FileObject file : files) {
+            final String name = file.getName().getBaseName();
+            String path = file.getParent().getName().getURI();
+            String t = path.replace(replaceSlash(sourceFolder), replaceSlash(targetFolder));
+            FileObject target = fsManager.resolveFile(t, opts);
+            target.copyFrom(file.getParent(), new FileFilterSelector(new FileFilter() {
+                @Override
+                public boolean accept(FileSelectInfo info) {
+                    if (name.contains(info.getFile().getName().getBaseName())) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }));
+        }
+    }
+
     public static void copyFile(FileObject source, FileObject target, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
         List<FileObject> files = new ArrayList<FileObject>();
         if (sourceFileNames == null || sourceFileNames.length == 0) {
-            // 全部複製
+            // 複製全部檔案
             FileObject[] objects = source.getChildren();
             files.addAll(Arrays.asList(objects));
         } else {
@@ -272,14 +311,11 @@ public class SmbFileUtil {
      *            欲判斷之路徑
      * @return 是否有權限寫入
      */
-    public static boolean writable(String filePath) {
+    public static boolean writeable(String filePath) {
         boolean tf = true;
         try {
             FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
-            String tmpFileName = String.valueOf(System.currentTimeMillis()) + ".tmp";
-            FileObject temp = fsManager.resolveFile(folder, tmpFileName);
-            temp.createFile();
-            temp.delete();
+            tf = folder.isWriteable();
         } catch (FileSystemException e) {
             e.printStackTrace();
             tf = false;

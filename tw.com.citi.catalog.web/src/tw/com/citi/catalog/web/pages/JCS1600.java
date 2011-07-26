@@ -120,19 +120,19 @@ public class JCS1600 extends AbstractBasePage {
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
-            throw new RuntimeException("Rename backup folder error. " + e.getMessage(), e);
+            throw new RuntimeException("Rename backup folder error.", e);
         }
         // 備份現有的 PROD source/execution 到 BACKUP
         try {
             if (SmbFileUtil.exist(prodSourcePath.get(0), null)) {
-                SmbFileUtil.copyFile(prodSourcePath.get(0), prodBackupPath + "source\\", null);
+                SmbFileUtil.copyFolder(prodSourcePath.get(0), prodBackupPath + "source\\");
             }
             if (SmbFileUtil.exist(prodExecutionPath.get(0), null)) {
-                SmbFileUtil.copyFile(prodExecutionPath.get(0), prodBackupPath + "execution\\", null);
+                SmbFileUtil.copyFolder(prodExecutionPath.get(0), prodBackupPath + "execution\\");
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
-            throw new RuntimeException("Backup current PROD folder error. " + e.getMessage(), e);
+            throw new RuntimeException("Backup current PROD folder error.", e);
         }
         // 複製 QA source/execution 到 PROD
         for (Map<String, String> file : fileList) {
