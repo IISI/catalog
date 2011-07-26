@@ -43,7 +43,6 @@
     </table>
     <br />
     <table id="fileList"></table>
-    <div id="fileListPager"></div>
     <br />
     <div class="button-bar">
         <button id="rollbackButton">Rollback</button>
@@ -152,14 +151,11 @@
                     {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
-                pager: '#fileListPager',
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
                 caption: 'Files in PROD Backup Path',
             }).hideCol('cb');
-            
-            fileList.jqGrid('navGrid', '#fileListPager', {edit: false, add: false, del: false});
             
             var dialog = $('<div></div>').dialog({
                 autoOpen: false,
