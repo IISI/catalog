@@ -43,6 +43,7 @@
     </table>
     <br />
     <table id="fileList"></table>
+    <div id="pager"></div>
     <br />
     <div class="button-bar">
         <button id="rollbackButton">Rollback</button>
@@ -84,7 +85,6 @@
                         dataType: 'json',
                         data: payload,
                         success: function(data, textStatus, jqXHR) {
-                            fileList.clearGridData();
                             appId.text(data.appId);
                             status.text(data.status);
                             // set qa path
@@ -116,6 +116,7 @@
                         dataType: 'json',
                         data: payload,
                         success: function(data, textStatus, jqXHR) {
+                            fileList.clearGridData();
                             // set file
                             for(var index in data.files) {
                                 var file = data.files[index];
@@ -151,12 +152,17 @@
                     {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
+                pager: '#pager',
+                pgbuttons: false,
+                pginput: false,
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
                 caption: 'Files in PROD Backup Path',
             }).hideCol('cb');
             
+            fileList.jqGrid('navGrid', '#pager', {edit: false, add: false, del: false});
+
             var dialog = $('<div></div>').dialog({
                 autoOpen: false,
                 modal: true,
