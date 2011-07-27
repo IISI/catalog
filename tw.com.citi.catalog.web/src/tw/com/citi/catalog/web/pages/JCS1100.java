@@ -433,6 +433,8 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_SIZE", file.getFileSize());
                     updateMap.put("FILE_MD5", file.getFileMd5());
                     updateMap.put("ID", appSourceFile.getId());
+                    updateMap.put("CHECKOUT", appSourceFile.getCheckout());
+                    updateMap.put("DELETED", appSourceFile.getDeleted());
                     appFileDao.update1100(updateMap);
                 } else {
                     throw new RuntimeException();
@@ -457,6 +459,8 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_SIZE", null);
                     updateMap.put("FILE_MD5", null);
                     updateMap.put("ID", appExecutionFile.getId());
+                    updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
+                    updateMap.put("DELETED", appExecutionFile.getDeleted());
                     appFileDao.update1100(updateMap);
                 } else {
                     throw new RuntimeException();
@@ -481,6 +485,7 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_MD5", file.getFileMd5());
                     updateMap.put("DELETED", 1);
                     updateMap.put("ID", appSourceFile.getId());
+                    updateMap.put("CHECKOUT", appSourceFile.getCheckout());
                     appFileDao.update1100(updateMap);
                 } else {
                     throw new RuntimeException();
@@ -504,7 +509,9 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_DATETIME", null);
                     updateMap.put("FILE_SIZE", null);
                     updateMap.put("FILE_MD5", null);
+                    updateMap.put("DELETED", 1);
                     updateMap.put("ID", appExecutionFile.getId());
+                    updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
                     appFileDao.update1100(updateMap);
                 } else {
                     throw new RuntimeException();
