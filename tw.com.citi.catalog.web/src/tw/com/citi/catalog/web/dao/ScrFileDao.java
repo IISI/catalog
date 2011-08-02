@@ -107,7 +107,7 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         params.put("JC_SCR_ID", jcScrId);
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(getTableName());
-        sql.append(" LAST_COMPILE_TIME = :LAST_COMPILE_TIME,");
+        sql.append(" SET LAST_COMPILE_TIME = :LAST_COMPILE_TIME");
         sql.append(" WHERE JC_SCR_ID = :JC_SCR_ID");
         return jdbcTemplate.update(sql.toString(), params);
     }
@@ -119,7 +119,7 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         params.put("ID", id);
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(getTableName());
-        sql.append(" FILE_DATETIME = :FILE_DATETIME,");
+        sql.append(" SET FILE_DATETIME = :FILE_DATETIME");
         sql.append(" WHERE ID = :ID");
         return jdbcTemplate.update(sql.toString(), params);
     }

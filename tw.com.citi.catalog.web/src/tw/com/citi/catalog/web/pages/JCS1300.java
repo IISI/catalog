@@ -197,13 +197,16 @@ public class JCS1300 extends AbstractBasePage {
         Process process = null;
         BufferedReader bf = null;
         try {
-            String command = "\"" + batchFile.getAbsolutePath() + "\"";
-            String[] cmd = new String[] { "cmd", "/C", command };
+            String fullPath = batchFile.getAbsolutePath();
+            String path = batchFile.getParent();
+            String command = "\"" + fullPath + "\"";
+            String[] cmd = new String[] { "cmd", "/C", command, path };
             process = Runtime.getRuntime().exec(cmd);
             bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line = "";
             while ((line = bf.readLine()) != null) {
                 result += line + "\n";
+                System.out.println(line + "\n");
             }
             bf.close();
             logger.debug(result);

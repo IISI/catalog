@@ -76,7 +76,7 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
         params.put("JC_APP_ID", jcAppId);
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(getTableName());
-        sql.append(" LAST_COMPILE_TIME = :LAST_COMPILE_TIME,");
+        sql.append(" SET LAST_COMPILE_TIME = :LAST_COMPILE_TIME");
         sql.append(" WHERE JC_APP_ID = :JC_APP_ID");
         return jdbcTemplate.update(sql.toString(), params);
     }
@@ -88,7 +88,7 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
         params.put("ID", id);
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(getTableName());
-        sql.append(" FILE_DATETIME = :FILE_DATETIME,");
+        sql.append(" SET FILE_DATETIME = :FILE_DATETIME");
         sql.append(" WHERE ID = :ID");
         return jdbcTemplate.update(sql.toString(), params);
     }
