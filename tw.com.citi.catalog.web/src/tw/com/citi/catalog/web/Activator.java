@@ -5,6 +5,12 @@ import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
+    private static BundleContext context;
+
+    public static BundleContext getContext() {
+        return context;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -13,7 +19,7 @@ public class Activator implements BundleActivator {
      * )
      */
     public void start(BundleContext context) throws Exception {
-        System.out.println("startMessage");
+        Activator.context = context;
     }
 
     /*
@@ -23,7 +29,7 @@ public class Activator implements BundleActivator {
      * org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
-        System.out.println("stopMessage");
+        Activator.context = null;
     }
 
 }

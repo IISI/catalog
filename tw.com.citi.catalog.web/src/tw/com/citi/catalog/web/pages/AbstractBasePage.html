@@ -212,6 +212,16 @@ input {
                     $('.ui-dialog-titlebar-close').hide();
                 }
             });
+            var errMsgDialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Error',
+                buttons: {
+                    OK: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            });
             $.ajaxSetup({
                 beforeSend: function() {
                     processDialog.html('Please wait ......').dialog('open');
@@ -221,6 +231,10 @@ input {
                 },
                 success: function () {
                     processDialog.dialog('close');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    var resp = JSON.parse(jqXHR.responseText);
+                    errMsgDialog.html(resp.message).dialog('open');
                 }
             });
         });

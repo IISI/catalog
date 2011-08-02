@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
+import tw.com.citi.catalog.web.dto.Rpt1100Dto;
 import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.model.ScrFile.FileType;
 
@@ -120,6 +122,43 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         sql.append(" FILE_DATETIME = :FILE_DATETIME,");
         sql.append(" WHERE ID = :ID");
         return jdbcTemplate.update(sql.toString(), params);
+    }
+
+    @Override
+    public List<Rpt1100Dto> find1100ReportData(long scrId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT");
+        sql.append("     sf.file_name fileName,");
+        sql.append("     sf.file_path filePath,");
+        sql.append("     CASE sf.file_type");
+        sql.append("         WHEN 0 THEN 'Source'");
+        sql.append("         ELSE 'Execution'");
+        sql.append("     END fileType,");
+        sql.append("     CASE rh.register_action");
+        sql.append("         WHEN 0 THEN 'New'");
+        sql.append("         WHEN 1 THEN 'Update'");
+        sql.append("         ELSE 'Delete'");
+        sql.append("     END action,");
+        sql.append("     sf.file_datetime fileDate,");
+        sql.append("     sf.file_size fileSize,");
+        sql.append("     sf.last_register_time registerDate");
+        sql.append(" FROM jc_scr_file sf");
+        sql.append(" LEFT JOIN jc_register_history rh ON sf.id = rh.jc_scr_file_id AND rh.register_count = (SELECT register_count FROM JC_SCR WHERE id = sf.jc_scr_id)");
+        sql.append(" WHERE sf.jc_scr_id = ?");
+        return jdbcTemplate.query(sql.toString(), BeanPropertyRowMapper.newInstance(Rpt1100Dto.class), scrId);
+    }
+
+    @Override
+    public List<ScrFile> find1400ReportData(long scrId, Long buildUnitId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM JC_SCR_FILE WHERE file_type = 1 AND jc_scr_id = :scrId");
+        if (buildUnitId != null) {
+            sql.append(" AND jc_build_unit_id = :buildUnitId");
+        }
+        Map<String, Long> params = new HashMap<String, Long>();
+        params.put("scrId", scrId);
+        params.put("buildUnitId", buildUnitId);
+        return jdbcTemplate.query(sql.toString(), getRowMapper(), params);
     }
 
 }

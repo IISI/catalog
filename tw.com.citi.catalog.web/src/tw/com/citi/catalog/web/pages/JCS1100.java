@@ -377,7 +377,7 @@ public class JCS1100 extends AbstractBasePage {
                 } else if (appSourceFile.getDeleted()) {
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Cannot add file. File already exists.");
                 }
                 
                 // create scr source file
@@ -388,7 +388,7 @@ public class JCS1100 extends AbstractBasePage {
                     scrFileDao.update1100(updateMap);
                     scrSourceFileId = scrSourceFile.getId();
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Cannot add file. File already exists.");
                 }
                 
                 // create source register history
@@ -408,7 +408,7 @@ public class JCS1100 extends AbstractBasePage {
                 } else if (appExecutionFile.getDeleted()) {
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Cannot add file. File already exists.");
                 }
                 
                 //create scr execution file
@@ -419,7 +419,7 @@ public class JCS1100 extends AbstractBasePage {
                     scrFileDao.update1100(updateMap);
                     scrExecutionFileId = scrExecutionFile.getId();
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Cannot add file. File already exists.");
                 }
                 
                 // create execution register history
@@ -433,16 +433,18 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_SIZE", file.getFileSize());
                     updateMap.put("FILE_MD5", file.getFileMd5());
                     updateMap.put("ID", appSourceFile.getId());
+                    updateMap.put("CHECKOUT", appSourceFile.getCheckout());
+                    updateMap.put("DELETED", appSourceFile.getDeleted());
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to update app source file.");
                 }
                 
                 // update scr source file
                 if (scrSourceFile != null && !scrSourceFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to update scr source file.");
                 }
                 
                 // create source register history
@@ -457,16 +459,18 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_SIZE", null);
                     updateMap.put("FILE_MD5", null);
                     updateMap.put("ID", appExecutionFile.getId());
+                    updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
+                    updateMap.put("DELETED", appExecutionFile.getDeleted());
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to update app execution file.");
                 }
                 
                 // update scr execution file
                 if (scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to update scr execution file.");
                 }
                 
                 // create execution register history
@@ -481,16 +485,17 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_MD5", file.getFileMd5());
                     updateMap.put("DELETED", 1);
                     updateMap.put("ID", appSourceFile.getId());
+                    updateMap.put("CHECKOUT", appSourceFile.getCheckout());
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to delete app source file.");
                 }
                 
                 // update scr source file
                 if (scrSourceFile != null && !scrSourceFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to delete scr source file.");
                 }
                 
                 // create source register history
@@ -504,17 +509,19 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("FILE_DATETIME", null);
                     updateMap.put("FILE_SIZE", null);
                     updateMap.put("FILE_MD5", null);
+                    updateMap.put("DELETED", 1);
                     updateMap.put("ID", appExecutionFile.getId());
+                    updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to delete app execution file.");
                 }
                 
                 // update scr execution file
                 if (scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException();
+                    throw new RuntimeException("Failed to delete scr execution file.");
                 }
                 
                 // create execution register history

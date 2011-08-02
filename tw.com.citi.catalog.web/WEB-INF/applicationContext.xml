@@ -4,6 +4,18 @@
     xmlns:osgi="http://www.springframework.org/schema/osgi"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <bean id="rpt1100" class="tw.com.citi.catalog.web.report.Rpt1100">
+        <property name="scrFileDao" ref="scrFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1100" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
+    <bean id="rpt1400" class="tw.com.citi.catalog.web.report.Rpt1400">
+        <property name="scrFileDao" ref="scrFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1400" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
