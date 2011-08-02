@@ -43,6 +43,7 @@
         <tr>
             <td>
                 <table id="copyFrom"></table>
+                <div id="copyFromPager"></div>
             </td>
             <td>
                 <div class="move-button" style="font-size: 0.8em">
@@ -56,6 +57,7 @@
                 </div></td>
             <td>
                 <table id="copyTo"></table>
+                <div id="copyToPager"></div>
             </td>
         </tr>
     </table>
@@ -257,11 +259,16 @@
                     {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
+                pager: '#copyFromPager',
+                pgbuttons: false,
+                pginput: false,
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
                 caption: 'From',
             }).hideCol('cb');
+            
+            copyFrom.jqGrid('navGrid', '#copyFromPager', {edit: false, add: false, del: false});
             
             var copyTo = $('#copyTo').jqGrid({
                 multiselect: 'true',
@@ -276,11 +283,16 @@
                     {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
                     {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
                 ],
+                pager: '#copyToPager',
+                pgbuttons: false,
+                pginput: false,
                 sortname: 'name',
                 sortorder: 'desc',
                 viewrecords: true,
                 caption: 'To',
             }).hideCol('cb');
+            
+            copyTo.jqGrid('navGrid', '#copyToPager', {edit: false, add: false, del: false});
             
             var dialog = $('<div></div>').dialog({
                 autoOpen: false,
