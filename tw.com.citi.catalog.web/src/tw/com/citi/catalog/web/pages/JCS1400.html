@@ -76,6 +76,14 @@
                 
                 function hookButtonEvent() {
                     printButton.click(function () {
+                        var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form.append('<input type="hidden" name="reportName" value="Rpt1400" />');
+                        form.append('<input type="hidden" name="scrId" value="' + scrId + '" />');
+                        form.append('<input type="hidden" name="buildUnitId" value="' + buildUnitElement.children(':selected').val() + '" />');
+                        form.append('<input type="hidden" name="scrNo" value="' + scrNoElement.children(':selected').text() + '" />');
+                        form.append('<input type="hidden" name="appId" value="' + $('#appId').text() + '" />');
+                        form.submit();
+                        form.remove();
                     });
                 }
                 

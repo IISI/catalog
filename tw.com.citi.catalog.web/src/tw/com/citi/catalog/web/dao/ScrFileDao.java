@@ -122,4 +122,17 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         return jdbcTemplate.query(sql.toString(), BeanPropertyRowMapper.newInstance(Rpt1100Dto.class), scrId);
     }
 
+    @Override
+    public List<ScrFile> find1400ReportData(long scrId, Long buildUnitId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM JC_SCR_FILE WHERE file_type = 1 AND jc_scr_id = :scrId");
+        if (buildUnitId != null) {
+            sql.append(" AND jc_build_unit_id = :buildUnitId");
+        }
+        Map<String, Long> params = new HashMap<String, Long>();
+        params.put("scrId", scrId);
+        params.put("buildUnitId", buildUnitId);
+        return jdbcTemplate.query(sql.toString(), getRowMapper(), params);
+    }
+
 }

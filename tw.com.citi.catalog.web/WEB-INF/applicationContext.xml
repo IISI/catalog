@@ -10,6 +10,12 @@
 
     <osgi:service ref="rpt1100" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
+    <bean id="rpt1400" class="tw.com.citi.catalog.web.report.Rpt1400">
+        <property name="scrFileDao" ref="scrFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1400" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

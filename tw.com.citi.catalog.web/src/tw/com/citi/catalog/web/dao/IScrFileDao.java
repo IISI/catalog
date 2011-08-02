@@ -22,4 +22,6 @@ public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
 
     List<Rpt1100Dto> find1100ReportData(long scrId);
 
+    List<ScrFile> find1400ReportData(long scrId, Long buildUnitId);
+
 }
