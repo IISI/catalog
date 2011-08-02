@@ -281,7 +281,6 @@ public class SmbFileUtil {
     public static FileObject getFile(String filePath, String fileName) throws FileSystemException {
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         FileObject file = fsManager.resolveFile(folder, fileName);
-        fsManager.closeFileSystem(folder.getFileSystem());
         return file;
     }
 

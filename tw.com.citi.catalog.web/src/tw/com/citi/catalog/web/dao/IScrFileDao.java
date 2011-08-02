@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -18,5 +19,9 @@ public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
     ScrFile findByUK(long scrId, String filePath, String fileName);
 
     int update1100(Map<String, Object> params);
+
+    int updateLastCompileTimeByJcScrId(Timestamp lastCompileTime, Long jcScrId);
+
+    int updateFileDateTimeById(Timestamp fileDateTime, Long id);
 
 }

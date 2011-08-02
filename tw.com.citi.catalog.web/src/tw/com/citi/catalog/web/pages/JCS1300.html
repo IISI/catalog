@@ -287,7 +287,8 @@
                 payload.actionParams = JSON.stringify({
                     scrId: scrNo.val(),
                     buildUnitId: buildUnit.val(),
-                    files: JSON.stringify(files), 
+                    files: JSON.stringify(files),
+                    localPath: mappingLocalPath.text(),
                     checkerId: checkerId.val(),
                     checkerPwd: checkerPwd.val()
                 });
