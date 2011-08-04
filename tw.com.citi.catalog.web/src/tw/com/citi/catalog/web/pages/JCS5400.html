@@ -254,6 +254,8 @@
                 payload.actionName = 'Delete';
                 payload.actionParams = JSON.stringify({
                     id: id.text(),
+                    name: name.val(),
+                    team: team.val(),
                     checkerId: checkerId.val(),
                     checkerPwd: checkerPwd.val()
                 });
