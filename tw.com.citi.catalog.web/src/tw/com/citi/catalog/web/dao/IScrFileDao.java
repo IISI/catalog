@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import tw.com.citi.catalog.web.dto.Rpt1100Dto;
+import tw.com.citi.catalog.web.dto.ScrFileDto;
 import tw.com.citi.catalog.web.model.ScrFile;
 
 public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
@@ -23,5 +24,7 @@ public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
     List<Rpt1100Dto> find1100ReportData(long scrId);
 
     List<ScrFile> find1400ReportData(long scrId, Long buildUnitId);
+
+    List<ScrFileDto> findBy(long scrId, Long buildUnitId, ScrFile.FileType fileType);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import tw.com.citi.catalog.web.dto.Rpt1100Dto;
+import tw.com.citi.catalog.web.dto.ScrFileDto;
 import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.model.ScrFile.FileType;
 
@@ -133,6 +134,23 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         params.put("scrId", scrId);
         params.put("buildUnitId", buildUnitId);
         return jdbcTemplate.query(sql.toString(), getRowMapper(), params);
+    }
+
+    @Override
+    public List<ScrFileDto> findBy(long scrId, Long buildUnitId, FileType fileType) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT sf.*, rh.register_action FROM ").append(getTableName()).append(" sf");
+        sql.append(" LEFT JOIN jc_register_history rh ON sf.id = rh.jc_scr_file_id");
+        sql.append(" AND rh.register_count = (SELECT register_count FROM jc_scr WHERE id = sf.jc_scr_id)");
+        sql.append(" WHERE sf.jc_scr_id = :scrId AND sf.file_type = :fileType");
+        if (buildUnitId != null) {
+            sql.append(" AND sf.jc_build_unit_id = :buildUnitId");
+        }
+        Map<String, Object> args = new HashMap<String, Object>();
+        args.put("scrId", scrId);
+        args.put("buildUnitId", buildUnitId);
+        args.put("fileType", fileType.ordinal());
+        return jdbcTemplate.query(sql.toString(), BeanPropertyRowMapper.newInstance(ScrFileDto.class), args);
     }
 
 }

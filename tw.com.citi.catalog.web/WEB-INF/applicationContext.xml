@@ -16,6 +16,20 @@
 
     <osgi:service ref="rpt1400" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
+    <bean id="rpt1500" class="tw.com.citi.catalog.web.report.Rpt1500">
+        <property name="appPathDao" ref="appPathDao"></property>
+        <property name="scrFileDao" ref="scrFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1500" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
+    <bean id="rpt1500D" class="tw.com.citi.catalog.web.report.Rpt1500D">
+        <property name="appPathDao" ref="appPathDao"></property>
+        <property name="scrFileDao" ref="scrFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1500D" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

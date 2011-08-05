@@ -86,4 +86,12 @@ public class AppPathDao extends AbstractGenericDao<AppPath, Long> implements IAp
         return results;
     }
 
+    @Override
+    public List<AppPath> findByAppName(String appName, AppPath.PathType pathType) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM ").append(getTableName());
+        sql.append(" WHERE jc_app_id = (SELECT id FROM JC_APP WHERE app_id = ?) AND path_type = ?");
+        return jdbcTemplate.query(sql.toString(), getRowMapper(), appName, pathType.ordinal());
+    }
+
 }

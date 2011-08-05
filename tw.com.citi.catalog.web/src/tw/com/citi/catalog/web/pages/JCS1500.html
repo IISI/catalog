@@ -96,6 +96,22 @@
                             dataType: 'json',
                             data: payload,
                             success: function () {
+                                var form1 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form1.append('<input type="hidden" name="reportName" value="Rpt1500" />');
+                                form1.append('<input type="hidden" name="scrId" value="' + scrId + '" />');
+                                form1.append('<input type="hidden" name="buildUnitId" value="' + buildUnitElement.children(':selected').val() + '" />');
+                                form1.append('<input type="hidden" name="scrNo" value="' + scrNoElement.children(':selected').text() + '" />');
+                                form1.append('<input type="hidden" name="appId" value="' + $('#appId').text() + '" />');
+                                form1.submit();
+                                form1.remove();
+                                
+                                var form2 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form2.append('<input type="hidden" name="reportName" value="Rpt1500D" />');
+                                form2.append('<input type="hidden" name="scrId" value="' + scrId + '" />');
+                                form2.append('<input type="hidden" name="buildUnitId" value="' + buildUnitElement.children(':selected').val() + '" />');
+                                form2.append('<input type="hidden" name="scrNo" value="' + scrNoElement.children(':selected').text() + '" />');
+                                form2.append('<input type="hidden" name="appId" value="' + $('#appId').text() + '" />');
+                                setTimeout(function () {form2.submit(); form2.remove();}, 500);
                             }
                         });
                     };
