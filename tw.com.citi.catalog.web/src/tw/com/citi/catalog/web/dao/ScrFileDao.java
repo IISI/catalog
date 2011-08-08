@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,7 +77,8 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
     @Override
     public ScrFile findByUK(long scrId, String filePath, String fileName) {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_SCR_ID = :scrId AND FILE_PATH = :filePath AND FILE_NAME = :fileName");
+        sb.append("SELECT * FROM ").append(getTableName())
+                .append(" WHERE JC_SCR_ID = :scrId AND FILE_PATH = :filePath AND FILE_NAME = :fileName");
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("scrId", scrId);
         args.put("filePath", filePath);
@@ -97,6 +99,30 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         sql.append(" DELETED = :DELETED");
         sql.append(" WHERE ID = :ID");
         return 0;
+    }
+
+    @Override
+    public int updateLastCompileTimeByJcScrId(Timestamp lastCompileTime, Long jcScrId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("LAST_COMPILE_TIME", lastCompileTime);
+        params.put("JC_SCR_ID", jcScrId);
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET LAST_COMPILE_TIME = :LAST_COMPILE_TIME");
+        sql.append(" WHERE JC_SCR_ID = :JC_SCR_ID");
+        return jdbcTemplate.update(sql.toString(), params);
+    }
+
+    @Override
+    public int updateFileDateTimeById(Timestamp fileDateTime, Long id) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("FILE_DATETIME", fileDateTime);
+        params.put("ID", id);
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET FILE_DATETIME = :FILE_DATETIME");
+        sql.append(" WHERE ID = :ID");
+        return jdbcTemplate.update(sql.toString(), params);
     }
 
     @Override

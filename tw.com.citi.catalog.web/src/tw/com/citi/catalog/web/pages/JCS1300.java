@@ -1,26 +1,36 @@
 package tw.com.citi.catalog.web.pages;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import tw.com.citi.catalog.web.dao.IAppDao;
+import tw.com.citi.catalog.web.dao.IAppFileDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
 import tw.com.citi.catalog.web.dao.IBuildUnitDao;
 import tw.com.citi.catalog.web.dao.IScrDao;
+import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.model.App;
+import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
+import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.util.NetUseUtil;
+import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,6 +48,12 @@ public class JCS1300 extends AbstractBasePage {
 
     @SpringBean(name = "scrDao")
     private IScrDao scrDao;
+
+    @SpringBean(name = "scrFileDao")
+    private IScrFileDao scrFileDao;
+
+    @SpringBean(name = "appFileDao")
+    private IAppFileDao appFileDao;
 
     private transient Gson gson = new Gson();
 
@@ -118,12 +134,87 @@ public class JCS1300 extends AbstractBasePage {
     }
 
     private String compile(Map dataMap) {
-        // TODO
         String sScrId = (String) dataMap.get("scrId");
+        String localPath = (String) dataMap.get("localPath");
+        String files = (String) dataMap.get("files");
+        List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
+        }.getType());
+        for (Map<String, String> file : fileList) {
+            String batchFileName = file.get("batchFileName");
+            File batchFile = new File(localPath + batchFileName);
+            if (batchFile.exists()) {
+                int rc = compile(batchFile);
+                if (rc != 0) {
+                    throw new RuntimeException("Execute " + batchFileName + " fail with return code " + rc);
+                }
+            } else {
+                throw new RuntimeException("Can't find " + batchFileName + "in Mapping Local Path.");
+            }
+        }
+        // 更新 Scr 的 status
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
         scrDao.updateStatus(scr.getId(), Status.COMPILE);
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        // 更新 AppFile 的 lastCompileTime
+        appFileDao.updateLastCompileTimeByJcAppId(now, scr.getJcAppId());
+        // 更新 AppFile 中 EXECTION 的 fileDateTime
+        List<AppFile> appFiles = appFileDao.findByAppId(scr.getJcAppId());
+        for (AppFile appFile : appFiles) {
+            try {
+                if (AppFile.FileType.EXECUTION == appFile.getFileType()) {
+                    FileObject file = SmbFileUtil.getFile(appFile.getFilePath(), appFile.getFileName());
+                    appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
+                            appFile.getId());
+                }
+            } catch (FileSystemException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Update File DateTime for AppFile " + appFile.getFileName() + " fail.", e);
+            }
+        }
+        // 更新 ScrFile 的 lastCompileTime
+        scrFileDao.updateLastCompileTimeByJcScrId(now, scrId);
+        // 更新 ScrFile 中 EXECTION 的 fileDateTime
+        List<ScrFile> scrFiles = scrFileDao.findByScrId(scrId);
+        for (ScrFile scrFile : scrFiles) {
+            try {
+                if (ScrFile.FileType.EXECUTION == scrFile.getFileType()) {
+                    FileObject file = SmbFileUtil.getFile(scrFile.getFilePath(), scrFile.getFileName());
+                    appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
+                            scrFile.getId());
+                }
+            } catch (FileSystemException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Update File DateTime for ScrFile " + scrFile.getFileName() + " fail.", e);
+            }
+        }
+        // TODO FunctionLog
         return null;
+    }
+
+    private int compile(File batchFile) {
+        String result = "";
+        Process process = null;
+        BufferedReader bf = null;
+        try {
+            String fullPath = batchFile.getAbsolutePath();
+            String path = batchFile.getParent();
+            String command = "\"" + fullPath + "\"";
+            String[] cmd = new String[] { "cmd", "/C", command, path };
+            process = Runtime.getRuntime().exec(cmd);
+            bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = "";
+            while ((line = bf.readLine()) != null) {
+                result += line + "\n";
+                System.out.println(line + "\n");
+            }
+            bf.close();
+            logger.debug(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage() + "\n" + result, e);
+        }
+        return process == null ? -1 : process.exitValue();
     }
 
     private String getFiles(Map dataMap) {

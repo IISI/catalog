@@ -2,9 +2,8 @@ package tw.com.citi.catalog.web.dao;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import org.springframework.jdbc.object.SqlUpdate;
 
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
@@ -57,8 +56,9 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
 
     @Override
     public Scr findByScrNo(String scrNo) {
-        return (Scr) jdbcTemplate.queryForObject("SELECT * FROM " + getTableName() + " WHERE SCR_NO = ?",
-                getRowMapper(), scrNo);
+        List<Scr> list = jdbcTemplate.query("SELECT * FROM " + getTableName() + " WHERE SCR_NO = ?", getRowMapper(),
+                scrNo);
+        return (list == null || list.size() == 0) ? null : list.get(0);
     }
 
     @Override

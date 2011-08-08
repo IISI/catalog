@@ -52,7 +52,8 @@ public class JCS5400 extends AbstractBasePage {
                 }
                 coordinatorDao.create(dataMap);
             } else if ("Modify".equals(actionName)) {
-                if (coordinator != null) {
+                String id = (String) dataMap.get("id");
+                if (coordinator != null && !id.equals(coordinator.getId())) {
                     throw new IllegalStateException("Coordinator with given name and team is already exist.");
                 }
                 coordinatorDao.update(dataMap);

@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.web.dao;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +45,8 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
     @Override
     public AppFile findByUK(long jcAppId, String filePath, String fileName) {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM ").append(getTableName()).append(" WHERE JC_APP_ID = :jcAppId AND FILE_PATH = :filePath AND FILE_NAME = :fileName");
+        sb.append("SELECT * FROM ").append(getTableName())
+                .append(" WHERE JC_APP_ID = :jcAppId AND FILE_PATH = :filePath AND FILE_NAME = :fileName");
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("jcAppId", jcAppId);
         args.put("filePath", filePath);
@@ -63,6 +65,30 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
         sql.append(" FILE_SIZE = :FILE_SIZE, FILE_MD5 = :FILE_MD5,");
         sql.append(" LAST_REGISTER_TIME = :LAST_REGISTER_TIME,");
         sql.append(" DELETED = :DELETED");
+        sql.append(" WHERE ID = :ID");
+        return jdbcTemplate.update(sql.toString(), params);
+    }
+
+    @Override
+    public int updateLastCompileTimeByJcAppId(Timestamp lastCompileTime, Long jcAppId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("LAST_COMPILE_TIME", lastCompileTime);
+        params.put("JC_APP_ID", jcAppId);
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET LAST_COMPILE_TIME = :LAST_COMPILE_TIME");
+        sql.append(" WHERE JC_APP_ID = :JC_APP_ID");
+        return jdbcTemplate.update(sql.toString(), params);
+    }
+
+    @Override
+    public int updateFileDateTimeById(Timestamp fileDateTime, Long id) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("FILE_DATETIME", fileDateTime);
+        params.put("ID", id);
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET FILE_DATETIME = :FILE_DATETIME");
         sql.append(" WHERE ID = :ID");
         return jdbcTemplate.update(sql.toString(), params);
     }
