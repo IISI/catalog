@@ -1,17 +1,18 @@
 package tw.com.citi.catalog.web.report;
 
 import java.io.InputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
-import tw.com.citi.catalog.util.DateUtil;
+import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
 
 public class Rpt1100 implements IReport {
+
+    private IScrDao scrDao;
 
     private IScrFileDao scrFileDao;
 
@@ -24,15 +25,15 @@ public class Rpt1100 implements IReport {
     public Map<String, Object> getReportParameters() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", req.getParameter("userId"));
-        params.put("reportId", "JCS1100");
+        Long scrId = Long.valueOf(req.getParameter("scrId"));
+        Map<String, Object> data = scrDao.queryScrInfo(scrId);
+        params.put("userId", "");
         params.put("scrNo", req.getParameter("scrNo"));
         params.put("status", req.getParameter("status"));
         params.put("createDate", req.getParameter("createDate"));
-        params.put("printDate", DateUtil.format(new Date()));
-        params.put("appId", req.getParameter("appId"));
-        params.put("programmer", req.getParameter("programmer"));
-        params.put("coordinator", req.getParameter("coordinator"));
+        params.put("appId", data.get("appId"));
+        params.put("programmer", data.get("programmer"));
+        params.put("coordinator", data.get("coordinator"));
         params.put("librarian", req.getParameter("librarian"));
         return params;
     }
@@ -47,6 +48,10 @@ public class Rpt1100 implements IReport {
     public Map<String, Object> getExporterParameters() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void setScrDao(IScrDao scrDao) {
+        this.scrDao = scrDao;
     }
 
     public void setScrFileDao(IScrFileDao scrFileDao) {

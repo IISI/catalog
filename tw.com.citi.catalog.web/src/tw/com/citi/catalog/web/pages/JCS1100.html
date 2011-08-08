@@ -307,13 +307,9 @@
                         var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
                         form.append('<input type="hidden" name="reportName" value="Rpt1100" />');
                         form.append('<input type="hidden" name="scrId" value="' + global.scrId + '" />');
-                        form.append('<input type="hidden" name="userId" value="test" />');
                         form.append('<input type="hidden" name="scrNo" value="' + $('.scrNo:first').text() + '" />')
                         form.append('<input type="hidden" name="status" value="' + $('#status').text() + '" />');
                         form.append('<input type="hidden" name="createDate" value="' + $('#createTime').text() + '" />');
-                        form.append('<input type="hidden" name="appId" value="' + $('.appId:first').text() + '" />');
-                        form.append('<input type="hidden" name="programmer" value="' + $('#programmer').text() + '" />');
-                        form.append('<input type="hidden" name="coordinator" value="' + $('#coordinator').text() + '" />');
                         form.append('<input type="hidden" name="librarian" value="' + $('#librarian').text() + '" />');
                         form.submit();
                         form.remove();

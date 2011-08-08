@@ -82,4 +82,13 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
         return jdbcTemplate.update(sql.toString(), params);
     }
 
+    @Override
+    public Map<String, Object> queryScrInfo(long jcScrId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT A.APP_ID appId, P.NAME programmer, C.NAME coordinator ");
+        sql.append("FROM JC_SCR S, JC_APP A, JC_PROGRAMMER P, JC_COORDINATOR C ");
+        sql.append("WHERE S.ID = ? AND A.ID = S.JC_APP_ID AND P.ID = S.JC_PROGRAMMER_ID AND C.ID = S.JC_COORDINATOR_ID");
+        return jdbcTemplate.queryForMap(sql.toString(), jcScrId);
+    }
+
 }

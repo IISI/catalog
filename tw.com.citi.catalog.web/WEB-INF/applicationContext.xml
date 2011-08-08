@@ -5,6 +5,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <bean id="rpt1100" class="tw.com.citi.catalog.web.report.Rpt1100">
+        <property name="scrDao" ref="scrDao"></property>
         <property name="scrFileDao" ref="scrFileDao"></property>
     </bean>
 
