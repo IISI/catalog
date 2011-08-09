@@ -1,6 +1,7 @@
 package tw.com.citi.catalog.web.pages;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,12 @@ import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.FileStatus;
+import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
+import tw.com.citi.catalog.web.util.F;
+import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
@@ -99,12 +103,14 @@ public class JCS1600 extends AbstractBasePage {
     }
 
     private String move(Map dataMap) {
+        Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
         // move file
         Long scrId = Long.parseLong(sScrId);
+        Long fLogId = F.log(scrId, Func.JCS1600, "", "", start, null);
         Scr scr = scrDao.findById(scrId);
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         // get path
@@ -124,6 +130,7 @@ public class JCS1600 extends AbstractBasePage {
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
+            F.updateEndTime(fLogId, new Date());
             throw new RuntimeException("Rename backup folder error.", e);
         }
         // 備份現有的 PROD source/execution 到 BACKUP
@@ -136,14 +143,19 @@ public class JCS1600 extends AbstractBasePage {
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
+            F.updateEndTime(fLogId, new Date());
             throw new RuntimeException("Backup current PROD folder error.", e);
         }
         // 複製 QA source/execution 到 PROD
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JC_FUNCTION_LOG_ID", fLogId);
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
             String fileType = file.get("fileType");
             String fileStatus = file.get("fileStatus");
+            ScrFile scrFile = scrFileDao.findByUK(scrId, filePath, fileName);
+            params.put("JC_SCR_FILE_ID", scrFile.getId());
             try {
                 String qaPath = "";
                 List<String> prodPaths = new ArrayList<String>();
@@ -154,32 +166,28 @@ public class JCS1600 extends AbstractBasePage {
                     qaPath = qaExecutionPath;
                     prodPaths = prodExecutionPath;
                 }
-                if ("DELETE".equalsIgnoreCase(fileStatus)) {
-                    deleteFromProd(filePath, fileName, prodPaths);
-                } else {
-                    copyToProd(qaPath, filePath, fileName, prodPaths);
+                for (String prodPath : prodPaths) {
+                    params.put("TARGET_PATH", prodPath);
+                    if ("DELETE".equalsIgnoreCase(fileStatus)) {
+                        SmbFileUtil.deleteFile(prodPath + filePath, fileName);
+                    } else {
+                        SmbFileUtil.copyFile(qaPath + filePath, prodPath + filePath, new String[] { fileName });
+                    }
+                    params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+                    fileMoveDetailDao.create(params);
                 }
                 // TODO PVCS Checkin 處理
             } catch (FileSystemException e) {
                 e.printStackTrace();
+                params.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
+                fileMoveDetailDao.create(params);
+                F.updateEndTime(fLogId, new Date());
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
         scrDao.updateStatus(scr.getId(), Status.MOVE_TO_PROD);
+        F.updateEndTime(fLogId, new Date());
         return null;
-    }
-
-    private void copyToProd(String qaPath, String filePath, String fileName, List<String> prodPaths)
-            throws FileSystemException {
-        for (String prodPath : prodPaths) {
-            SmbFileUtil.copyFile(qaPath + filePath, prodPath + filePath, new String[] { fileName });
-        }
-    }
-
-    private void deleteFromProd(String filePath, String fileName, List<String> prodPaths) throws FileSystemException {
-        for (String prodPath : prodPaths) {
-            SmbFileUtil.deleteFile(prodPath + filePath, fileName);
-        }
     }
 
     private String getFiles(Map dataMap) {
