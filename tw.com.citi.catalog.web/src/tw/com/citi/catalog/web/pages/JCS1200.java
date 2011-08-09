@@ -150,8 +150,10 @@ public class JCS1200 extends AbstractBasePage {
             }
         }
         scrDao.updateStatus(scr.getId(), Status.MOVE_TO_QA);
+        Map<String, Object> results = new HashMap<String, Object>();
+        results.put("functionLogId", fLogId);
         F.updateEndTime(fLogId, new Date());
-        return null;
+        return gson.toJson(results);
     }
 
     private String getFiles(Map dataMap) {
