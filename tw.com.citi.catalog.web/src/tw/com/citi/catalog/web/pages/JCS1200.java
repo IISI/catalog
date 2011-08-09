@@ -120,7 +120,6 @@ public class JCS1200 extends AbstractBasePage {
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         // get target path
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("ID", scrId);
         params.put("JC_FUNCTION_LOG_ID", fLogId);
         params.put("TARGET_PATH", qaSourcePath);
         for (Map<String, String> file : fileList) {

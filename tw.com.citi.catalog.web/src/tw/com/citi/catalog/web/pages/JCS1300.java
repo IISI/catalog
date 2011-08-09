@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
+import tw.com.citi.catalog.web.util.F;
+import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.NetUseUtil;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
@@ -139,7 +142,10 @@ public class JCS1300 extends AbstractBasePage {
     }
 
     private String compile(Map dataMap) {
+        Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
+        Long scrId = Long.parseLong(sScrId);
+        Long fLogId = F.log(scrId, Func.JCS1300, "", "", start, null);
         String localPath = (String) dataMap.get("localPath");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
@@ -150,20 +156,23 @@ public class JCS1300 extends AbstractBasePage {
             if (batchFile.exists()) {
                 int rc = compile(batchFile);
                 if (rc != 0) {
+                    F.updateEndTime(fLogId, new Date());
                     throw new RuntimeException("Execute " + batchFileName + " fail with return code " + rc);
                 }
             } else {
+                F.updateEndTime(fLogId, new Date());
                 throw new RuntimeException("Can't find " + batchFileName + "in Mapping Local Path.");
             }
         }
         // 更新 Scr 的 status
-        Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
         scrDao.updateStatus(scr.getId(), Status.COMPILE);
         Timestamp now = new Timestamp(System.currentTimeMillis());
         // 更新 AppFile 的 lastCompileTime
         appFileDao.updateLastCompileTimeByJcAppId(now, scr.getJcAppId());
         // 更新 AppFile 中 EXECTION 的 fileDateTime
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JC_FUNCTION_LOG_ID", fLogId);
         List<AppFile> appFiles = appFileDao.findByAppId(scr.getJcAppId());
         for (AppFile appFile : appFiles) {
             try {
@@ -171,9 +180,12 @@ public class JCS1300 extends AbstractBasePage {
                     FileObject file = SmbFileUtil.getFile(appFile.getFilePath(), appFile.getFileName());
                     appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
                             appFile.getId());
+                    params.put("JC_APP_FILE_ID", appFile.getId());
+                    compileDetailDao.create(params);
                 }
             } catch (FileSystemException e) {
                 e.printStackTrace();
+                F.updateEndTime(fLogId, new Date());
                 throw new RuntimeException("Update File DateTime for AppFile " + appFile.getFileName() + " fail.", e);
             }
         }
@@ -190,10 +202,11 @@ public class JCS1300 extends AbstractBasePage {
                 }
             } catch (FileSystemException e) {
                 e.printStackTrace();
+                F.updateEndTime(fLogId, new Date());
                 throw new RuntimeException("Update File DateTime for ScrFile " + scrFile.getFileName() + " fail.", e);
             }
         }
-        // TODO FunctionLog
+        F.updateEndTime(fLogId, new Date());
         return null;
     }
 
