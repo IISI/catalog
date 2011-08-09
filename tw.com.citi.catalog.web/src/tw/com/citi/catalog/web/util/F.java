@@ -42,7 +42,8 @@ public class F {
         }
     }
 
-    public static void log(long scrId, Func function, String maker, String checker, Date start, Date end) {
+    public static Long log(long scrId, Func function, String maker, String checker, Date start, Date end) {
+        Long functionLogId = null;
         if (functionLogDao != null) {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("JC_SCR_ID", scrId);
@@ -51,7 +52,14 @@ public class F {
             params.put("CHECKER", checker);
             params.put("START_TIME", start);
             params.put("END_TIME", end);
-            functionLogDao.create(params);
+            functionLogId = functionLogDao.create(params);
+        }
+        return functionLogId;
+    }
+
+    public static void updateEndTime(Long functionLogId, Date end) {
+        if (functionLogDao != null) {
+            functionLogDao.updateEndTime(functionLogId, end);
         }
     }
 
