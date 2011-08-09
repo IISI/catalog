@@ -1,6 +1,7 @@
 package tw.com.citi.catalog.web.pages;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,10 @@ import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.FileType;
+import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.util.F;
+import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
@@ -92,9 +96,11 @@ public class JCS1700 extends AbstractBasePage {
     }
 
     private String rollback(Map dataMap) {
+        Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         // move file
         Long scrId = Long.parseLong(sScrId);
+        Long fLogId = F.log(scrId, Func.JCS1700, "", "", start, null);
         Scr scr = scrDao.findById(scrId);
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         // get path
@@ -119,6 +125,7 @@ public class JCS1700 extends AbstractBasePage {
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
+            F.updateEndTime(fLogId, new Date());
             throw new RuntimeException("Rename backup folder error. " + e.getMessage(), e);
         }
         // rollback 現有的 BACKUP 到 QA/PROD source/execution
@@ -141,8 +148,21 @@ public class JCS1700 extends AbstractBasePage {
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
+            F.updateEndTime(fLogId, new Date());
             throw new RuntimeException("Backup current PROD folder error. " + e.getMessage(), e);
         }
+        // 紀錄 fileMoveDetail，因為前面都是整個目錄搬移，若失敗就無法紀錄檔案明細
+        App app = appDao.findById(scr.getJcAppId());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JC_FUNCTION_LOG_ID", fLogId);
+        params.put("TARGET_PATH", qaSourcePath);
+        List<AppFile> appFiles = appFileDao.findByAppId(app.getId());
+        for (AppFile appFile : appFiles) {
+            params.put("JC_APP_FILE_ID", appFile.getId());
+            params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+            fileMoveDetailDao.create(params);
+        }
+        F.updateEndTime(fLogId, new Date());
         return null;
     }
 
@@ -152,9 +172,6 @@ public class JCS1700 extends AbstractBasePage {
         App app = appDao.findById(scr.getJcAppId());
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         List<AppFile> files = new ArrayList<AppFile>();
-        // TODO 查出 APP File
-        // TODO 查出 此 SCR 最後一次 REGISTER 之資料
-        // TODO list 出 prod backup path 下的檔案
         String prodSourceBackupPath = (String) appPaths.get(PathType.PROD_BACKUP) + "source\\";
         String prodExecutionBackupPath = (String) appPaths.get(PathType.PROD_BACKUP) + "execution\\";
         List<AppFile> appFiles = appFileDao.findByAppId(app.getId());
@@ -170,7 +187,6 @@ public class JCS1700 extends AbstractBasePage {
                     files.add(appFile);
                 }
             } catch (FileSystemException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
                 if (e.getCause() instanceof SmbAuthException) {
                     throw new RuntimeException("Access PROD Backup Path error.", e);
