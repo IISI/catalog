@@ -10,6 +10,12 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.osgi.service.exporter.OsgiServicePropertiesResolver;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import tw.com.citi.catalog.web.Activator;
 import tw.com.citi.catalog.web.dao.IFunctionLogDao;
@@ -26,6 +32,8 @@ public class F {
 
     private static IFunctionLogDao functionLogDao;
 
+    private static PlatformTransactionManager txManager;
+
     static {
         BundleContext context = Activator.getContext();
         try {
@@ -34,6 +42,15 @@ public class F {
                 String beanName = (String) ref.getProperty(OsgiServicePropertiesResolver.BEAN_NAME_PROPERTY_KEY);
                 if ("functionLogDao".equals(beanName)) {
                     functionLogDao = (IFunctionLogDao) context.getService(ref);
+                    break;
+                }
+            }
+            refs = context.getServiceReferences("org.springframework.transaction.PlatformTransactionManager", null);
+            for (ServiceReference ref : refs) {
+                String beanName = (String) ref.getProperty(OsgiServicePropertiesResolver.BEAN_NAME_PROPERTY_KEY);
+                if ("txManager".equals(beanName)) {
+                    txManager = (PlatformTransactionManager) context.getService(ref);
+                    break;
                 }
             }
         } catch (InvalidSyntaxException e) {
@@ -42,25 +59,40 @@ public class F {
         }
     }
 
-    public static Long log(long scrId, Func function, String maker, String checker, Date start, Date end) {
-        Long functionLogId = null;
-        if (functionLogDao != null) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("JC_SCR_ID", scrId);
-            params.put("FUNCTION_ID", function.name());
-            params.put("MAKER", maker);
-            params.put("CHECKER", checker);
-            params.put("START_TIME", start);
-            params.put("END_TIME", end);
-            functionLogId = functionLogDao.create(params);
-        }
-        return functionLogId;
+    public static Long log(final long scrId, final Func function, final String maker, final String checker, final Date start, final Date end) {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(txManager, new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        return transactionTemplate.execute(new TransactionCallback<Long>() {
+
+            @Override
+            public Long doInTransaction(TransactionStatus status) {
+                Long functionLogId = null;
+                if (functionLogDao != null) {
+                    Map<String, Object> params = new HashMap<String, Object>();
+                    params.put("JC_SCR_ID", scrId);
+                    params.put("FUNCTION_ID", function.name());
+                    params.put("MAKER", maker);
+                    params.put("CHECKER", checker);
+                    params.put("START_TIME", start);
+                    params.put("END_TIME", end);
+                    functionLogId = functionLogDao.create(params);
+                }
+                return functionLogId;
+            }
+        });
     }
 
-    public static void updateEndTime(Long functionLogId, Date end) {
-        if (functionLogDao != null) {
-            functionLogDao.updateEndTime(functionLogId, end);
-        }
+    public static void updateEndTime(final Long functionLogId, final Date end) {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(txManager, new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+        transactionTemplate.execute(new TransactionCallback<Void>() {
+
+            @Override
+            public Void doInTransaction(TransactionStatus arg0) {
+                if (functionLogDao != null) {
+                    functionLogDao.updateEndTime(functionLogId, end);
+                }
+                return null;
+            }
+        });
     }
 
 }
