@@ -1,6 +1,7 @@
 package tw.com.citi.catalog.web.pages;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,15 +15,19 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
 import tw.com.citi.catalog.web.dao.IBuildUnitDao;
+import tw.com.citi.catalog.web.dao.IFileMoveDetailDao;
 import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
+import tw.com.citi.catalog.web.model.FileStatus;
+import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
-import tw.com.citi.catalog.web.model.ScrFile.FileStatus;
+import tw.com.citi.catalog.web.util.F;
+import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
@@ -44,6 +49,9 @@ public class JCS1200 extends AbstractBasePage {
 
     @SpringBean(name = "scrFileDao")
     private IScrFileDao scrFileDao;
+
+    @SpringBean(name = "fileMoveDetailDao")
+    private IFileMoveDetailDao fileMoveDetailDao;
 
     private transient Gson gson = new Gson();
 
@@ -97,6 +105,7 @@ public class JCS1200 extends AbstractBasePage {
     }
 
     private String move(Map dataMap) {
+        Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
@@ -104,27 +113,40 @@ public class JCS1200 extends AbstractBasePage {
         // move file
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
+        Long fLogId = F.log(scr.getId(), Func.JCS1200, "", "", start, null);
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         // get source path
         String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         // get target path
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ID", scrId);
+        params.put("JC_FUNCTION_LOG_ID", fLogId);
+        params.put("TARGET_PATH", qaSourcePath);
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
             String status = file.get("fileStatus");
+            ScrFile scrFile = scrFileDao.findByUK(scrId, filePath, fileName);
+            params.put("JC_SCR_FILE_ID", scrFile.getId());
             try {
                 if ("DELETE".equalsIgnoreCase(status)) {
                     SmbFileUtil.deleteFile(qaSourcePath + filePath, fileName);
                 } else {
                     SmbFileUtil.copyFile(rdPath + filePath, qaSourcePath + filePath, new String[] { fileName });
                 }
+                params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+                fileMoveDetailDao.create(params);
             } catch (FileSystemException e) {
+                params.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
+                fileMoveDetailDao.create(params);
                 e.printStackTrace();
+                F.updateEndTime(fLogId, new Date());
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
         scrDao.updateStatus(scr.getId(), Status.MOVE_TO_QA);
+        F.updateEndTime(fLogId, new Date());
         return null;
     }
 
