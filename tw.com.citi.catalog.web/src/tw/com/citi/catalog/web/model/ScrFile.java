@@ -10,14 +10,6 @@ import tw.com.citi.catalog.web.mapper.ScrFileMapper;
 @Mapper(ScrFileMapper.class)
 public class ScrFile implements IModel<Long> {
 
-    public enum FileType {
-        SOURCE, EXECUTION
-    }
-
-    public enum FileStatus {
-        EXIST, NOT_FOUND, ACCESS_DENIED, DELETE
-    }
-
     private Long id;
     private Long jcScrId;
     private String filePath;

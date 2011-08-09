@@ -16,7 +16,7 @@ import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.dto.Rpt1500Dto;
 import tw.com.citi.catalog.web.dto.ScrFileDto;
 import tw.com.citi.catalog.web.model.AppPath;
-import tw.com.citi.catalog.web.model.ScrFile.FileType;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.util.impl.PvcsCmd;
 
 public class Rpt1500D implements IReport {

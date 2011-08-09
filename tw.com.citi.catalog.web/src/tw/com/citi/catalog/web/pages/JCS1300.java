@@ -20,12 +20,14 @@ import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppFileDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
 import tw.com.citi.catalog.web.dao.IBuildUnitDao;
+import tw.com.citi.catalog.web.dao.ICompileDetailDao;
 import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
@@ -54,6 +56,9 @@ public class JCS1300 extends AbstractBasePage {
 
     @SpringBean(name = "appFileDao")
     private IAppFileDao appFileDao;
+
+    @SpringBean(name = "compileDetailDao")
+    private ICompileDetailDao compileDetailDao;
 
     private transient Gson gson = new Gson();
 
@@ -162,7 +167,7 @@ public class JCS1300 extends AbstractBasePage {
         List<AppFile> appFiles = appFileDao.findByAppId(scr.getJcAppId());
         for (AppFile appFile : appFiles) {
             try {
-                if (AppFile.FileType.EXECUTION == appFile.getFileType()) {
+                if (FileType.EXECUTION == appFile.getFileType()) {
                     FileObject file = SmbFileUtil.getFile(appFile.getFilePath(), appFile.getFileName());
                     appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
                             appFile.getId());
@@ -178,7 +183,7 @@ public class JCS1300 extends AbstractBasePage {
         List<ScrFile> scrFiles = scrFileDao.findByScrId(scrId);
         for (ScrFile scrFile : scrFiles) {
             try {
-                if (ScrFile.FileType.EXECUTION == scrFile.getFileType()) {
+                if (FileType.EXECUTION == scrFile.getFileType()) {
                     FileObject file = SmbFileUtil.getFile(scrFile.getFilePath(), scrFile.getFileName());
                     appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
                             scrFile.getId());

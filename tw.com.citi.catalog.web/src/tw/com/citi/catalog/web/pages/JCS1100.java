@@ -45,6 +45,7 @@ import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.Coordinator;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Programmer;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.ScrFile;
@@ -366,7 +367,7 @@ public class JCS1100 extends AbstractBasePage {
                 // create app source file
                 updateMap.put("FILE_PATH", file.getSourcePath());
                 updateMap.put("FILE_NAME", file.getSourceFileName());
-                updateMap.put("FILE_TYPE", ScrFile.FileType.SOURCE.ordinal());
+                updateMap.put("FILE_TYPE", FileType.SOURCE.ordinal());
                 updateMap.put("FILE_DATETIME", file.getFileDatetime());
                 updateMap.put("FILE_SIZE", file.getFileSize());
                 updateMap.put("FILE_MD5", file.getFileMd5());
@@ -399,7 +400,7 @@ public class JCS1100 extends AbstractBasePage {
                 // create app execution file
                 updateMap.put("FILE_PATH", file.getExecutionPath());
                 updateMap.put("FILE_NAME", file.getExecutionFileName());
-                updateMap.put("FILE_TYPE", ScrFile.FileType.EXECUTION.ordinal());
+                updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
                 updateMap.put("FILE_DATETIME", null);
                 updateMap.put("FILE_SIZE", null);
                 updateMap.put("FILE_MD5", null);
@@ -428,7 +429,7 @@ public class JCS1100 extends AbstractBasePage {
             } else if ("update".equalsIgnoreCase(file.getAction())) {
                 // update app source file
                 if (appSourceFile != null && !appSourceFile.getDeleted()) {
-                    updateMap.put("FILE_TYPE", ScrFile.FileType.SOURCE.ordinal());
+                    updateMap.put("FILE_TYPE", FileType.SOURCE.ordinal());
                     updateMap.put("FILE_DATETIME", file.getFileDatetime());
                     updateMap.put("FILE_SIZE", file.getFileSize());
                     updateMap.put("FILE_MD5", file.getFileMd5());
@@ -454,7 +455,7 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // update app execution file
                 if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
-                    updateMap.put("FILE_TYPE", ScrFile.FileType.EXECUTION.ordinal());
+                    updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
                     updateMap.put("FILE_DATETIME", null);
                     updateMap.put("FILE_SIZE", null);
                     updateMap.put("FILE_MD5", null);
@@ -479,7 +480,7 @@ public class JCS1100 extends AbstractBasePage {
             } else if ("delete".equalsIgnoreCase(file.getAction())) {
                 // update app source file
                 if (appSourceFile != null && !appSourceFile.getDeleted()) {
-                    updateMap.put("FILE_TYPE", ScrFile.FileType.SOURCE.ordinal());
+                    updateMap.put("FILE_TYPE", FileType.SOURCE.ordinal());
                     updateMap.put("FILE_DATETIME", file.getFileDatetime());
                     updateMap.put("FILE_SIZE", file.getFileSize());
                     updateMap.put("FILE_MD5", file.getFileMd5());
@@ -505,7 +506,7 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // update app execution file
                 if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
-                    updateMap.put("FILE_TYPE", ScrFile.FileType.EXECUTION.ordinal());
+                    updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
                     updateMap.put("FILE_DATETIME", null);
                     updateMap.put("FILE_SIZE", null);
                     updateMap.put("FILE_MD5", null);

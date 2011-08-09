@@ -10,14 +10,6 @@ import tw.com.citi.catalog.web.mapper.AppFileMapper;
 @Mapper(AppFileMapper.class)
 public class AppFile implements IModel<Long> {
 
-    public enum FileType {
-        SOURCE, EXECUTION
-    }
-
-    public enum FileStatus {
-        EXIST, NOT_FOUND, ACCESS_DENIED
-    }
-
     private Long id;
     private Long jcAppId;
     private String filePath;

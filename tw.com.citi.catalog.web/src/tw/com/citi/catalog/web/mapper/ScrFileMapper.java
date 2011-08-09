@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.ScrFile;
-import tw.com.citi.catalog.web.model.ScrFile.FileType;
 
 public class ScrFileMapper implements RowMapper<ScrFile> {
 

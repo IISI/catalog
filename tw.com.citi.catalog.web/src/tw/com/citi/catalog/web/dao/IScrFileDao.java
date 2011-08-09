@@ -6,6 +6,7 @@ import java.util.Map;
 
 import tw.com.citi.catalog.web.dto.Rpt1100Dto;
 import tw.com.citi.catalog.web.dto.ScrFileDto;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.ScrFile;
 
 public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
@@ -26,7 +27,7 @@ public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
 
     List<ScrFile> find1400ReportData(long scrId, Long buildUnitId);
 
-    List<ScrFileDto> findBy(long scrId, Long buildUnitId, ScrFile.FileType fileType);
+    List<ScrFileDto> findBy(long scrId, Long buildUnitId, FileType fileType);
 
     int updateLastCompileTimeByJcScrId(Timestamp lastCompileTime, Long jcScrId);
 

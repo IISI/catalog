@@ -2,8 +2,6 @@ package tw.com.citi.catalog.web.dto;
 
 import java.sql.Timestamp;
 
-import tw.com.citi.catalog.web.model.ScrFile.FileType;
-
 public class ScrFileDto {
 
     private Long id;

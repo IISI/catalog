@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 
 import tw.com.citi.catalog.web.model.AppFile;
-import tw.com.citi.catalog.web.model.AppFile.FileType;
+import tw.com.citi.catalog.web.model.FileType;
 
 public class AppFileMapper implements RowMapper<AppFile> {
 

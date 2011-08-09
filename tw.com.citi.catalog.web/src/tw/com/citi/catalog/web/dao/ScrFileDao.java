@@ -12,8 +12,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import tw.com.citi.catalog.web.dto.Rpt1100Dto;
 import tw.com.citi.catalog.web.dto.ScrFileDto;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.ScrFile;
-import tw.com.citi.catalog.web.model.ScrFile.FileType;
 
 public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements IScrFileDao {
 

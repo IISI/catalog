@@ -14,11 +14,12 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppFileDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
+import tw.com.citi.catalog.web.dao.IFileMoveDetailDao;
 import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppFile;
-import tw.com.citi.catalog.web.model.AppFile.FileType;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
@@ -38,6 +39,9 @@ public class JCS1700 extends AbstractBasePage {
 
     @SpringBean(name = "appFileDao")
     private IAppFileDao appFileDao;
+
+    @SpringBean(name = "fileMoveDetailDao")
+    private IFileMoveDetailDao fileMoveDetailDao;
 
     private transient Gson gson = new Gson();
 

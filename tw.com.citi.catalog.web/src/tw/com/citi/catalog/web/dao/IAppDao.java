@@ -1,6 +1,5 @@
 package tw.com.citi.catalog.web.dao;
 
-import java.util.List;
 import java.util.Map;
 
 import tw.com.citi.catalog.web.model.App;

@@ -14,15 +14,16 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
 import tw.com.citi.catalog.web.dao.IBuildUnitDao;
+import tw.com.citi.catalog.web.dao.IFileMoveDetailDao;
 import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
+import tw.com.citi.catalog.web.model.FileStatus;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
-import tw.com.citi.catalog.web.model.ScrFile.FileStatus;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 import com.google.gson.Gson;
@@ -44,6 +45,9 @@ public class JCS1600 extends AbstractBasePage {
 
     @SpringBean(name = "scrFileDao")
     private IScrFileDao scrFileDao;
+
+    @SpringBean(name = "fileMoveDetailDao")
+    private IFileMoveDetailDao fileMoveDetailDao;
 
     private transient Gson gson = new Gson();
 
