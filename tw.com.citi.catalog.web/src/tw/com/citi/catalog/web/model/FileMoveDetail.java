@@ -12,6 +12,8 @@ public class FileMoveDetail implements IModel<Long> {
 
     private Long jcFunctionLogId;
 
+    private Long jcAppFileId;
+
     private String targetPath;
 
     private ProcessResult processResult;
@@ -48,6 +50,14 @@ public class FileMoveDetail implements IModel<Long> {
 
     public ProcessResult getProcessResult() {
         return processResult;
+    }
+
+    public void setJcAppFileId(Long jcAppFileId) {
+        this.jcAppFileId = jcAppFileId;
+    }
+
+    public Long getJcAppFileId() {
+        return jcAppFileId;
     }
 
 }

@@ -15,6 +15,7 @@ public class FileMoveDetailMapper implements RowMapper<FileMoveDetail> {
         FileMoveDetail fileMoveDetail = new FileMoveDetail();
         fileMoveDetail.setId(rs.getLong("ID"));
         fileMoveDetail.setJcFunctionLogId(rs.getLong("JC_FUNCTION_LOG_ID"));
+        fileMoveDetail.setJcAppFileId(rs.getLong("JC_APP_FILE_ID"));
         fileMoveDetail.setProcessResult(ProcessResult.values()[rs.getInt("PROCESS_RESULT")]);
         fileMoveDetail.setTargetPath(rs.getString("TARGET_PATH"));
         return fileMoveDetail;

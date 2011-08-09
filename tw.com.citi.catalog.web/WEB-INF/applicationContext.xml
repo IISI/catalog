@@ -88,10 +88,6 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
-    <bean id="fileCheckoutDetailDao" class="tw.com.citi.catalog.web.dao.FileCheckoutDetailDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
     <bean id="compileDetailDao" class="tw.com.citi.catalog.web.dao.CompileDetailDao">
         <property name="dataSource" ref="dataSource"></property>
     </bean>

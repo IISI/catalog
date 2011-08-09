@@ -13,6 +13,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 import tw.com.citi.catalog.web.dao.IAppDao;
+import tw.com.citi.catalog.web.dao.IAppFileDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
 import tw.com.citi.catalog.web.dao.IBuildUnitDao;
 import tw.com.citi.catalog.web.dao.IFileMoveDetailDao;
@@ -20,6 +21,7 @@ import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
+import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.FileStatus;
 import tw.com.citi.catalog.web.model.ProcessResult;
@@ -49,6 +51,9 @@ public class JCS1200 extends AbstractBasePage {
 
     @SpringBean(name = "scrFileDao")
     private IScrFileDao scrFileDao;
+
+    @SpringBean(name = "appFileDao")
+    private IAppFileDao appFileDao;
 
     @SpringBean(name = "fileMoveDetailDao")
     private IFileMoveDetailDao fileMoveDetailDao;
@@ -126,8 +131,8 @@ public class JCS1200 extends AbstractBasePage {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
             String status = file.get("fileStatus");
-            ScrFile scrFile = scrFileDao.findByUK(scrId, filePath, fileName);
-            params.put("JC_SCR_FILE_ID", scrFile.getId());
+            AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), filePath, fileName);
+            params.put("JC_APP_FILE_ID", appFile.getId());
             try {
                 if ("DELETE".equalsIgnoreCase(status)) {
                     SmbFileUtil.deleteFile(qaSourcePath + filePath, fileName);
