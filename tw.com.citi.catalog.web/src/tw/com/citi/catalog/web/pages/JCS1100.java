@@ -49,6 +49,8 @@ import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Programmer;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.ScrFile;
+import tw.com.citi.catalog.web.util.F;
+import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.FileUtil;
 import tw.com.citi.catalog.web.util.IPvcsCmd;
 import tw.com.citi.catalog.web.util.IZipCmd;
@@ -126,11 +128,14 @@ public class JCS1100 extends AbstractBasePage {
             return checkImportFile(changeFile, hashFile, pvcsUsername, pvcsPassword, scrId);
         } else if ("register".equals(actionName)) {
             long scrId = params.getLong("actionParams[scrId]");
+            Long functionLogId = F.log(scrId, Func.JCS1100, null, null, new Date(), null);
             String objs = params.getString("actionParams[files]");
             GsonBuilder builder = new GsonBuilder();
             builder.setDateFormat(DateUtil.FORMAT);
             List<JCS1100.FileModel> files = builder.create().fromJson(objs, new TypeToken<List<JCS1100.FileModel>>() {}.getType());
-            return register(scrId, files);
+            String results = register(scrId, files);
+            F.updateEndTime(functionLogId, new Date());
+            return results;
         }
         return null;
     }
