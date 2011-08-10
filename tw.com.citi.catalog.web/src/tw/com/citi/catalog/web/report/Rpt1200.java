@@ -54,4 +54,12 @@ public class Rpt1200 implements IReport {
         return null;
     }
 
+    public void setFunctionLogDao(IFunctionLogDao functionLogDao) {
+        this.functionLogDao = functionLogDao;
+    }
+
+    public void setFileMoveDetailDao(IFileMoveDetailDao fileMoveDetailDao) {
+        this.fileMoveDetailDao = fileMoveDetailDao;
+    }
+
 }

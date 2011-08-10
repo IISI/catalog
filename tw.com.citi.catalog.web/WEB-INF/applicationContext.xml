@@ -11,6 +11,13 @@
 
     <osgi:service ref="rpt1100" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
+    <bean id="rpt1200" class="tw.com.citi.catalog.web.report.Rpt1200">
+        <property name="functionLogDao" ref="functionLogDao"></property>
+        <property name="fileMoveDetailDao" ref="fileMoveDetailDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1200" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="rpt1400" class="tw.com.citi.catalog.web.report.Rpt1400">
         <property name="scrFileDao" ref="scrFileDao"></property>
     </bean>
