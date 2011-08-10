@@ -105,6 +105,7 @@ public class JCS1000 extends AbstractBasePage {
         dataMap.put("status", Status.CREATE.ordinal());
         dataMap.put("process_time", now);
         dataMap.put("register_count", 0);
+        dataMap.put("deleted", 0);
         Long id = scrDao.create(dataMap);
         Scr scr = scrDao.findById(id);
         return gson.toJson(scr);
