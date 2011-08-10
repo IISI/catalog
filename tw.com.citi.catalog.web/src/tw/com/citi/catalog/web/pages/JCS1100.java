@@ -117,7 +117,7 @@ public class JCS1100 extends AbstractBasePage {
             return findBuildUnit(scrId);
         } else if ("unzipFile".equals(actionName)) {
             String zipFile = params.getString("actionParams[zipFile]");
-            String zipPassword = params.getString("actionParams[zipPassword");
+            String zipPassword = params.getString("actionParams[zipPassword]");
             return unzipFile(zipFile, zipPassword);
         } else if ("checkImportFile".equals(actionName)) {
             String changeFile = params.getString("actionParams[changeFile]");
