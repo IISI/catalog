@@ -53,7 +53,7 @@ public class JCS5300 extends AbstractBasePage {
                 programmerDao.create(dataMap);
             } else if ("Modify".equals(actionName)) {
                 String id = (String) dataMap.get("id");
-                if (programmer != null && !id.equals(programmer.getId())) {
+                if (programmer != null && !id.equals(String.valueOf(programmer.getId()))) {
                     throw new IllegalStateException("Programmer with given name and team is already exist.");
                 }
                 programmerDao.update(dataMap);
