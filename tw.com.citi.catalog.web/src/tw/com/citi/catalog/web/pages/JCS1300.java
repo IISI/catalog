@@ -142,28 +142,35 @@ public class JCS1300 extends AbstractBasePage {
     }
 
     private String compile(Map dataMap) {
+        Map<String, Object> retVal = new HashMap<String, Object>();
         Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         Long scrId = Long.parseLong(sScrId);
         Long fLogId = F.log(scrId, Func.JCS1300, "", "", start, null);
+        retVal.put("functionLogId", fLogId);
         String localPath = (String) dataMap.get("localPath");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
+        List<String[]> consoleLogs = new ArrayList<String[]>();
         for (Map<String, String> file : fileList) {
             String batchFileName = file.get("batchFileName");
             File batchFile = new File(localPath + batchFileName);
             if (batchFile.exists()) {
-                int rc = compile(batchFile);
+                Map<String, Object> results = compile(batchFile);
+                int rc = (Integer) results.get("rc");
                 if (rc != 0) {
                     F.updateEndTime(fLogId, new Date());
                     throw new RuntimeException("Execute " + batchFileName + " fail with return code " + rc);
+                } else {
+                    consoleLogs.add(new String[] { (String) results.get("result") });
                 }
             } else {
                 F.updateEndTime(fLogId, new Date());
                 throw new RuntimeException("Can't find " + batchFileName + "in Mapping Local Path.");
             }
         }
+        retVal.put("consoleLogs", gson.toJson(consoleLogs));
         // 更新 Scr 的 status
         Scr scr = scrDao.findById(scrId);
         scrDao.updateStatus(scr.getId(), Status.COMPILE);
@@ -207,10 +214,10 @@ public class JCS1300 extends AbstractBasePage {
             }
         }
         F.updateEndTime(fLogId, new Date());
-        return null;
+        return gson.toJson(retVal);
     }
 
-    private int compile(File batchFile) {
+    private Map<String, Object> compile(File batchFile) {
         String result = "";
         Process process = null;
         BufferedReader bf = null;
@@ -232,7 +239,10 @@ public class JCS1300 extends AbstractBasePage {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage() + "\n" + result, e);
         }
-        return process == null ? -1 : process.exitValue();
+        Map<String, Object> results = new HashMap<String, Object>();
+        results.put("rc", process == null ? -1 : process.exitValue());
+        results.put("result", result);
+        return results;
     }
 
     private String getFiles(Map dataMap) {
