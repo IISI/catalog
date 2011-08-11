@@ -41,8 +41,8 @@ public class PvcsCmd implements IPvcsCmd{
 				}
 				
 			}
-			
-			Process process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
@@ -92,7 +92,8 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="pcli AddFiles -pr\""+projectDatabase+"\" -id\""+username+":"+password+"\" -pp\""+projectPath+"\" -c -m\""+description+"\" -t\""+description+"\" -v\""+label+"\" "+addFileArray;
 			logger.debug("command:"+command);
-			Process process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
@@ -153,7 +154,8 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="pcli AddFiles -pr\""+ projectDatabase +"\" -id\"" + username + ":" + password +"\" -pp\"" + projectPath + "\" -c -m\""+description+"\" -t\""+description+"\" -v\""+label+"\" "+addFileArray;
 			logger.debug("command:"+command);
-			Process process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
@@ -210,7 +212,8 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="pcli Delete -pr\""+projectDatabase+"\" -id\""+username+":"+password+"\" -pp\""+projectPath+"\" "+delFileArray;
 			logger.debug("command:"+command);
-			Process process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
@@ -269,7 +272,8 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="pcli get -pr\""+projectDatabase+"\" -id\""+username+":"+password+"\" -pp\""+projectPath+"\" -l -nm -o "+checkoutFileArray;
 			logger.debug("command:"+command);
-			Process process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
@@ -315,7 +319,8 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="vdiff "+file1+" "+file2;
 			logger.debug("command:"+command);
-			Process process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
 			
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String r="";
