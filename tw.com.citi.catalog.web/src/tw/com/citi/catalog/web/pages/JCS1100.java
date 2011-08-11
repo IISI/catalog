@@ -413,8 +413,6 @@ public class JCS1100 extends AbstractBasePage {
                     appFileDao.create(updateMap);
                 } else if (appExecutionFile.getDeleted()) {
                     appFileDao.update1100(updateMap);
-                } else {
-                    throw new RuntimeException("Cannot add file. File already exists.");
                 }
                 
                 //create scr execution file
@@ -424,13 +422,13 @@ public class JCS1100 extends AbstractBasePage {
                 } else if (scrExecutionFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
                     scrExecutionFileId = scrExecutionFile.getId();
-                } else {
-                    throw new RuntimeException("Cannot add file. File already exists.");
                 }
                 
                 // create execution register history
-                updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
-                registerHistoryDao.create(updateMap);
+                if (scrExecutionFileId != null) {
+                    updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
+                    registerHistoryDao.create(updateMap);
+                }
             } else if ("update".equalsIgnoreCase(file.getAction())) {
                 // update app source file
                 if (appSourceFile != null && !appSourceFile.getDeleted()) {
