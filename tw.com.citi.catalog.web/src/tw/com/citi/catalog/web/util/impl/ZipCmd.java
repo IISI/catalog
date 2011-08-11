@@ -30,7 +30,8 @@ public class ZipCmd implements IZipCmd{
 		try {
 			String command="pkzipc -extract=all -overwrite=all -times=all -directories -silent -passphrase="+password+" "+sourceFile+" "+targetPath;
 			logger.debug("command:"+command);
-			process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String r="";
 			while((r=bf.readLine()) !=  null){
@@ -74,7 +75,8 @@ public class ZipCmd implements IZipCmd{
 		try {
 			String command="pkzipc -add -passphrase="+password+" -cryptalgorithm=aes,256 -cd=encrypt "+zipFile+" "+fileStr;
 			logger.debug("command:"+command);
-			process = Runtime.getRuntime().exec(command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			process = Runtime.getRuntime().exec(cmd);
 			
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String r="";
