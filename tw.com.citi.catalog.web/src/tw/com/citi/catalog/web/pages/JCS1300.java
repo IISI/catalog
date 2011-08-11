@@ -65,8 +65,6 @@ public class JCS1300 extends AbstractBasePage {
 
     private transient Gson gson = new Gson();
 
-    private Map<String, String> compileResult;
-
     @Override
     public String handleRequest(PageParameters params) {
         String result;
@@ -152,7 +150,6 @@ public class JCS1300 extends AbstractBasePage {
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
-        compileResult = new HashMap<String, String>();
         for (Map<String, String> file : fileList) {
             String batchFileName = file.get("batchFileName");
             File batchFile = new File(localPath + batchFileName);
@@ -230,7 +227,6 @@ public class JCS1300 extends AbstractBasePage {
                 System.out.println(line + "\n");
             }
             bf.close();
-            compileResult.put(fullPath, result);
             logger.debug(result);
         } catch (IOException e) {
             e.printStackTrace();
