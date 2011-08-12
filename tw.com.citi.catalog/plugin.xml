@@ -23,5 +23,38 @@
          point="org.eclipse.ui.editors">
       <editor id="tw.com.iisi.rabbithq.editors.MozillaEditor" name="Mozilla" class="org.eclipse.springframework.util.SpringExtensionFactory:mozillaEditor" contributorClass="org.eclipse.ui.part.EditorActionBarContributor"></editor>
    </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="tw.com.citi.catalog.application"
+            name="RabbitHQ">
+         <property
+               name="windowImages"
+               value="icons/sample.gif">
+         </property>
+         <property
+               name="aboutText"
+               value="RCP Mail template created by PDE">
+         </property>
+         <property
+               name="aboutImage"
+               value="product_lg.gif">
+         </property>
+         <property
+               name="appName"
+               value="RabbitHQ">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="tw.com.citi.catalog.Application">
+         </run>
+      </application>
+   </extension>
 
 </plugin>

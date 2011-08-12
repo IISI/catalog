@@ -9,4 +9,40 @@
 
     <bean id="tw.com.citi.catalog.handler.java.SelectFileHandler" class="tw.com.citi.catalog.handler.java.SelectFileHandler"></bean>
 
+	<bean id="settings" class="tw.com.citi.catalog.Settings"></bean>
+
+
+    <bean id="secDataSourceProxy" class="org.springframework.jdbc.datasource.DelegatingDataSource">
+        <constructor-arg ref="secDataSource"></constructor-arg>
+    </bean>
+
+    <bean id="dataSourceProxy" class="org.springframework.jdbc.datasource.DelegatingDataSource">
+        <constructor-arg ref="dataSource"></constructor-arg>
+    </bean>
+
+    <bean id="secDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="#{settings.jdbc.driverClassName}"></property>
+        <property name="jdbcUrl" value="#{settings.jdbc.url}"></property>
+        <property name="user" value="#{settings.jdbc.username}"></property>
+        <property name="password" value="#{settings.jdbc.password}"></property>
+        <property name="checkoutTimeout" value="10000"></property>
+    </bean>
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    </bean>
+
+    <bean id="pcapDao" class="tw.com.citi.catalog.dao.PcapDao">
+        <constructor-arg ref="secDataSource"></constructor-arg>
+    </bean>
+    
+    <bean id="userDao" class="tw.com.citi.catalog.dao.UserDao">
+        <constructor-arg ref="secDataSource"></constructor-arg>
+    </bean>
+    
+    <bean id="appFunctionDao" class="tw.com.citi.catalog.dao.AppFunctionDao">
+        <constructor-arg ref="secDataSource"></constructor-arg>
+    </bean>
+    
+
+
 </beans>

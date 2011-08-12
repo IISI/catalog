@@ -7,6 +7,12 @@ import tw.com.citi.catalog.views.MenuView;
 
 public class Perspective implements IPerspectiveFactory {
 
+
+    /**
+     * The ID of the perspective as specified in the extension.
+     */
+    public static final String ID = "tw.com.citi.catalog.Perspective";
+	
     @Override
     public void createInitialLayout(IPageLayout layout) {
         String editorArea = layout.getEditorArea();

@@ -8,7 +8,19 @@ Bundle-Vendor: IISI
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  tw.com.iisi.rabbithq,
- org.eclipse.springframework.util;bundle-version="1.0.3"
+ org.eclipse.springframework.util;bundle-version="1.0.3",
+ org.springframework.jdbc;bundle-version="3.0.5",
+ org.apache.commons.dbcp;bundle-version="1.4.0",
+ org.slf4j.api;bundle-version="1.5.11",
+ org.springframework.context;bundle-version="3.0.5",
+ org.springframework.core;bundle-version="3.0.5",
+ org.springframework.transaction;bundle-version="3.0.5",
+ org.springframework.beans;bundle-version="3.0.5",
+ org.apache.commons.codec;bundle-version="1.3.0",
+ com.google.gson;bundle-version="1.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: tw.com.citi.catalog.util
+Bundle-ClassPath: libs/c3p0-0.9.1.2.jar,
+ libs/sqljdbc4.jar,
+ .

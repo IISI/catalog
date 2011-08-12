@@ -1,6 +1,17 @@
 package tw.com.citi.catalog.views;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.*;
@@ -12,7 +23,27 @@ import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.RowMapper;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
+import tw.com.citi.catalog.Activator;
+import tw.com.citi.catalog.ApplicationWorkbenchWindowAdvisor;
+import tw.com.citi.catalog.dao.IAppFunctionDao;
+import tw.com.citi.catalog.dao.IGenericDao;
+import tw.com.citi.catalog.dao.IUserDao;
+import tw.com.citi.catalog.model.AppFunction;
+import tw.com.citi.catalog.model.User;
 import tw.com.iisi.rabbithq.editors.BrowserEditorInput;
 import tw.com.iisi.rabbithq.editors.MozillaEditor;
 
@@ -44,6 +75,7 @@ public class MenuView extends ViewPart {
     private Action action2;
     private Action singleClickAction;
 
+    
     /*
      * The content provider class is responsible for providing objects to the
      * view. It can wrap existing objects in adapters or simply return objects
@@ -53,16 +85,35 @@ public class MenuView extends ViewPart {
      */
 
     class TreeObject implements IAdaptable {
+    	
+    	private String id;
         private String name;
+        private String url;
         private TreeParent parent;
 
         public TreeObject(String name) {
             this.name = name;
         }
 
+        public void setId(String id) {
+			this.id = id;
+		}
+
+		public String getId() {
+			return id;
+		}
+        
         public String getName() {
             return name;
         }
+        
+		public String getUrl() {
+			return url;
+		}
+
+		public void setUrl(String url) {
+			this.url = url;
+		}
 
         public void setParent(TreeParent parent) {
             this.parent = parent;
@@ -153,6 +204,30 @@ public class MenuView extends ViewPart {
          * code, you will connect to a real model and expose its hierarchy.
          */
         private void initialize() {
+        	
+        	URL config = Platform.getBundle(Activator.PLUGIN_ID).getResource("/configs/tree.json");
+        	JsonArray jsonArr = null;
+        	try {
+                InputStreamReader reader = new InputStreamReader(config.openStream(), "UTF-8");
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(JsonArray.class, new CustomerDeserializer());
+                jsonArr = gsonBuilder.create().fromJson(reader, JsonArray.class);
+                //System.out.println("&&& json size="+jsonArr.get(0).getAsJsonObject().get("nodes"));
+                
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            
+            
+            for(int i=0;i<jsonArr.size();i++){
+            	JsonObject rootObj=jsonArr.get(i).getAsJsonObject();
+            	TreeObject parent=getFilterNodes(rootObj);
+            	invisibleRoot = new TreeParent("");
+                invisibleRoot.addChild(parent);
+            	
+            }
+        	
+            /*
             TreeObject to5100 = new TreeObject("JCS5100");
             TreeObject to5300 = new TreeObject("JCS5300");
             TreeObject to5400 = new TreeObject("JCS5400");
@@ -189,7 +264,32 @@ public class MenuView extends ViewPart {
 
             invisibleRoot = new TreeParent("");
             invisibleRoot.addChild(root);
+            */
         }
+        
+        private TreeObject getFilterNodes(JsonObject rootObj){
+        	if(rootObj.get("nodes")!=null && rootObj.get("nodes").isJsonArray()){
+        		TreeParent treeParent=new TreeParent(rootObj.get("text").getAsString());
+        		JsonArray nodes=rootObj.get("nodes").getAsJsonArray();
+        		for(int i=0;i<nodes.size();i++){
+        			JsonObject jsonObj=nodes.get(i).getAsJsonObject();
+                	TreeObject nodeObj=getFilterNodes(jsonObj);
+                	treeParent.addChild(nodeObj);
+        		}
+        		return treeParent;
+        		
+        	}else if(rootObj.get("nodes")==null ){
+        		TreeObject treeObject=new TreeObject(rootObj.get("text").getAsString());
+        		if(rootObj.get("url")!=null){
+        			treeObject.setUrl(rootObj.get("url").getAsString());
+        		}
+        		return treeObject;
+        	}else{
+        		return null;
+        	}
+        	
+        }
+        
     }
 
     class ViewLabelProvider extends LabelProvider {
@@ -223,6 +323,9 @@ public class MenuView extends ViewPart {
         viewer.setContentProvider(new ViewContentProvider());
         viewer.setLabelProvider(new ViewLabelProvider());
         viewer.setInput(getViewSite());
+        viewer.expandAll();
+        
+        
         makeActions();
         hookContextMenu();
         hookSingleClickAction();
@@ -270,6 +373,8 @@ public class MenuView extends ViewPart {
         drillDownAdapter.addNavigationActions(manager);
     }
 
+    
+    
     private void makeActions() {
         action1 = new Action() {
             public void run() {
@@ -295,13 +400,15 @@ public class MenuView extends ViewPart {
             @Override
             public void run() {
                 ISelection selection = viewer.getSelection();
-                Object obj = ((IStructuredSelection) selection)
+                TreeObject obj = (TreeObject)((IStructuredSelection) selection)
                         .getFirstElement();
                 if (obj == null || obj instanceof TreeParent)
                     return;
                 IWorkbenchPage page = MenuView.this.getViewSite().getPage();
-                BrowserEditorInput editorInput = new BrowserEditorInput(
-                        "http://localhost:8080/catalog/app/" + obj.toString());
+
+                System.out.println(obj.getUrl());
+                BrowserEditorInput editorInput = new BrowserEditorInput(obj.getUrl());
+                        //"http://localhost:8080/catalog/app/" + obj.toString());
                 IEditorPart editorPart = page.getActiveEditor();
                 if (editorPart == null) {
                     try {
@@ -337,4 +444,150 @@ public class MenuView extends ViewPart {
     public void setFocus() {
         viewer.getControl().setFocus();
     }
+    
+    private class CustomerDeserializer implements JsonDeserializer<JsonArray> {
+
+        private List<AppFunction> functionList = null;
+
+        @Override
+        public JsonArray deserialize(JsonElement element, Type type, JsonDeserializationContext context)
+                throws JsonParseException {
+            return filter(element.getAsJsonArray());
+        }
+
+        private JsonArray filter(JsonArray array) {
+        	//LoggerFactory.getLogger(ApplicationWorkbenchWindowAdvisor.class).info("$$$$ filter start");
+            JsonArray array2 = new JsonArray();
+            for (Iterator<JsonElement> iter = array.iterator(); iter.hasNext();) {
+                JsonObject function = iter.next().getAsJsonObject();
+                boolean allowed = false;
+                JsonElement id = function.get("id");
+                if (id != null) {
+                	System.out.println("function list="+getFunctionList().size());
+                    for (AppFunction func : getFunctionList()) {
+                        String funcCode = func.getFuncCode() == null ? null : func.getFuncCode().trim();
+                        if (id.getAsString().equals("") || id.getAsString().equals(funcCode)) {
+                            allowed = true;
+                            break;
+                        }
+                    }
+
+                    if (allowed) {
+                        if (function.has("nodes")) {
+                            JsonElement node = function.get("nodes");
+                            JsonArray array3 = filter(node.getAsJsonArray());
+                            if (array3.size() > 0) {
+                                function.add("nodes", array3);
+                                array2.add(function);
+                            }
+                        } else {
+                            array2.add(function);
+                        }
+                    }
+                } else {
+                    if (function.has("nodes")) {
+                        JsonElement node = function.get("nodes");
+                        JsonArray array3 = filter(node.getAsJsonArray());
+                        if (array3.size() > 0) {
+                            function.add("nodes", array3);
+                            array2.add(function);
+                        }
+                    }
+                }
+            }
+            return array2;
+        }
+
+        private IAppFunctionDao getAppFunctionDao(String beanName) throws Exception {
+            BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
+            ServiceReference[] daoRefs = bc.getServiceReferences(IAppFunctionDao.class.getName(),
+                    "(org.springframework.osgi.bean.name=" + beanName + ")");
+            IAppFunctionDao dao = (IAppFunctionDao) bc.getService(daoRefs[0]);
+            return dao;
+        }
+        
+        private IUserDao getUserDao(String beanName) throws Exception {
+            BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
+            ServiceReference[] daoRefs = bc.getServiceReferences(IUserDao.class.getName(),
+                    "(org.springframework.osgi.bean.name=" + beanName + ")");
+            IUserDao dao = (IUserDao) bc.getService(daoRefs[0]);
+            return dao;
+        }
+
+        private List<AppFunction> getFunctionList() {
+        	
+        	
+        	
+        	System.out.println("$$$$ func list start");
+            List<AppFunction> functions = new ArrayList<AppFunction>();
+            if (functionList != null) {
+                return functionList;
+            }
+
+            String[] args = Platform.getApplicationArgs();
+            Map<String, String> params = new HashMap<String, String>();
+            for (String arg : args) {
+            	System.out.println("$$$$ arg="+arg);
+                String[] keyValue = arg.split("=", 2);
+                if ("userId".equalsIgnoreCase(keyValue[0])) {
+                    params.put("userId", keyValue[1]);
+                }
+            }
+            
+            System.out.println("$$$$ userId="+params.get("userId"));
+
+            try {
+            	
+                List<User> grpList = getUserDao("userDao").query("SELECT UserId, GrpName FROM USERS WHERE UserId = :userId", User.class, params);
+                System.out.println("$$$$ grpList size="+grpList.size());
+                if (grpList != null && grpList.size() > 0) {
+                    User user = grpList.get(0);
+                    String grpName = user.getGrpName();
+                    System.out.println("Find one record from USERS where userId="+params.get("userId")+", grpName="+grpName);
+                    
+                    
+                    System.out.println("$$$$ grpName bf split token="+grpName);
+                    StringTokenizer st = new StringTokenizer(grpName, ";");
+                    System.out.println("$$$$ grpName af split token="+grpName);
+                    if (st.countTokens() > 0) {
+                        StringBuffer sql = new StringBuffer();
+                        sql.append("SELECT FUNCCODE, FUNCDESC FROM FUNCLIST WHERE MAJORSYSCODE='JCS' ");
+                        int grpIndex = 0;
+                        while (st.hasMoreElements()) {
+                            if (grpIndex == 0) {
+                                sql.append("AND (");
+                            } else {
+                                sql.append("OR ");
+                            }
+                            sql.append(st.nextToken().trim()).append("=1 ");
+                            grpIndex++;
+                        }
+                        sql.append(" )");
+                        
+                        
+                        System.out.println("$$$$ sql="+sql.toString());
+
+                        functions = getAppFunctionDao("appFunctionDao").query(sql.toString(), new RowMapper<AppFunction>() {
+
+                            @Override
+                            public AppFunction mapRow(ResultSet rs, int rowNum) throws SQLException {
+                                AppFunction func = new AppFunction();
+                                func.setFuncCode(rs.getString("FUNCCODE"));
+                                func.setFuncDesc(rs.getString("FUNCDESC"));
+                                return func;
+                            }
+                        }, params, true);
+                        
+                        System.out.println("$$$$ functions="+functions);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return functions;
+        }
+
+    }
+    
 }
