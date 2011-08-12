@@ -145,3 +145,207 @@ CREATE TABLE JC_COMPILE_DETAIL (
     JC_APP_FILE_ID INT NOT NULL REFERENCES JC_APP_FILE(ID),
     PROCESS_RESULT INT
 );
+
+/****** for Common security test ******/
+/****** Object:  Table [dbo].[USERS]    Script Date: 08/12/2011 11:01:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[USERS](
+	[UserID] [char](20) NOT NULL,
+	[EmpID] [char](20) NULL,
+	[Name] [char](50) NULL,
+	[Maker] [char](20) NULL,
+	[Checker] [char](20) NULL,
+	[Telephone] [char](20) NULL,
+	[Pswd0] [binary](32) NULL,
+	[Pswd1] [binary](32) NULL,
+	[Pswd2] [binary](32) NULL,
+	[Pswd3] [binary](32) NULL,
+	[Pswd4] [binary](32) NULL,
+	[Pswd5] [binary](32) NULL,
+	[Enable] [tinyint] NULL,
+	[Location] [char](12) NULL,
+	[Depart] [char](16) NULL,
+	[Business] [char](20) NULL,
+	[CreateDate] [datetime] NULL,
+	[LastLogin] [datetime] NULL,
+	[LastUpdate] [datetime] NULL,
+	[ErrorLogin] [tinyint] NULL,
+	[GrpName] [char](200) NULL,
+	[Branch] [char](20) NULL,
+	[Action] [char](1) NULL,
+	[LastTab] [int] NULL,
+	[ApplicationID] [varchar](6) NULL,
+	[GEID] [varchar](10) NULL
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+
+/****** Object:  Table [dbo].[SEC_USRBASIC]    Script Date: 08/12/2011 11:01:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[SEC_USRBASIC](
+	[USR_ID_C] [varchar](20) NULL,
+	[USR_PWD_C] [varbinary](32) NULL
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+
+/****** Object:  Table [dbo].[PCAP]    Script Date: 08/12/2011 11:01:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[PCAP](
+	[SeqNo] [int] NOT NULL,
+	[SvrName] [varchar](20) NULL,
+	[DBName] [varchar](20) NULL,
+	[UsrName] [varchar](20) NULL,
+	[DBID] [varbinary](40) NULL,
+	[OleProvider] [varchar](15) NULL,
+	[Passync] [tinyint] NULL
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+
+/****** Object:  Table [dbo].[FUNCLIST]    Script Date: 08/12/2011 11:01:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[FUNCLIST](
+	[FuncCode] [char](15) NOT NULL,
+	[FuncDesc] [char](60) NOT NULL,
+	[MajorSysCode] [char](4) NOT NULL,
+	[TabNo] [int] NOT NULL,
+	[ProgPath] [char](60) NOT NULL,
+	[MakerID] [char](20) NOT NULL,
+	[MakerDate] [char](20) NOT NULL,
+	[GrpAdmin] [bit] NOT NULL,
+	[GrpUserMgr] [bit] NOT NULL,
+	[Grp_Maker] [bit] NOT NULL,
+	[Grp_Checker] [bit] NOT NULL,
+	[QM_REVIEWER] [bit] NOT NULL,
+	[SF] [bit] NOT NULL,
+	[CCP] [bit] NOT NULL,
+	[CIM] [bit] NOT NULL,
+	[CIM1] [bit] NOT NULL,
+	[CIM2] [bit] NOT NULL,
+	[CIM3] [bit] NOT NULL,
+	[CREDIT_CYCLE] [bit] NOT NULL,
+	[DATA_CENTER] [bit] NOT NULL,
+	[EM_CCI] [bit] NOT NULL,
+	[EM_M] [bit] NOT NULL,
+	[EM_C] [bit] NOT NULL,
+	[EM_I] [bit] NOT NULL,
+	[FM] [bit] NOT NULL,
+	[INV_ADM] [bit] NOT NULL,
+	[QM_SA] [bit] NOT NULL,
+	[INS_M] [bit] NOT NULL,
+	[INS_C] [bit] NOT NULL,
+	[CCP_C] [bit] NOT NULL,
+	[Appr_User] [bit] NOT NULL,
+	[Appr_Staff] [bit] NOT NULL,
+	[BCI] [bit] NOT NULL,
+	[APD] [bit] NOT NULL,
+	[EM_Q] [bit] NOT NULL,
+	[SCB_M] [bit] NOT NULL,
+	[SCB_C] [bit] NOT NULL,
+	[WORKOUT_HEAD] [bit] NOT NULL,
+	[OREO] [bit] NOT NULL,
+	[RMS_Admin] [bit] NOT NULL,
+	[TCB_HOLIDAY4TPE] [bit] NOT NULL,
+	[KHB_HOLIDAY4TPE] [bit] NOT NULL,
+	[GSS_M] [bit] NOT NULL,
+	[GSS_C] [bit] NOT NULL,
+	[TPD] [bit] NOT NULL,
+	[CIM_IPS] [bit] NOT NULL,
+	[UPMCHECKER] [bit] NOT NULL,
+	[FM_IR_INQ] [bit] NOT NULL,
+	[FM_OR_MKR] [bit] NOT NULL,
+	[FM_OR_CKR] [bit] NOT NULL,
+	[AM_Maker] [bit] NOT NULL,
+	[AM_Checker] [bit] NOT NULL,
+	[LTP_M] [bit] NOT NULL,
+	[LTP_C] [bit] NOT NULL,
+	[ML_HYB] [bit] NOT NULL,
+	[ML_HCB] [bit] NOT NULL,
+	[ML_PCB] [bit] NOT NULL,
+	[ML_TM] [bit] NOT NULL,
+	[ML_RM] [bit] NOT NULL,
+	[ML_APD] [bit] NOT NULL,
+	[ML_BPA] [bit] NOT NULL,
+	[ML_MKT] [bit] NOT NULL,
+	[ADM_Maker] [bit] NOT NULL,
+	[AM_BSP_M] [bit] NOT NULL,
+	[AM_BSP_C] [bit] NOT NULL,
+	[AMD_TAX_CHECKER] [bit] NOT NULL,
+	[PL_PROC] [bit] NOT NULL,
+	[FMD_FISC] [bit] NOT NULL,
+	[AMD_PA_TAX_M] [bit] NOT NULL,
+	[ML_S] [bit] NOT NULL,
+	[ML_SH] [bit] NOT NULL,
+	[ML_MGT] [bit] NOT NULL,
+	[FM_INV_MKR] [bit] NOT NULL,
+	[FM_INV_CKR] [bit] NOT NULL,
+	[LIB] [bit] NOT NULL,
+	[ML_APD_C] [bit] NOT NULL,
+	[AM_M2] [bit] NOT NULL,
+	[AM_C2] [bit] NOT NULL,
+	[BSG_C] [bit] NOT NULL,
+	[BSG_M] [bit] NOT NULL,
+	[Dummy] [bit] NOT NULL,
+	[KHB_GDB_M] [bit] NOT NULL,
+	[TCB_JGB_M] [bit] NOT NULL,
+	[MLB_M] [bit] NOT NULL,
+	[KHB_GDB_C] [bit] NOT NULL,
+	[TCB_JGB_C] [bit] NOT NULL,
+	[MLB_C] [bit] NOT NULL,
+	[HYB_C] [bit] NOT NULL,
+	[HYB_M] [bit] NOT NULL,
+	[ML_YHB] [bit] NOT NULL,
+	[FA_Maker] [bit] NOT NULL,
+	[FA_Checker] [bit] NOT NULL,
+	[AM] [bit] NOT NULL,
+	[AM1] [bit] NOT NULL
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+
+/****** Object:  Table [dbo].[FUNCLOG]    Script Date: 08/12/2011 11:01:31 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[FUNCLOG](
+	[UserID] [char](20) NOT NULL,
+	[FuncCode] [char](15) NOT NULL,
+	[InDate] [smalldatetime] NOT NULL,
+	[InTime] [char](8) NOT NULL,
+	[OutDate] [smalldatetime] NULL,
+	[OutTime] [char](8) NULL,
+	[PrtFlag] [bit] NOT NULL
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING OFF
+GO
+/****** for Common security test END ******/
+
