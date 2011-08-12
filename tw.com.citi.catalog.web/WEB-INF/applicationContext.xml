@@ -136,4 +136,8 @@
         <property name="buildUnitDao" ref="buildUnitDao"></property>
     </bean>
 
+    <bean id="reportGrid" class="tw.com.citi.catalog.web.grid.ReportGrid">
+        <property name="functionLogDao" ref="functionLogDao"></property>
+    </bean>
+
 </beans>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+<title>4300</title>
+</wicket:head>
+<wicket:extend>
+    <h1>4300 Report</h1>
+    <div id="queryPanel">
+        <table class="form">
+            <tr>
+                <td colspan="2"><div id="actionText" /></td>
+            </tr>
+            <tr>
+                <td><label for="scrNo">SCR No.</label></td>
+                <td><select id="scrNo"></select></td>
+            </tr>
+            <tr>
+                <td><label>Process Date</label></td>
+                <td>
+                    <input id="startDate" type="text" placeholder="MM/DD/YYYY" /> to
+                    <input id="endDate" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td><label>Status/Log Type</label></td>
+                <td>
+                    <input type="checkbox" name="status" value="JCS1200" />1200 Move File from RD to QA<br />
+                    <input type="checkbox" name="status" value="JCS1300" />1300 Compile<br />
+                    <input type="checkbox" name="status" value="JCS1400" />1400 Last Compile Date Time<br />
+                    <input type="checkbox" name="status" value="JCS1600" />1600 Move File from QA to PROD<br />
+                    <input type="checkbox" name="status" value="JCS1700" />1700 Rollback Last Production Change<br />
+                    <input type="checkbox" name="status" value="JCS1800" />1800 Checkout Files from PVCS
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div class="button-bar">
+            <button id="queryButton">Query</button>
+            <button id="misButton" disabled="disabled">MIS Report</button>
+            <button id="scrButton" disabled="disabled">SCR Status Report</button>
+        </div>
+        <br />
+        <table id="scrList"></table>
+        <div id="scrPager"></div>
+        <br />
+        <div class="button-bar">
+            <button id="printButton" disabled="disabled">Print</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+        $(function () {
+            
+            'use strict';
+            
+            function Query() {
+                var scrNoElement = $('#scrNo');
+                var dates = $('#startDate, #endDate');
+                var startDate = $('#startDate');
+                var endDate = $('#endDate');
+                var scrGrid = $('#scrList');
+                var queryButton = $('#queryButton');
+                var misButton = $('#misButton');
+                var scrButton = $('#scrButton');
+                var printButton = $('#printButton');
+                var errMsgDialog = $('<div></div>').dialog({
+                    autoOpen: false,
+                    modal: true,
+                    title: 'Error',
+                    buttons: {
+                        OK: function () {
+                            $(this).dialog('close');
+                        }
+                    }
+                });
+                
+                function initGrid() {
+                    scrGrid.jqGrid({
+                        datatype: 'local',
+                        mtype: 'POST',
+                        colNames: ['ID', 'SCR ID', 'SCR No.', 'Status/Log Type', 'Application', 'Create Date', 'Process Date'],
+                        colModel: [
+                            {name: 'id', index: 'id', hidden: true},
+                            {name: 'scrId', index: 'scrId', hidden: true},
+                            {name: 'scrNo', index: 'scrNo', align: 'left', sortable: true},
+                            {name: 'functionId', index: 'functionId', align: 'left', sortable: true},
+                            {name: 'app', index: 'app', align: 'left', sortable: true},
+                            {name: 'createDate', index: 'createDate', align: 'left', sortable: false},
+                            {name: 'processDate', index: 'processDate', align: 'left', sortable: false}
+                        ],
+                        pager: '#scrPager',
+                        sortname: 'scrNo',
+                        sortorder: 'asc',
+                        viewrecords: true,
+                        caption: 'Report List',
+                        multiselect: true,
+                        loadComplete: function (data) {
+                            if (data.totalRecords > 0) {
+                                misButton.button('enable');
+                                scrButton.button('enable');
+                                printButton.button('enable');
+                            } else {
+                                misButton.button('disable');
+                                scrButton.button('disable');
+                                printButton.button('disable');
+                            }
+                        }
+                    });
+                    scrGrid.jqGrid('navGrid', '#scrPager', {edit: false, add: false, del: false});
+                }
+                
+                function isFormValid() {
+                    var errors = [];
+                    var start = startDate.datepicker('getDate');
+                    var end = endDate.datepicker('getDate');
+                    if (start !== null && end !== null && end - start < 0) {
+                        errors.push('End date can not be smaller than start date.');
+                    }
+                    if (errors.length > 0) {
+                        var messages = '';
+                        for (i in errors) {
+                            messages += '<li>' + errors[i];
+                        }
+                        errMsgDialog.html(messages).dialog('open');
+                        return false;
+                    }
+                    return true;
+                }
+                
+                function hookButtonEvent() {
+                    queryButton.click(function () {
+                        if (!isFormValid()) return;
+                        var functionIds = $('input[name=status]:checked').map(function (index, element) { return element.value }).get();
+                        var queryParams = {
+                            scrId: scrNoElement.children(':selected').val() === 'none' ? null : scrNoElement.children(':selected').val(),
+                            startDate: $.datepicker.formatDate('mm/dd/yy', startDate.datepicker('getDate')),
+                            endDate: $.datepicker.formatDate('mm/dd/yy', endDate.datepicker('getDate')),
+                            functionIds: JSON.stringify(functionIds)
+                        };
+                        var queryOperators = ['', '', '', ''];
+                        scrGrid.jqGrid('setGridParam', {
+                            url: __ajaxHandler,
+                            datatype: 'json',
+                            postData: {
+                                _gridHandler: 'reportGrid',
+                                queryParams: JSON.stringify(queryParams),
+                                queryOperators: queryOperators
+                            }
+                        }).trigger('reloadGrid');
+                    });
+                    misButton.click(function () {
+                        
+                    });
+                    scrButton.click(function () {
+                        
+                    });
+                    printButton.click(function () {
+                        var selectedRows = scrGrid.jqGrid('getGridParam', 'selarrrow');
+                        for (i in selectedRows) {
+                            var selectedRow = scrGrid.jqGrid('getRowData', selectedRows[i]);
+                            switch (selectedRow.functionId) {
+                            case 'JCS1200':
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1200" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + selectedRow.scrNo + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + selectedRow.app + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + selectedRow.id + '" />');
+                                form.submit();
+                                form.remove();
+                                break;
+                            case 'JCS1300':
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1300L" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + selectedRow.scrNo + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + selectedRow.id + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + selectedRow.app + '" />');
+                                form.submit();
+                                form.remove();
+                                break;
+                            case 'JCS1400':
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1400" />');
+                                form.append('<input type="hidden" name="scrId" value="' + selectedRow.scrId + '" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + selectedRow.scrNo + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + selectedRow.app + '" />');
+                                form.submit();
+                                form.remove();
+                                break;
+                            case 'JCS1600':
+                                break;
+                            case 'JCS1700':
+                                break;
+                            case 'JCS1800':
+                                break;
+                            }
+                            setTimeout(function () {}, 1000);
+                        }
+                    });
+                }
+                
+                function reloadScrGrid(scrId, buildUnitId) {
+                    var queryParams = {
+                        jc_scr_id: scrId,
+                        file_type: 0
+                    };
+                    var queryOperators = ['equal', 'equal'];
+                    
+                    if (typeof buildUnitId !== 'undefined') {
+                        queryParams.jc_build_unit_id = buildUnitId;
+                        queryOperators.push('equal');
+                    }
+                    
+                    scrGrid.jqGrid('setGridParam', {
+                        url: __ajaxHandler,
+                        datatype: 'json',
+                        postData: {
+                            _gridHandler: 'scrFileGrid',
+                            queryParams: JSON.stringify(queryParams),
+                            queryOperators: queryOperators
+                        }
+                    }).trigger('reloadGrid');
+                    
+                    // clear queryOperators
+                    scrGrid.jqGrid('getGridParam').postData.queryOperators.length = 0;
+                }
+
+                function initCombobox() {
+                    scrNoElement.load(__ajaxHandler, {'actionName':'findScrNo'});
+                }
+                
+                // initialization
+                (function () {
+                    hookButtonEvent();
+                    initCombobox();
+                    initGrid();
+                    dates.datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        onSelect: function (selectedDate) {
+                            var option = this.id == 'startDate' ? 'minDate' : 'maxDate';
+                            var instance = $(this).data('datepicker');
+                            var date = $.datepicker.parseDate(instance.settings.dateFormat || $.datepicker._defaults.dateFormat, selectedDate, instance.settings);
+                            dates.not(this).datepicker('option', option, date);
+                        }
+                    });
+                })();
+                
+                return {};
+            }
+            
+            (function () {
+                new Query();
+            })();
+            
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>
