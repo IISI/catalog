@@ -351,6 +351,7 @@ public class JCS1100 extends AbstractBasePage {
         scrDao.update1100(updateMap);
         
         for (JCS1100.FileModel file : files) {
+            logger.debug("Registering file: {}", file.getSourcePath() + file.getSourceFileName());
             updateMap.clear();
             
             AppFile appSourceFile = appFileDao.findByUK(scr.getJcAppId(), file.getSourcePath(), file.getSourceFileName());
