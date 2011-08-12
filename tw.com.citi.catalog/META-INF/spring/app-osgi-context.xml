@@ -6,5 +6,16 @@
     <set id="javaHandlers" interface="tw.com.iisi.rabbithq.editors.IJavaHandler" cardinality="0..N"></set>
 
     <service ref="tw.com.citi.catalog.handler.java.SelectFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
+	
+	<service ref="secDataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
+	
+	<service ref="dataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
 
+	<service ref="pcapDao" interface="tw.com.citi.catalog.dao.IPcapDao"></service>
+	
+	<service ref="userDao" interface="tw.com.citi.catalog.dao.IUserDao"></service>
+	
+	<service ref="appFunctionDao" interface="tw.com.citi.catalog.dao.IAppFunctionDao"></service>
+	
+	
 </beans:beans>
