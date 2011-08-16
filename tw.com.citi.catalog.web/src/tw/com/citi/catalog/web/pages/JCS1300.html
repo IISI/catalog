@@ -184,6 +184,7 @@
             
 			function getFilesInfo() {
                 batchList.clearGridData();
+                compileList.clearGridData();
                 var payload = {};
                 payload.actionName = 'GetFiles';
                 payload.actionParams = JSON.stringify({
