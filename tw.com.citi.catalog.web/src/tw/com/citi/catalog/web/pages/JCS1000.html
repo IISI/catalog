@@ -16,6 +16,8 @@
             <td class="formLabel"><label for="scrNo">SCR No.</label></td>
             <td><select id="scrNo"></select></td>
         </tr>
+    </table>
+    <table class="form" id="scrDetail">
         <tr>
             <td class="formLabel"><label for="app">Application Id</label></td>
             <td><select id="app"></select></td>
@@ -90,6 +92,7 @@
             var checkerId = $('#checkerId');
             var checkerPwd = $('#checkerPwd');
             var grid = $('#list');
+            var scrDetail = $('#scrDetail');
             var actionText;
             
             saveButton.hide();
@@ -97,6 +100,7 @@
             modifyButton.hide();
             deleteButton.hide();
             scrNoButton.show();
+            scrDetail.hide();
             loadInitData();
             
             function doButtonControl() {
@@ -112,6 +116,7 @@
                     scrNoButton.show();
                     createButton.show();
                     $('#gbox_list').show();
+                    scrDetail.show();
                 } else if (actionText == 'Create') {
                     text = actionText;
                     scrNo.attr('inoptions', false);
@@ -123,6 +128,7 @@
                     scrNoButton.hide();
                     createButton.hide();
                     $('#gbox_list').hide();
+                    scrDetail.show();
                 } else if ( actionText == 'Modify' ) {
                     text = actionText;
                     saveButton.show();
@@ -132,6 +138,7 @@
                     createButton.hide();
                     deleteButton.hide();
                     modifyButton.hide();
+                    scrDetail.show();
                 } else if ( actionText == 'Reset' ) {
                     saveButton.hide();
                     queryButton.show();
@@ -141,6 +148,7 @@
                     scrNoButton.show();
                     createButton.show();
                     $('#gbox_list').hide();
+                    scrDetail.hide();
                 }
                 text && $('h1').text('1000 SCR Maintain - ' + actionText);
             }
