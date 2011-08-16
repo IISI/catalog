@@ -114,13 +114,15 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
     }
 
     @Override
-    public int updateFileDateTimeById(Timestamp fileDateTime, Long id) {
+    public int updateFileInfoById(Timestamp fileDateTime, Long fileSize, Long id) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("FILE_DATETIME", fileDateTime);
+        params.put("FILE_SIZE", fileSize);
         params.put("ID", id);
         StringBuilder sql = new StringBuilder();
         sql.append("UPDATE ").append(getTableName());
-        sql.append(" SET FILE_DATETIME = :FILE_DATETIME");
+        sql.append(" SET FILE_DATETIME = :FILE_DATETIME, ");
+        sql.append(" FILE_SIZE = :FILE_SIZE");
         sql.append(" WHERE ID = :ID");
         return jdbcTemplate.update(sql.toString(), params);
     }

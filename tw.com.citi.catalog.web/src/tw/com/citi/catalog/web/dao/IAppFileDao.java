@@ -18,6 +18,6 @@ public interface IAppFileDao extends IGenericDao<AppFile, Long> {
 
     int updateLastCompileTimeByJcAppId(Timestamp lastCompileTime, Long jcAppId);
 
-    int updateFileDateTimeById(Timestamp fileDateTime, Long id);
+    int updateFileInfoById(Timestamp fileDateTime, Long fileSize, Long id);
 
 }

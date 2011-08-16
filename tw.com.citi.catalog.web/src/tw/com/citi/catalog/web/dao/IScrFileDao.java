@@ -31,6 +31,6 @@ public interface IScrFileDao extends IGenericDao<ScrFile, Long> {
 
     int updateLastCompileTimeByJcScrId(Timestamp lastCompileTime, Long jcScrId);
 
-    int updateFileDateTimeById(Timestamp fileDateTime, Long id);
+    int updateFileInfoById(Timestamp fileDateTime, Long fileSize, Long id);
 
 }

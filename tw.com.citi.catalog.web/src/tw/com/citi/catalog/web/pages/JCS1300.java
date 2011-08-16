@@ -29,6 +29,7 @@ import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.FileType;
+import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
@@ -152,9 +153,14 @@ public class JCS1300 extends AbstractBasePage {
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
+        Scr scr = scrDao.findById(scrId);
+        Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
+        String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
+        String qaExecutionPath = (String) appPaths.get(PathType.QA_EXECUTION);
         List<String[]> consoleLogs = new ArrayList<String[]>();
         for (Map<String, String> file : fileList) {
             String batchFileName = file.get("batchFileName");
+            String unitId = batchFileName.substring(6, batchFileName.lastIndexOf("."));
             File batchFile = new File(localPath + batchFileName);
             if (batchFile.exists()) {
                 Map<String, Object> results = compile(batchFile);
@@ -164,6 +170,12 @@ public class JCS1300 extends AbstractBasePage {
                     throw new RuntimeException("Execute " + batchFileName + " fail with return code " + rc);
                 } else {
                     consoleLogs.add(new String[] { (String) results.get("result") });
+                    // 把 batch 所在目錄下 target 目錄下的所有檔案搬到 qa execution
+                    try {
+                        SmbFileUtil.renameTo(qaSourcePath + "target\\", null, qaExecutionPath + unitId + "\\", null);
+                    } catch (FileSystemException e) {
+                        throw new RuntimeException("Move files to QA Execution Path fail.");
+                    }
                 }
             } else {
                 F.updateEndTime(fLogId, new Date());
@@ -172,7 +184,6 @@ public class JCS1300 extends AbstractBasePage {
         }
         retVal.put("consoleLogs", gson.toJson(consoleLogs));
         // 更新 Scr 的 status
-        Scr scr = scrDao.findById(scrId);
         scrDao.updateStatus(scr.getId(), Status.COMPILE);
         Timestamp now = new Timestamp(System.currentTimeMillis());
         // 更新 AppFile 的 lastCompileTime
@@ -184,10 +195,12 @@ public class JCS1300 extends AbstractBasePage {
         for (AppFile appFile : appFiles) {
             try {
                 if (FileType.EXECUTION == appFile.getFileType()) {
-                    FileObject file = SmbFileUtil.getFile(appFile.getFilePath(), appFile.getFileName());
-                    appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
-                            appFile.getId());
+                    FileObject file = SmbFileUtil.getFile(qaExecutionPath + appFile.getFilePath(),
+                            appFile.getFileName());
+                    appFileDao.updateFileInfoById(new Timestamp(file.getContent().getLastModifiedTime()), file
+                            .getContent().getSize(), appFile.getId());
                     params.put("JC_APP_FILE_ID", appFile.getId());
+                    params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
                     compileDetailDao.create(params);
                 }
             } catch (FileSystemException e) {
@@ -203,9 +216,10 @@ public class JCS1300 extends AbstractBasePage {
         for (ScrFile scrFile : scrFiles) {
             try {
                 if (FileType.EXECUTION == scrFile.getFileType()) {
-                    FileObject file = SmbFileUtil.getFile(scrFile.getFilePath(), scrFile.getFileName());
-                    appFileDao.updateFileDateTimeById(new Timestamp(file.getContent().getLastModifiedTime()),
-                            scrFile.getId());
+                    FileObject file = SmbFileUtil.getFile(qaExecutionPath + scrFile.getFilePath(),
+                            scrFile.getFileName());
+                    scrFileDao.updateFileInfoById(new Timestamp(file.getContent().getLastModifiedTime()), file
+                            .getContent().getSize(), scrFile.getId());
                 }
             } catch (FileSystemException e) {
                 e.printStackTrace();
