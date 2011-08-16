@@ -24,6 +24,7 @@ import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.FileStatus;
+import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
@@ -214,13 +215,20 @@ public class JCS1600 extends AbstractBasePage {
             files = scrFileDao.findByBuildUnitIds(ids);
         }
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
+        String qaExecutionPath = (String) appPaths.get(PathType.QA_EXECUTION);
         // check 檔案是否真的存在 qaSourcePath
+        String path;
         for (ScrFile file : files) {
             try {
                 if (file.getDeleted()) {
                     file.setFileStatus(FileStatus.DELETE);
                 } else {
-                    if (SmbFileUtil.exist(qaSourcePath + file.getFilePath(), file.getFileName())) {
+                    if (FileType.SOURCE == file.getFileType()) {
+                        path = qaSourcePath;
+                    } else {
+                        path = qaExecutionPath;
+                    }
+                    if (SmbFileUtil.exist(path + file.getFilePath(), file.getFileName())) {
                         file.setFileStatus(FileStatus.EXIST);
                     } else {
                         file.setFileStatus(FileStatus.NOT_FOUND);

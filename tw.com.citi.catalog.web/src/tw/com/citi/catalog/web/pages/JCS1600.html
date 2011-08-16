@@ -213,6 +213,7 @@
             buildUnit.combobox({
                 selected: function(event, ui) {
                     copyFrom.clearGridData();
+                    copyTo.clearGridData();
                     var payload = {};
                     payload.actionName = 'GetFiles';
                     payload.actionParams = JSON.stringify({
