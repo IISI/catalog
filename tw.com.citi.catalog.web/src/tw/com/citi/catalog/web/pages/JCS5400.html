@@ -168,6 +168,8 @@
                 if ( row ){
                     actionText = 'Delete';
                     id.text(grid.getCell(row, 'id'));
+                    name.val(grid.getCell(row, 'name'));
+                    team.val(grid.getCell(row, 'team'));
                     grid.resetSelection();
                     confirmDialog.html('Do you want to delete coordinator ' + grid.getCell(row, 'name') + ' ?').dialog('open');
                 } else {
@@ -272,6 +274,7 @@
                     error: function(jqXHR, textStatus, errorThrown) {
                         var resp = JSON.parse(jqXHR.responseText);
                         dialog.html(resp.message).dialog('open');
+                        resetButton.trigger('click');
                     }
                 });
             }
