@@ -210,6 +210,7 @@
             
             function getFilesInfo() {
                 copyFrom.clearGridData();
+                copyTo.clearGridData();
                 var payload = {};
                 payload.actionName = 'GetFiles';
                 payload.actionParams = JSON.stringify({
