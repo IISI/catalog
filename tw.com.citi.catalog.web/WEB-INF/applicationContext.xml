@@ -49,6 +49,18 @@
 
     <osgi:service ref="rpt1500D" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
+    <bean id="rpt4100" class="tw.com.citi.catalog.web.report.Rpt4100">
+        <property name="functionLogDao" ref="functionLogDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt4100" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
+    <bean id="rpt4200" class="tw.com.citi.catalog.web.report.Rpt4200">
+        <property name="functionLogDao" ref="functionLogDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt4200" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

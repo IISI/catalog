@@ -74,6 +74,10 @@
                         }
                     }
                 });
+                var keptScrId;
+                var keptStartDate;
+                var keptEndDate;
+                var keptFunctionIds;
                 
                 function initGrid() {
                     scrGrid.jqGrid({
@@ -85,7 +89,7 @@
                             {name: 'scrId', index: 'scrId', hidden: true},
                             {name: 'scrNo', index: 'scrNo', align: 'left', sortable: true},
                             {name: 'functionId', index: 'functionId', align: 'left', sortable: true},
-                            {name: 'app', index: 'app', align: 'left', sortable: true},
+                            {name: 'app', index: 'app', align: 'left', sortable: false},
                             {name: 'createDate', index: 'createDate', align: 'left', sortable: false},
                             {name: 'processDate', index: 'processDate', align: 'left', sortable: false}
                         ],
@@ -131,12 +135,20 @@
                 function hookButtonEvent() {
                     queryButton.click(function () {
                         if (!isFormValid()) return;
+                        
                         var functionIds = $('input[name=status]:checked').map(function (index, element) { return element.value }).get();
+                        
+                        // save query criteria in member variables for latter reuse
+                        keptScrId = scrNoElement.children(':selected').val() === 'none' ? null : scrNoElement.children(':selected').val();
+                        keptStartDate = $.datepicker.formatDate('mm/dd/yy', startDate.datepicker('getDate'));
+                        keptEndDate = $.datepicker.formatDate('mm/dd/yy', endDate.datepicker('getDate'));
+                        keptFunctionIds = JSON.stringify(functionIds);
+                        
                         var queryParams = {
-                            scrId: scrNoElement.children(':selected').val() === 'none' ? null : scrNoElement.children(':selected').val(),
-                            startDate: $.datepicker.formatDate('mm/dd/yy', startDate.datepicker('getDate')),
-                            endDate: $.datepicker.formatDate('mm/dd/yy', endDate.datepicker('getDate')),
-                            functionIds: JSON.stringify(functionIds)
+                            scrId: keptScrId,
+                            startDate: keptStartDate,
+                            endDate: keptEndDate,
+                            functionIds: keptFunctionIds
                         };
                         var queryOperators = ['', '', '', ''];
                         scrGrid.jqGrid('setGridParam', {
@@ -150,9 +162,24 @@
                         }).trigger('reloadGrid');
                     });
                     misButton.click(function () {
-                        
+                        var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form.append('<input type="hidden" name="reportName" value="Rpt4100" />');
+                        form.append('<input type="hidden" name="startDate" value="' + keptStartDate + '" />');
+                        form.append('<input type="hidden" name="endDate" value="' + keptEndDate + '" />');
+                        form.append('<input type="hidden" name="scrId" value="' + keptScrId + '" />');
+                        form.append('<input type="hidden" name="functionIds" value=\'' + JSON.stringify(keptFunctionIds) + '\' />');
+                        form.submit();
+                        form.remove();
                     });
                     scrButton.click(function () {
+                        var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form.append('<input type="hidden" name="reportName" value="Rpt4200" />');
+                        form.append('<input type="hidden" name="startDate" value="' + keptStartDate + '" />');
+                        form.append('<input type="hidden" name="endDate" value="' + keptEndDate + '" />');
+                        form.append('<input type="hidden" name="scrId" value="' + keptScrId + '" />');
+                        form.append('<input type="hidden" name="functionIds" value=\'' + JSON.stringify(keptFunctionIds) + '\' />');
+                        form.submit();
+                        form.remove();
                         
                     });
                     printButton.click(function () {

@@ -18,4 +18,8 @@ public interface IFunctionLogDao extends IGenericDao<FunctionLog, Long> {
             Date endDate, Set<String> functions, String index, String order,
             long start, long limit);
 
+    List<Map<String, Object>> find4300MISReportData(Long jcScrId, Date startDate, Date endDate, Set<String> functions);
+
+    List<Map<String, Object>> find4300SCRReportData(Long jcScrId, Date startDate, Date endDate, Set<String> functions);
+
 }
