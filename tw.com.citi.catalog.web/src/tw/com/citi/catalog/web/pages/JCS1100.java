@@ -359,8 +359,9 @@ public class JCS1100 extends AbstractBasePage {
             ScrFile scrSourceFile = scrFileDao.findByUK(scr.getId(), file.getSourcePath(), file.getSourceFileName());
             ScrFile scrExecutionFile = scrFileDao.findByUK(scr.getId(), file.getExecutionPath(), file.getExecutionFileName());
             
+            App app = appDao.findById(scr.getJcAppId());
             updateMap.put("JC_APP_ID", scr.getJcAppId());
-            updateMap.put("JC_BUILD_UNIT_ID", buildUnitDao.findByAppId(scr.getJcAppId()).get(0).getId());
+            updateMap.put("JC_BUILD_UNIT_ID", buildUnitDao.findUnique(app.getAppId(), file.getBuildUnit()).getId());
             updateMap.put("LAST_REGISTER_TIME", new Date());
             
             updateMap.put("JC_SCR_ID", scr.getId());
