@@ -1,5 +1,7 @@
 package tw.com.citi.catalog.web.report;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,10 +15,10 @@ import org.apache.wicket.protocol.http.WebRequest;
 
 import tw.com.citi.catalog.web.dao.IAppPathDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
-import tw.com.citi.catalog.web.dto.Rpt1500Dto;
 import tw.com.citi.catalog.web.dto.ScrFileDto;
 import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.FileType;
+import tw.com.citi.catalog.web.util.NetUseUtil;
 import tw.com.citi.catalog.web.util.impl.PvcsCmd;
 
 public class Rpt1500D implements IReport {
@@ -51,11 +53,12 @@ public class Rpt1500D implements IReport {
         String qaSourcePath = null;
         if (qaSourcePaths != null && !qaSourcePaths.isEmpty()) {
             qaSourcePath = qaSourcePaths.get(0).getPath();
+            connectRemotePath(qaSourcePath);
         }
         List<AppPath> prodSourcePaths = appPathDao.findByAppName(req.getParameter("appId"), AppPath.PathType.PROD_SOURCE);
         List<ScrFileDto> scrFiles = scrFileDao.findBy(scrId, buildUnitId, FileType.SOURCE);
-        List<Rpt1500Dto> data = new ArrayList<Rpt1500Dto>();
         for (AppPath prodSourcePath : prodSourcePaths) {
+            connectRemotePath(prodSourcePath.getPath());
             for (ScrFileDto file : scrFiles) {
                 String qaSourceFile = qaSourcePath + "\\" + file.getFilePath() + file.getFileName();
                 String prodSourceFile = prodSourcePath.getPath() + "\\" + file.getFilePath() + file.getFileName();
@@ -72,6 +75,37 @@ public class Rpt1500D implements IReport {
     public Map<String, Object> getExporterParameters() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    private String connectRemotePath(String path) {
+        String mappingLocalPath = NetUseUtil.mappingLocalPath(path);
+        int rc = 0;
+        if (!localPathWritable(mappingLocalPath)) {
+            if ((rc = NetUseUtil.disconnectAllNetworkPath()) == 0) {
+                rc += NetUseUtil.connectNetworkDrive(path);
+            }
+            if (rc == 0) {
+                return NetUseUtil.mappingLocalPath(path);
+            } else {
+                throw new RuntimeException("Cannot map qaSourcePath to local driver.");
+            }
+        } else {
+            return mappingLocalPath;
+        }
+    }
+
+    private boolean localPathWritable(String path) {
+        boolean tf = false;
+        if (!"".equals(path)) {
+            String tmpFileName = String.valueOf(System.currentTimeMillis()) + ".tmp";
+            File f = new File(path + tmpFileName);
+            try {
+                tf = f.createNewFile() && f.delete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return tf;
     }
 
     public void setAppPathDao(IAppPathDao appPathDao) {
