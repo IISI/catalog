@@ -154,9 +154,16 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
     @Override
     public List<ScrFile> find1400ReportData(long scrId, Long buildUnitId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM JC_SCR_FILE WHERE file_type = 1 AND jc_scr_id = :scrId");
+        sql.append("SELECT SF.ID, SF.JC_SCR_ID, AP.PATH + SF.FILE_PATH FILE_PATH, SF.FILE_NAME, SF.JC_BUILD_UNIT_ID, SF.FILE_TYPE, SF.CHECKOUT, SF.FILE_DATETIME, SF.FILE_SIZE, SF.FILE_MD5, SF.LAST_REGISTER_TIME, SF.LAST_COMPILE_TIME, SF.DELETED ");
+        sql.append("FROM JC_SCR_FILE SF ");
+        sql.append("LEFT JOIN JC_SCR S ");
+        sql.append("    LEFT JOIN JC_APP A ");
+        sql.append("        LEFT JOIN JC_APP_PATH AP ON A.ID = AP.JC_APP_ID AND AP.PATH_TYPE = 1 ");
+        sql.append("    ON S.JC_APP_ID = A.ID ");
+        sql.append("ON SF.JC_SCR_ID = S.ID ");
+        sql.append("WHERE SF.file_type = 1 AND SF.jc_scr_id = :scrId");
         if (buildUnitId != null) {
-            sql.append(" AND jc_build_unit_id = :buildUnitId");
+            sql.append(" AND SF.jc_build_unit_id = :buildUnitId");
         }
         Map<String, Long> params = new HashMap<String, Long>();
         params.put("scrId", scrId);
