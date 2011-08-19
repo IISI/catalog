@@ -157,11 +157,11 @@ public class JCS1000 extends AbstractBasePage {
         }
         Long scrId = Long.parseLong(id);
         Scr scr = scrDao.findById(scrId);
-        // SCR Status 為 CREATE or MOVE_TO_PROD 時才能刪除。
-        if (scr != null && (Status.MOVE_TO_PROD == scr.getStatus() || Status.CREATE == scr.getStatus())) {
+        // SCR Status 為 CREATE 時才能刪除。
+        if (scr != null && Status.CREATE == scr.getStatus()) {
             scrDao.delete(dataMap);
         } else {
-            throw new IllegalStateException("Selected SCR cannot be deleted. SCR Status is "
+            throw new IllegalStateException("Selected SCR can be deleted only in CREATE status. SCR Status is "
                     + scr.getStatus().toString() + ".");
         }
         return "";

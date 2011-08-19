@@ -1,30 +1,3 @@
-INSERT INTO JC_PROGRAMMER (TEAM, NAME, PHONE, MOBILE) VALUES ('IISI', 'Java', '12345678', '0935123456');
-INSERT INTO JC_PROGRAMMER (TEAM, NAME, PHONE, MOBILE) VALUES ('IISI', 'Ruby', '11111111', '0935111111');
-
-INSERT INTO JC_APP (APP_ID, DESCRIPTION, PVCS_PROJ_DB) VALUES ('CDIC', '中央存保轉檔', 'CDIC');
-INSERT INTO JC_APP (APP_ID, DESCRIPTION, PVCS_PROJ_DB) VALUES ('SDB', '保管箱', 'SDB');
-
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 0, '\\QA\Project\CDIC\source');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 1, '\\QA\Project\CDIC\execution');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 2, '\\QA\Project\CDIC\backup');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 3, '\\PROD1\Project\CDIC\source');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 3, '\\PROD2\Project\CDIC\source');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 4, '\\PROD1\Project\CDIC\execution');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 4, '\\PROD2\Project\CDIC\execution');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (1, 5, '\\FileServer\Project\CDIC');
-
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (2, 0, '\\QA\Project\SDB\source');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (2, 1, '\\QA\Project\SDB\execution');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (2, 2, '\\QA\Project\SDB\backup');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (2, 3, '\\PROD1\Project\SDB\source');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (2, 4, '\\PROD1\Project\SDB\execution');
-INSERT INTO JC_APP_PATH (JC_APP_ID, PATH_TYPE, PATH) VALUES (2, 5, '\\FileServer\Project\SDB');
-
-INSERT INTO JC_BUILD_UNIT (JC_APP_ID, UNIT_ID) VALUES (1, 'CLIENT');
-INSERT INTO JC_BUILD_UNIT (JC_APP_ID, UNIT_ID) VALUES (1, 'SERVER');
-INSERT INTO JC_BUILD_UNIT (JC_APP_ID, UNIT_ID) VALUES (1, 'WRAPPER');
-
-
 /***** for common security test ****/
 /***** FUNCTIONLIST *****/
 INSERT [dbo].[FUNCLIST] ([FuncCode], [FuncDesc], [MajorSysCode], [TabNo], [ProgPath], [MakerID], [MakerDate], [GrpAdmin], [GrpUserMgr], [Grp_Maker], [Grp_Checker], [QM_REVIEWER], [SF], [CCP], [CIM], [CIM1], [CIM2], [CIM3], [CREDIT_CYCLE], [DATA_CENTER], [EM_CCI], [EM_M], [EM_C], [EM_I], [FM], [INV_ADM], [QM_SA], [INS_M], [INS_C], [CCP_C], [Appr_User], [Appr_Staff], [BCI], [APD], [EM_Q], [SCB_M], [SCB_C], [WORKOUT_HEAD], [OREO], [RMS_Admin], [TCB_HOLIDAY4TPE], [KHB_HOLIDAY4TPE], [GSS_M], [GSS_C], [TPD], [CIM_IPS], [UPMCHECKER], [FM_IR_INQ], [FM_OR_MKR], [FM_OR_CKR], [AM_Maker], [AM_Checker], [LTP_M], [LTP_C], [ML_HYB], [ML_HCB], [ML_PCB], [ML_TM], [ML_RM], [ML_APD], [ML_BPA], [ML_MKT], [ADM_Maker], [AM_BSP_M], [AM_BSP_C], [AMD_TAX_CHECKER], [PL_PROC], [FMD_FISC], [AMD_PA_TAX_M], [ML_S], [ML_SH], [ML_MGT], [FM_INV_MKR], [FM_INV_CKR], [LIB], [ML_APD_C], [AM_M2], [AM_C2], [BSG_C], [BSG_M], [Dummy], [KHB_GDB_M], [TCB_JGB_M], [MLB_M], [KHB_GDB_C], [TCB_JGB_C], [MLB_C], [HYB_C], [HYB_M], [ML_YHB], [FA_Maker], [FA_Checker], [AM], [AM1]) VALUES (N'JCS1500        ', N'JCS1500 Source Compare                                      ', N'JCS ', 0, N'0                                                           ', N'maker               ', N'2011-02-22          ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1)
