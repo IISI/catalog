@@ -82,7 +82,7 @@
 	</columnHeader>
 	<detail>
 		<band height="55" splitType="Stretch">
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="752" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{log}]]></textFieldExpression>
