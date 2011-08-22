@@ -26,7 +26,7 @@ public class Rpt1300 implements IReport {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("userId", null);
         data.put("scrNo", req.getParameter("scrNo"));
-        return null;
+        return data;
     }
 
     @Override
