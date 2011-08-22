@@ -148,12 +148,6 @@ CREATE TABLE JC_COMPILE_DETAIL (
 
 /****** for Common security test ******/
 /****** Object:  Table [dbo].[USERS]    Script Date: 08/12/2011 11:01:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
 CREATE TABLE [dbo].[USERS](
 	[UserID] [char](20) NOT NULL,
 	[EmpID] [char](20) NULL,
@@ -181,33 +175,15 @@ CREATE TABLE [dbo].[USERS](
 	[LastTab] [int] NULL,
 	[ApplicationID] [varchar](6) NULL,
 	[GEID] [varchar](10) NULL
-) ON [PRIMARY]
-GO
-SET ANSI_PADDING OFF
-GO
+) ON [PRIMARY];
 
 /****** Object:  Table [dbo].[SEC_USRBASIC]    Script Date: 08/12/2011 11:01:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
 CREATE TABLE [dbo].[SEC_USRBASIC](
 	[USR_ID_C] [varchar](20) NULL,
 	[USR_PWD_C] [varbinary](32) NULL
-) ON [PRIMARY]
-GO
-SET ANSI_PADDING OFF
-GO
+) ON [PRIMARY];
 
 /****** Object:  Table [dbo].[PCAP]    Script Date: 08/12/2011 11:01:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
 CREATE TABLE [dbo].[PCAP](
 	[SeqNo] [int] NOT NULL,
 	[SvrName] [varchar](20) NULL,
@@ -216,18 +192,9 @@ CREATE TABLE [dbo].[PCAP](
 	[DBID] [varbinary](40) NULL,
 	[OleProvider] [varchar](15) NULL,
 	[Passync] [tinyint] NULL
-) ON [PRIMARY]
-GO
-SET ANSI_PADDING OFF
-GO
+) ON [PRIMARY];
 
 /****** Object:  Table [dbo].[FUNCLIST]    Script Date: 08/12/2011 11:01:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
 CREATE TABLE [dbo].[FUNCLIST](
 	[FuncCode] [char](15) NOT NULL,
 	[FuncDesc] [char](60) NOT NULL,
@@ -323,18 +290,9 @@ CREATE TABLE [dbo].[FUNCLIST](
 	[FA_Checker] [bit] NOT NULL,
 	[AM] [bit] NOT NULL,
 	[AM1] [bit] NOT NULL
-) ON [PRIMARY]
-GO
-SET ANSI_PADDING OFF
-GO
+) ON [PRIMARY];
 
 /****** Object:  Table [dbo].[FUNCLOG]    Script Date: 08/12/2011 11:01:31 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-SET ANSI_PADDING ON
-GO
 CREATE TABLE [dbo].[FUNCLOG](
 	[UserID] [char](20) NOT NULL,
 	[FuncCode] [char](15) NOT NULL,
@@ -343,9 +301,5 @@ CREATE TABLE [dbo].[FUNCLOG](
 	[OutDate] [smalldatetime] NULL,
 	[OutTime] [char](8) NULL,
 	[PrtFlag] [bit] NOT NULL
-) ON [PRIMARY]
-GO
-SET ANSI_PADDING OFF
-GO
+) ON [PRIMARY];
 /****** for Common security test END ******/
-
