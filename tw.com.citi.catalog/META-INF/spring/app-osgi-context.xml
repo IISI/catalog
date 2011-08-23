@@ -6,6 +6,10 @@
     <set id="javaHandlers" interface="tw.com.iisi.rabbithq.editors.IJavaHandler" cardinality="0..N"></set>
 
     <service ref="tw.com.citi.catalog.handler.java.SelectFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
+    
+    <service ref="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
+    
+	<service ref="tw.com.citi.catalog.handler.java.SelectFilePathHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
 	
 	<service ref="secDataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
 	

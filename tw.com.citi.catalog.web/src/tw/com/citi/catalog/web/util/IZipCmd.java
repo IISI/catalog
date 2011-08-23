@@ -25,5 +25,7 @@ public interface IZipCmd {
      * @return
      */
     int zip(String zipFile, String[] sourceFile, String password);
+    
+    int zip(String zipFile, String sourceDir, String password);
 
 }
