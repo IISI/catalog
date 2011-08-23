@@ -110,7 +110,7 @@ public class PvcsCmd implements IPvcsCmd{
 			logger.debug("add file:"+s);
 		}
 		
-		//判斷每個soirce file是否成功新增
+		//判斷每個source file是否成功新增
 		for(int i=0; i<files.length; i++){
 			String oriFile=files[i];
 			if(addOkFileList.contains(oriFile)){
@@ -119,6 +119,69 @@ public class PvcsCmd implements IPvcsCmd{
 				rc[i] = -1;
 			}
 		}
+		
+		return rc;
+	}
+	
+	/**
+     * 新增檔案至 PVCS。
+     * 
+     * pcli AddFiles -pr"${projectDatabase}" -id"${username}:${password}" -pp"${projectPath}" -c -m"${description}" -t"${description}" -v"${label}" ${files}
+     * 
+     * @param projectDatabase
+     * @param projectPath
+     * @param username
+     * @param password
+     * @param label
+     * @param description
+     * @param files
+     * @return
+     */
+	@Override
+	public int[] addFiles(String projectDatabase, String projectPath,
+			String username, String password, String label, String description,
+			String path) {
+		// TODO Auto-generated method stub
+		int[] rc= new int[1];
+		
+		ArrayList<String> addOkFileList=new ArrayList<String>();
+		
+		try {
+			String command="pcli AddFiles -pr\""+projectDatabase+"\" -id\""+username+":"+password+"\" -pp\""+projectPath+"\" -z -m\""+description+"\" -t\""+description+"\" -v\""+label+"\" "+path;
+			logger.debug("command:"+command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
+			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String file="";
+			while((file=bf.readLine())   !=   null){
+				addOkFileList.add(file);
+				System.out.println("file:"+file);
+			}
+			bf.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+		}
+		
+		//test
+		/*
+		for(String s : addOkFileList){
+			System.out.println("add file:"+s);
+		}
+		*/
+		
+		//判斷每個source file是否成功新增
+		/*
+		for(int i=0; i<files.length; i++){
+			String oriFile=files[i];
+			if(addOkFileList.contains(oriFile)){
+				rc[i] = 0;
+			}else{
+				rc[i] = -1;
+			}
+		}
+		*/
 		
 		return rc;
 	}
@@ -171,7 +234,7 @@ public class PvcsCmd implements IPvcsCmd{
 			logger.debug("add file:"+s);
 		}
 		
-		//判斷每個soirce file是否成功Check in
+		//判斷每個source file是否成功Check in
 		for(int i=0; i<files.length; i++){
 			String oriFile=files[i];
 			if(addOkFileList.contains(oriFile)){
@@ -272,6 +335,7 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="pcli get -pr\""+projectDatabase+"\" -id\""+username+":"+password+"\" -pp\""+projectPath+"\" -l -nm -o "+checkoutFileArray;
 			logger.debug("command:"+command);
+			System.out.println("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			Process process = Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));

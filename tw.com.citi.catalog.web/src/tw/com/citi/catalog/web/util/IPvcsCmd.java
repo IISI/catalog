@@ -33,6 +33,22 @@ public interface IPvcsCmd {
     int[] addFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String[] files);
 
     /**
+     * 新增檔案至 PVCS。
+     * 
+     * pcli AddFiles -pr"${projectDatabase}" -id"${username}:${password}" -pp"${projectPath}" -c -m"${description}" -t"${description}" -v"${label}" ${files}
+     * 
+     * @param projectDatabase
+     * @param projectPath
+     * @param username
+     * @param password
+     * @param label
+     * @param description
+     * @param files
+     * @return
+     */
+    int[] addFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String path);
+    
+    /**
      * 將先前被 check out 的檔案，check in 回 PVCS。
      * 
      * pcli Put -pr"${projectDatabase}" -id"${username}:${password}" -pp"${projectPath}" -v"${label}" -m"${description}" ${files}

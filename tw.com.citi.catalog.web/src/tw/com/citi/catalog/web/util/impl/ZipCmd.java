@@ -73,7 +73,8 @@ public class ZipCmd implements IZipCmd{
 		
 		String result="";
 		try {
-			String command="pkzipc -add -passphrase="+password+" -cryptalgorithm=aes,256 -cd=encrypt "+zipFile+" "+fileStr;
+			String command="pkzipc -add -path=root -passphrase="+password+" -cryptalgorithm=aes,256 -cd=encrypt "+zipFile+" "+fileStr;
+			System.out.println("command:"+command);
 			logger.debug("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			process = Runtime.getRuntime().exec(cmd);
@@ -94,6 +95,38 @@ public class ZipCmd implements IZipCmd{
 		}
 		
 		return rc;
+	}
+	
+	
+	@Override
+	public int zip(String zipFile, String sourceDir, String password) {
+		int rc=0;
+		Process process=null;
+		String result="";
+		try {
+			String command="pkzipc -add -path=root -passphrase="+password+" -cryptalgorithm=aes,256 -cd=encrypt "+sourceDir+"\\*";
+			System.out.println("command:"+command);
+			logger.debug("command:"+command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			process = Runtime.getRuntime().exec(cmd);
+			
+			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String r="";
+			while((r=bf.readLine())   !=   null){
+				result+=r+"\n";
+			}
+			bf.close();
+			logger.debug(result);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			rc = process.exitValue();
+		}
+		
+		return rc;
+		
 	}
 
 }
