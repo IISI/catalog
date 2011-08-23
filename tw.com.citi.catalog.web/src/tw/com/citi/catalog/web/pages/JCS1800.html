@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <title>1800</title>
+</wicket:head>
+<wicket:extend>
+    <h1>1800 Checkout Files from PVCS</h1>
+    <input type="hidden" id="id" name="id" />
+    <table class="form">
+	  <tr>
+	    <td class="formLabel">SCR No.</td>
+	    <td><select id="scrNo" name="scrNo"></select></td>
+	    <td class="formLabel">Application ID.</td>
+	    <td><div id="appId" /></td>
+	  </tr>
+	  <tr>
+	    <td class="formLabel">Label</td>
+	    <td><input type="text" id="label" name="label" /></td>
+	    <td class="formLabel">Checkout Path</td>
+	    <td><div id="checkoutPath" /></td>
+	  </tr>
+	  <tr>
+	    <td class="formLabel">Checkout ID </td>
+	    <td><input type="text" id="checkoutId" name="checkoutId" /></td>
+	    <td class="formLabel">Checkout Password</td>
+	    <td><input type="password" id="checkoutPass" name="checkoutPass" /></td>
+	  </tr>
+	  <tr>
+	    <td class="formLabel">Zip File Path</td>
+	    <td colspan="3">
+	    	<input id="zipFilePath" type="text" maxlength="256" size="60" />
+            <button id="setZipFilePath">Set Path</button>
+        </td>
+	  </tr>
+	  <tr>
+	    <td height="255" class="formLabel">Files</td>
+	    <td colspan="3" valign="top">
+	    	<!-- import file list table -->
+	    	<table width="80%" border="0">
+			  <tr>
+			  	<td width="24%"><button id="import">Import</button></td>
+    			<td width="76%">&nbsp;</td>
+			    
+			  </tr>
+			  <tr>
+			    <td>
+					<table id="checkoutList"></table>
+        			<div id="checkoutPager"></div>
+
+				</td>
+			  </tr>
+			</table>
+
+		</td>
+	  </tr>    
+
+    </table>
+    <br />
+    <table id="fileList"></table>
+    <div id="pager"></div>
+    <br />
+    <div class="button-bar">
+        <button id="CheckoutButton">Checkout</button>
+    </div>
+    <br />
+    <script type="text/javascript">
+    <!--
+        $(function() {
+        	var checkoutList=null;
+        	$('#scrNo').load(__ajaxHandler, {'actionName':'findScrNo'});
+        	$('#scrNo').combobox({
+                selected: function (event, ui) {
+                    //global.scrId = this.value; 
+                    var payload = {};
+                    payload.actionName = 'getScrInfo';
+                    payload.actionParams = {
+                        scrId: this.value
+                    };
+                    $.ajax({
+                        url: __ajaxHandler,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: payload,
+                        success: function (data) {
+                           //alert(data);
+                           //$('#scrNo').html(data.scrNo);
+                           
+                           $('#appId').html(data.appId);
+                           $('#checkoutPath').html(data.rdPath);
+                           $('#label').val(data.label);
+                        }
+                    });
+                }
+            });
+        	
+        	initCheckoutGrid();
+        	
+            $("#setZipFilePath").click(function() {
+            	var result = callJava('tw.com.citi.catalog.handler.java.SelectFilePathHandler');
+            	$("#zipFilePath").val(result);
+            	//var file = eval('(' + result + ')');
+            });
+            $("#import").click(function() {
+            	var result = callJava('tw.com.citi.catalog.handler.java.SelectGeneralFileHandler');
+            	if(result!=null){
+            		reloadCheckoutGrid(result, $('#checkoutList').getGridParam('page'));
+            	}
+            	
+            	//get all file to javascript vab
+            	var payload = {};
+                payload.actionName = 'allCheckoutList';
+                payload.actionParams = {
+                		checkoutFile: result
+                };
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function (data) {
+                       //alert("t"+data);
+                       checkoutList=data;
+                       
+                    }
+                });
+            });
+            
+            $("#CheckoutButton").click(function(){
+            	if(checkoutList!=null){
+            		//alert(checkoutList);
+            		var payload = {};
+                    payload.actionName = 'checkout';
+                    payload.actionParams = {
+                    		scrNo:$('#scrNo').val(),
+                    		appId:$('#appId').html(),
+                    		checkoutLabel:$('#label').val(),
+                    		checkoutPath:$('#checkoutPath').html(),
+                    		checkoutId: $('#checkoutId').val(),
+                    		checkoutPass:$('#checkoutPass').val(),
+                    		zipfilePath: $('#zipFilePath').val(),
+                    		checkoutList: JSON.stringify(checkoutList)
+                    };
+                    $.ajax({
+                        url: __ajaxHandler,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: payload,
+                        success: function (data) {
+                           //alert("checkout="+data);
+                           
+                           
+                        }
+                    });
+            	}else{
+            		alert("Checkout file List not import!");
+            	}
+            	
+            });
+            
+        });
+    //-->
+    	function initCheckoutGrid(){
+    		checkoutGrid = $('#checkoutList').jqGrid({
+    			width:'700',
+    			height:'230',
+    			datatype: 'local',
+    			mtype: 'POST',
+    			colNames: ['Name', 'Build Unit'],
+    			colModel: [
+    				{name: 'filePath', index: 'filePath',width: 150, align:'left'},
+    				{name: 'buildUnit', index: 'buildUnit',width: 250, align:'left'},
+    			],
+    			pager: '#checkoutPager',
+    			rowNum: 10,
+    			rowList: [10, 20, 30],
+    			viewrecords: true,
+
+    		});
+    	}
+    	
+    	function reloadCheckoutGrid(checkoutListfilePath, page){
+    		
+    		var queryParams = {
+    				checkoutFile: checkoutListfilePath
+                };
+    			checkoutGrid.jqGrid('setGridParam', {
+                    url: __ajaxHandler,
+                    datatype: 'json',
+                    postData: {
+                        _gridHandler: 'checkoutGrid',
+                        queryParams: JSON.stringify(queryParams),
+                        queryOperators: ['equal']
+                    }
+                }).trigger('reloadGrid');
+    	}
+    </script>
+</wicket:extend>
+</html>
