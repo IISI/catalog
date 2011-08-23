@@ -50,7 +50,7 @@ public class JCS1700 extends AbstractBasePage {
     private transient Gson gson = new Gson();
 
     @Override
-    public String handleRequest(PageParameters params) throws FileSystemException {
+    public String handleRequest(PageParameters params) {
         String result;
         String actionName = params.getString("actionName");
         String actionParams = params.getString("actionParams");

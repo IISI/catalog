@@ -107,7 +107,7 @@ public class JCS1100 extends AbstractBasePage {
     }
 
     @Override
-    public String handleRequest(PageParameters params) throws IOException {
+    public String handleRequest(PageParameters params) {
         String actionName = params.getString("actionName");
         if ("findScrNo".equals(actionName)) {
             return findScrNo();
@@ -343,7 +343,7 @@ public class JCS1100 extends AbstractBasePage {
         }
     }
 
-    private String register(long scrId, List<JCS1100.FileModel> files) throws IOException {
+    private String register(long scrId, List<JCS1100.FileModel> files) {
         Set<String> registeredExecutionFile = new HashSet<String>();
         Scr scr = scrDao.findById(scrId);
         Map<String, Object> updateMap = new HashMap<String, Object>();
@@ -589,17 +589,18 @@ public class JCS1100 extends AbstractBasePage {
                     SmbFileUtil.deleteFile(rdPath + file.getSourcePath(), file.getSourceFileName());
                 }
             } catch (FileNotFoundException e) {
-                logger.error("Failed to copy/delete files.", e);
-                throw e;
+                throw new RuntimeException("Failed to copy/delete files.", e);
             } catch (FileSystemException e) {
-                logger.error("Failed to copy/delete files.", e);
-                throw e;
+                throw new RuntimeException("Failed to copy/delete files.", e);
             } catch (IOException e) {
-                logger.error("Failed to copy/delete files.", e);
-                throw e;
+                throw new RuntimeException("Failed to copy/delete files.", e);
             } finally {
                 if (fi != null) {
-                    fi.close();
+                    try {
+                        fi.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Failed to close input stream.", e);
+                    }
                 }
             }
         }

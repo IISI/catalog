@@ -57,7 +57,7 @@ public abstract class AbstractBasePage extends AbstractAquariusPage {
         return null;
     }
 
-    public String handleRequest(PageParameters params) throws Exception {
+    public String handleRequest(PageParameters params) {
         return null;
     }
 
