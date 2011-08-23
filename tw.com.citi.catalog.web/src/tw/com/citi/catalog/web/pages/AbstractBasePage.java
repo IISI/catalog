@@ -25,25 +25,21 @@ public abstract class AbstractBasePage extends AbstractAquariusPage {
 
     @Override
     public final String handleAjaxRequest(final PageParameters params) {
-        if (params.containsKey("_gridHandler")) {
-            try {
+        try {
+            if (params.containsKey("_gridHandler")) {
                 return getGridHandler(params.getString("_gridHandler")).handle(params);
-            } catch (Exception e) {
-                return handleException(e);
-            }
-        } else {
-            TransactionTemplate transactionTemplate = new TransactionTemplate(txManager);
-            return transactionTemplate.execute(new TransactionCallback<String>() {
-                
-                @Override
-                public String doInTransaction(TransactionStatus status) {
-                    try {
+            } else {
+                TransactionTemplate transactionTemplate = new TransactionTemplate(txManager);
+                return transactionTemplate.execute(new TransactionCallback<String>() {
+                    
+                    @Override
+                    public String doInTransaction(TransactionStatus status) {
                         return handleRequest(params);
-                    } catch (Exception e) {
-                        return handleException(e);
                     }
-                }
-            });
+                });
+            }
+        } catch (Exception e) {
+            return handleException(e);
         }
     }
 
