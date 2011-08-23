@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.web.pages;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,14 +25,15 @@ import tw.com.citi.catalog.web.model.AppFile;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.FileStatus;
-import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.model.ScrFile;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.F.Func;
+import tw.com.citi.catalog.web.util.IPvcsCmd;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
+import tw.com.citi.catalog.web.util.impl.PvcsCmd;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -158,6 +160,7 @@ public class JCS1600 extends AbstractBasePage {
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
+            System.out.println(""+filePath+"-"+fileName);
             String fileType = file.get("fileType");
             String fileStatus = file.get("fileStatus");
             AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), filePath, fileName);
@@ -178,11 +181,18 @@ public class JCS1600 extends AbstractBasePage {
                         SmbFileUtil.deleteFile(prodPath + filePath, fileName);
                     } else {
                         SmbFileUtil.copyFile(qaPath + filePath, prodPath + filePath, new String[] { fileName });
+                    
+                        //for check in pvcs
+                        //copy to c:\temp\Javacatalog\source
+                        SmbFileUtil.copySmbToLocal(qaPath + filePath, "c:\\temp\\Javacatalog\\source"+filePath, new String[] { fileName });
+                    
                     }
                     params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
                     fileMoveDetailDao.create(params);
                 }
-                // TODO PVCS Checkin 處理
+                
+                
+                
             } catch (FileSystemException e) {
                 e.printStackTrace();
                 params.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
@@ -191,6 +201,26 @@ public class JCS1600 extends AbstractBasePage {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
+        
+        // PVCS Checkin 處理
+        //checkin
+        IPvcsCmd pvcsCmd=new PvcsCmd();
+        String sId =(String) dataMap.get("scrId");
+        Scr scrTmp = scrDao.findById(Long.parseLong(sId));
+        App appTmp = appDao.findById(scr.getJcAppId());
+        String prjDb=appTmp.getPvcsProjDb();
+        String prjPath=appTmp.getPvcsProjPath();
+        int[] rc=pvcsCmd.addFiles(prjDb, prjPath, "thomaschan", "1234", "Check In", "Check In", "c:\\temp\\Javacatalog\\source");
+        System.out.println("pvcs check in done!");
+        try {
+			Runtime.getRuntime().exec(new String[] { "cmd", "/C", "rmdir /s /q C:\\temp\\JavaCatalog\\source" });
+			Runtime.getRuntime().exec(new String[] { "cmd", "/C", "mkdir C:\\temp\\JavaCatalog\\source" });
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        
         scrDao.updateStatus(scr.getId(), Status.MOVE_TO_PROD);
         F.updateEndTime(fLogId, new Date());
         return null;
@@ -215,20 +245,14 @@ public class JCS1600 extends AbstractBasePage {
             files = scrFileDao.findByBuildUnitIds(ids);
         }
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
-        String qaExecutionPath = (String) appPaths.get(PathType.QA_EXECUTION);
         // check 檔案是否真的存在 qaSourcePath
-        String path;
         for (ScrFile file : files) {
             try {
                 if (file.getDeleted()) {
                     file.setFileStatus(FileStatus.DELETE);
                 } else {
-                    if (FileType.SOURCE == file.getFileType()) {
-                        path = qaSourcePath;
-                    } else {
-                        path = qaExecutionPath;
-                    }
-                    if (SmbFileUtil.exist(path + file.getFilePath(), file.getFileName())) {
+                	System.out.println(qaSourcePath+" : " + file.getFilePath()+" : "+file.getFileName());
+                    if (SmbFileUtil.exist(qaSourcePath + file.getFilePath(), file.getFileName())) {
                         file.setFileStatus(FileStatus.EXIST);
                     } else {
                         file.setFileStatus(FileStatus.NOT_FOUND);
