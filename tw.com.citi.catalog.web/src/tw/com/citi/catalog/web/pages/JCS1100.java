@@ -388,7 +388,7 @@ public class JCS1100 extends AbstractBasePage {
                 } else if (appSourceFile.getDeleted()) {
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException("Cannot add file. File already exists.");
+                    throw new RuntimeException("Cannot add app source file [" + file.getSourcePath() + file.getSourceFileName() + "]. File already exists.");
                 }
                 
                 // create scr source file
@@ -399,7 +399,7 @@ public class JCS1100 extends AbstractBasePage {
                     scrFileDao.update1100(updateMap);
                     scrSourceFileId = scrSourceFile.getId();
                 } else {
-                    throw new RuntimeException("Cannot add file. File already exists.");
+                    throw new RuntimeException("Cannot add scr source file [" + file.getSourcePath() + file.getSourceFileName() + "]. File already exists.");
                 }
                 
                 // create source register history
@@ -435,7 +435,7 @@ public class JCS1100 extends AbstractBasePage {
                     if (scrExecutionFileId != null) {
                         updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
                         registerHistoryDao.create(updateMap);
-                        registeredExecutionFile.add(updateMap.get("JC_SCR_ID") + "," + updateMap.get("REGISTER_COUNT") + "," + updateMap.get("JC_SCR_FILE_ID"));
+                        registeredExecutionFile.add(file.getExecutionPath() + file.getExecutionFileName());
                     }
                 }
             } else if ("update".equalsIgnoreCase(file.getAction())) {
@@ -450,18 +450,24 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("DELETED", appSourceFile.getDeleted());
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException("Failed to update app source file.");
+                    throw new RuntimeException("Failed to update app source file [" + file.getSourcePath() + file.getSourceFileName() + "].");
                 }
                 
                 // update scr source file
-                if (scrSourceFile != null && !scrSourceFile.getDeleted()) {
+                Long scrSourceFileId = null;
+                if (Scr.Status.CREATE != scr.getStatus() && scrSourceFile != null && !scrSourceFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
+                    scrSourceFileId = scrSourceFile.getId();
+                } else if (Scr.Status.CREATE == scr.getStatus() && scrSourceFile == null) {
+                    updateMap.put("FILE_PATH", file.getSourcePath());
+                    updateMap.put("FILE_NAME", file.getSourceFileName());
+                    scrSourceFileId = scrFileDao.create(updateMap);
                 } else {
-                    throw new RuntimeException("Failed to update scr source file.");
+                    throw new RuntimeException("Failed to update scr source file [" + file.getSourcePath() + file.getSourceFileName() + "].");
                 }
                 
                 // create source register history
-                updateMap.put("JC_SCR_FILE_ID", scrSourceFile.getId());
+                updateMap.put("JC_SCR_FILE_ID", scrSourceFileId);
                 updateMap.put("REGISTER_ACTION", 1);
                 registerHistoryDao.create(updateMap);
                 
@@ -478,21 +484,27 @@ public class JCS1100 extends AbstractBasePage {
                         updateMap.put("DELETED", appExecutionFile.getDeleted());
                         appFileDao.update1100(updateMap);
                     } else {
-                        throw new RuntimeException("Failed to update app execution file.");
+                        throw new RuntimeException("Failed to update app execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
                     }
                     
-                    updateMap.put("JC_SCR_FILE_ID", scrExecutionFile.getId());
-                    if (!registeredExecutionFile.contains(updateMap.get("JC_SCR_ID") + "," + updateMap.get("REGISTER_COUNT") + "," + updateMap.get("JC_SCR_FILE_ID"))) {
+                    Long scrExecutionFileId = null;
+                    if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName())) {
                         // update scr execution file
-                        if (scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
+                        if (Scr.Status.CREATE != scr.getStatus() && scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
                             scrFileDao.update1100(updateMap);
+                            scrExecutionFileId = scrExecutionFile.getId();
+                        } else if (Scr.Status.CREATE == scr.getStatus() && scrExecutionFile == null) {
+                            updateMap.put("FILE_PATH", file.getExecutionPath());
+                            updateMap.put("FILE_NAME", file.getExecutionFileName());
+                            scrExecutionFileId = scrFileDao.create(updateMap);
                         } else {
-                            throw new RuntimeException("Failed to update scr execution file.");
+                            throw new RuntimeException("Failed to update scr execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
                         }
                         
                         // create execution register history
+                        updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
                         registerHistoryDao.create(updateMap);
-                        registeredExecutionFile.add(updateMap.get("JC_SCR_ID") + "," + updateMap.get("REGISTER_COUNT") + "," + updateMap.get("JC_SCR_FILE_ID"));
+                        registeredExecutionFile.add(file.getExecutionPath() + file.getExecutionFileName());
                     }
                 }
             } else if ("delete".equalsIgnoreCase(file.getAction())) {
@@ -507,18 +519,22 @@ public class JCS1100 extends AbstractBasePage {
                     updateMap.put("CHECKOUT", appSourceFile.getCheckout());
                     appFileDao.update1100(updateMap);
                 } else {
-                    throw new RuntimeException("Failed to delete app source file.");
+                    throw new RuntimeException("Failed to delete app source file [" + file.getSourcePath() + file.getSourceFileName() + "].");
                 }
                 
                 // update scr source file
-                if (scrSourceFile != null && !scrSourceFile.getDeleted()) {
+                Long scrSourceFileId = null;
+                if (Scr.Status.CREATE != scr.getStatus() && scrSourceFile != null && !scrSourceFile.getDeleted()) {
                     scrFileDao.update1100(updateMap);
+                    scrSourceFileId = scrSourceFile.getId();
+                } else if (Scr.Status.CREATE == scr.getStatus() && scrSourceFile == null) {
+                    scrSourceFileId = scrFileDao.create(updateMap);
                 } else {
-                    throw new RuntimeException("Failed to delete scr source file.");
+                    throw new RuntimeException("Failed to delete scr source file [" + file.getSourcePath() + file.getSourceFileName() + "].");
                 }
                 
                 // create source register history
-                updateMap.put("JC_SCR_FILE_ID", scrSourceFile.getId());
+                updateMap.put("JC_SCR_FILE_ID", scrSourceFileId);
                 updateMap.put("REGISTER_ACTION", 1);
                 registerHistoryDao.create(updateMap);
                 
@@ -535,21 +551,27 @@ public class JCS1100 extends AbstractBasePage {
                         updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
                         appFileDao.update1100(updateMap);
                     } else {
-                        throw new RuntimeException("Failed to delete app execution file.");
+                        throw new RuntimeException("Failed to delete app execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
                     }
                     
-                    updateMap.put("JC_SCR_FILE_ID", scrExecutionFile.getId());
-                    if (!registeredExecutionFile.contains(updateMap.get("JC_SCR_ID") + "," + updateMap.get("REGISTER_COUNT") + "," + updateMap.get("JC_SCR_FILE_ID"))) {
+                    Long scrExecutionFileId = null;
+                    if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName())) {
                         // update scr execution file
-                        if (scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
+                        if (Scr.Status.CREATE != scr.getStatus() && scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
                             scrFileDao.update1100(updateMap);
+                            scrExecutionFileId = scrExecutionFile.getId();
+                        } else if (Scr.Status.CREATE == scr.getStatus() && scrExecutionFile == null) {
+                            updateMap.put("FILE_PATH", file.getExecutionPath());
+                            updateMap.put("FILE_NAME", file.getExecutionFileName());
+                            scrExecutionFileId = scrFileDao.create(updateMap);
                         } else {
-                            throw new RuntimeException("Failed to delete scr execution file.");
+                            throw new RuntimeException("Failed to delete scr execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
                         }
                         
                         // create execution register history
+                        updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
                         registerHistoryDao.create(updateMap);
-                        registeredExecutionFile.add(updateMap.get("JC_SCR_ID") + "," + updateMap.get("REGISTER_COUNT") + "," + updateMap.get("JC_SCR_FILE_ID"));
+                        registeredExecutionFile.add(file.getExecutionPath() + file.getExecutionFileName());
                     }
                 }
             }
