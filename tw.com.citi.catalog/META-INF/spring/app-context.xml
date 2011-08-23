@@ -8,6 +8,11 @@
     </bean>
 
     <bean id="tw.com.citi.catalog.handler.java.SelectFileHandler" class="tw.com.citi.catalog.handler.java.SelectFileHandler"></bean>
+	
+	<bean id="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler" class="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler"></bean>
+	
+	<bean id="tw.com.citi.catalog.handler.java.SelectFilePathHandler" class="tw.com.citi.catalog.handler.java.SelectFilePathHandler"></bean>
+
 
 	<bean id="settings" class="tw.com.citi.catalog.Settings"></bean>
 
