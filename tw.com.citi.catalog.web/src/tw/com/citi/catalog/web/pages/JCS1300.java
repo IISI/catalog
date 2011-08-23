@@ -158,6 +158,8 @@ public class JCS1300 extends AbstractBasePage {
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         String qaExecutionPath = (String) appPaths.get(PathType.QA_EXECUTION);
         List<String[]> consoleLogs = new ArrayList<String[]>();
+        List<String> errorMessages = new ArrayList<String>();
+        retVal.put("errorMessages", errorMessages);
         for (Map<String, String> file : fileList) {
             String batchFileName = file.get("batchFileName");
             String unitId = batchFileName.substring(6, batchFileName.lastIndexOf("."));
@@ -165,24 +167,31 @@ public class JCS1300 extends AbstractBasePage {
             if (batchFile.exists()) {
                 Map<String, Object> results = compile(batchFile);
                 int rc = (Integer) results.get("rc");
+                consoleLogs.add(new String[] { (String) results.get("result") });
+                retVal.put("consoleLogs", gson.toJson(consoleLogs));
                 if (rc != 0) {
                     F.updateEndTime(fLogId, new Date());
-                    throw new RuntimeException("Execute " + batchFileName + " fail with return code " + rc);
+                    errorMessages.add("Execute " + batchFileName + " fail with return code " + rc);
+                    retVal.put("errorMessages", errorMessages);
+                    return gson.toJson(retVal);
                 } else {
-                    consoleLogs.add(new String[] { (String) results.get("result") });
                     // 把 batch 所在目錄下 target 目錄下的所有檔案搬到 qa execution
                     try {
                         SmbFileUtil.renameTo(qaSourcePath + "target\\", null, qaExecutionPath + unitId + "\\", null);
                     } catch (FileSystemException e) {
-                        throw new RuntimeException("Move files to QA Execution Path fail.");
+                        F.updateEndTime(fLogId, new Date());
+                        errorMessages.add("Move files from " + qaSourcePath + "target\\ to " + qaExecutionPath + unitId + "\\ fail.");
+                        retVal.put("errorMessages", errorMessages);
+                        return gson.toJson(retVal);
                     }
                 }
             } else {
                 F.updateEndTime(fLogId, new Date());
-                throw new RuntimeException("Can't find " + batchFileName + "in Mapping Local Path.");
+                errorMessages.add("Can't find " + batchFileName + "in Mapping Local Path.");
+                retVal.put("errorMessages", errorMessages);
+                return gson.toJson(retVal);
             }
         }
-        retVal.put("consoleLogs", gson.toJson(consoleLogs));
         // 更新 Scr 的 status
         scrDao.updateStatus(scr.getId(), Status.COMPILE);
         Timestamp now = new Timestamp(System.currentTimeMillis());
