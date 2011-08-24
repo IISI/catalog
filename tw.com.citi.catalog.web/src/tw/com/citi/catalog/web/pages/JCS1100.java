@@ -310,7 +310,11 @@ public class JCS1100 extends AbstractBasePage {
         Map<String, JCS1100.FileModel> files = new HashMap<String, JCS1100.FileModel>();
         try {
             for (JCS1100.FileModel fileModel = itemReader.read(); fileModel != null; fileModel = itemReader.read()) {
-                files.put(fileModel.getBuildUnit() + "|" + fileModel.getSourcePath() + "|" + fileModel.getSourceFileName(), fileModel);
+                if (fileModel.getSourceFileName().trim().isEmpty()) {
+                    files.put(fileModel.getBuildUnit() + "|" + fileModel.getExecutionPath() + "|" + fileModel.getExecutionFileName(), fileModel);
+                } else {
+                    files.put(fileModel.getBuildUnit() + "|" + fileModel.getSourcePath() + "|" + fileModel.getSourceFileName(), fileModel);
+                }
             }
         } catch (UnexpectedInputException e) {
             e.printStackTrace();
@@ -560,15 +564,19 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // 如果 execution file name 為空值的話，該筆資料就不需要被註冊
                 if (file.getExecutionFileName() != null && !file.getExecutionFileName().trim().isEmpty()) {
-                    // 如果 execution file 已經處理過了，就不需要再被處理
-                    if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName())) {
+                    // 如果 execution file 尚未被處理，或 source file name 為空值時，則該筆資料需要被處理
+                    if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName()) || file.getSourceFileName().trim().isEmpty()) {
                         // update app execution file
                         if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
                             updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
                             updateMap.put("FILE_DATETIME", null);
                             updateMap.put("FILE_SIZE", null);
                             updateMap.put("FILE_MD5", null);
-                            updateMap.put("DELETED", 1);
+                            if (file.getSourceFileName().trim().isEmpty()) {
+                                updateMap.put("DELETED", 1);
+                            } else {
+                                updateMap.put("DELETED", 0);
+                            }
                             updateMap.put("ID", appExecutionFile.getId());
                             updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
                             appFileDao.update1100(updateMap);
