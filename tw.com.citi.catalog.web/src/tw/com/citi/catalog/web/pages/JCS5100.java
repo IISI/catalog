@@ -203,7 +203,8 @@ public class JCS5100 extends AbstractBasePage {
                 String path = appPath.getPath();
                 if (SmbFileUtil.exist(path, null)) {
                     if (SmbFileUtil.listFiles(path) != null && SmbFileUtil.listFiles(path).size() > 0) {
-                        throw new IllegalStateException("Cannot remove prod path, because there are files in it.");
+                        throw new IllegalStateException("Cannot remove " + appPath.getPathType().toString()
+                                + " path, because there are files in it.");
                     }
                 }
             }
