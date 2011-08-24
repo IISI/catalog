@@ -69,7 +69,7 @@ public class JCS1800 extends AbstractBasePage {
     }
     
     @Override
-    public String handleRequest(PageParameters params) throws FileSystemException {
+    public String handleRequest(PageParameters params){
         String result = null;
         String actionName = params.getString("actionName");
         
@@ -91,14 +91,14 @@ public class JCS1800 extends AbstractBasePage {
         	String zipfilePath=params.getString("actionParams[zipfilePath]");
             String checkoutList = params.getString("actionParams[checkoutList]");
             List<CheckoutFile> CheckoutFileList=gson.fromJson(checkoutList, new TypeToken<List<CheckoutFile>>(){}.getType());
-            System.out.println("scrNo="+scrNo);
-            System.out.println("appId="+appId);
-            System.out.println("checkoutLabel="+checkoutLabel);
-            System.out.println("checkoutPath="+checkoutPath);
-            System.out.println("checkoutId="+checkoutId);
-            System.out.println("checkoutPass="+checkoutPass);
-            System.out.println("zipfilePath="+zipfilePath);
-            System.out.println("CheckoutFileList="+CheckoutFileList.size());
+            //System.out.println("scrNo="+scrNo);
+            //System.out.println("appId="+appId);
+            //System.out.println("checkoutLabel="+checkoutLabel);
+            //System.out.println("checkoutPath="+checkoutPath);
+            //System.out.println("checkoutId="+checkoutId);
+            //System.out.println("checkoutPass="+checkoutPass);
+            //System.out.println("zipfilePath="+zipfilePath);
+            //System.out.println("CheckoutFileList="+CheckoutFileList.size());
             
             
             AppPath appPath = appPathDao.findByScrId(Long.parseLong(scrNo), PathType.APP_BASE).get(0);
@@ -186,7 +186,11 @@ public class JCS1800 extends AbstractBasePage {
             	CheckoutFile oFile=CheckoutFileList.get(i);
             	String filePath=oFile.getSrcPath();
             	String fileName=oFile.getSrcFileName();
-            	SmbFileUtil.copyLocalToSmb("c:\\temp\\Javacatalog\\source\\"+filePath, rdPath+"/"+filePath , new String[] { fileName });
+            	try {
+					SmbFileUtil.copyLocalToSmb("c:\\temp\\Javacatalog\\source\\"+filePath, rdPath+"/"+filePath , new String[] { fileName });
+				} catch (FileSystemException e) {
+					e.printStackTrace();
+				}
             }
             
             try {
