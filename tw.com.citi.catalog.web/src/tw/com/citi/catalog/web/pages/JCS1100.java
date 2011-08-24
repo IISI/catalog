@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,6 +64,11 @@ import tw.com.citi.catalog.web.util.impl.ZipCmd;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 public class JCS1100 extends AbstractBasePage {
@@ -133,7 +140,7 @@ public class JCS1100 extends AbstractBasePage {
             Long functionLogId = F.log(scrId, Func.JCS1100, null, null, new Date(), null);
             String objs = params.getString("actionParams[files]");
             GsonBuilder builder = new GsonBuilder();
-            builder.setDateFormat(DateUtil.FORMAT);
+            builder.registerTypeAdapter(FileModel.class, new FileModelDeserializer());
             List<JCS1100.FileModel> files = builder.create().fromJson(objs, new TypeToken<List<JCS1100.FileModel>>() {}.getType());
             String results = register(scrId, files);
             F.updateEndTime(functionLogId, new Date());
@@ -409,33 +416,36 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // 如果 execution file name 為空值的話，該筆資料就不需要被註冊
                 if (file.getExecutionFileName() != null && !file.getExecutionFileName().trim().isEmpty()) {
-                    // create app execution file
-                    updateMap.put("FILE_PATH", file.getExecutionPath());
-                    updateMap.put("FILE_NAME", file.getExecutionFileName());
-                    updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
-                    updateMap.put("FILE_DATETIME", null);
-                    updateMap.put("FILE_SIZE", null);
-                    updateMap.put("FILE_MD5", null);
-                    if (appExecutionFile == null) {
-                        appFileDao.create(updateMap);
-                    } else if (appExecutionFile.getDeleted()) {
-                        appFileDao.update1100(updateMap);
-                    }
-                    
-                    //create scr execution file
-                    Long scrExecutionFileId = null;
-                    if (scrExecutionFile == null) {
-                        scrExecutionFileId = scrFileDao.create(updateMap);
-                    } else if (scrExecutionFile.getDeleted()) {
-                        scrFileDao.update1100(updateMap);
-                        scrExecutionFileId = scrExecutionFile.getId();
-                    }
-                    
-                    // create execution register history
-                    if (scrExecutionFileId != null) {
-                        updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
-                        registerHistoryDao.create(updateMap);
-                        registeredExecutionFile.add(file.getExecutionPath() + file.getExecutionFileName());
+                    // 如果 execution file 已經處理過了，就不需要再被處理
+                    if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName())) {
+                        // create app execution file
+                        updateMap.put("FILE_PATH", file.getExecutionPath());
+                        updateMap.put("FILE_NAME", file.getExecutionFileName());
+                        updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
+                        updateMap.put("FILE_DATETIME", null);
+                        updateMap.put("FILE_SIZE", null);
+                        updateMap.put("FILE_MD5", null);
+                        if (appExecutionFile == null) {
+                            appFileDao.create(updateMap);
+                        } else if (appExecutionFile.getDeleted()) {
+                            appFileDao.update1100(updateMap);
+                        }
+                        
+                        //create scr execution file
+                        Long scrExecutionFileId = null;
+                        if (scrExecutionFile == null) {
+                            scrExecutionFileId = scrFileDao.create(updateMap);
+                        } else if (scrExecutionFile.getDeleted()) {
+                            scrFileDao.update1100(updateMap);
+                            scrExecutionFileId = scrExecutionFile.getId();
+                        }
+                        
+                        // create execution register history
+                        if (scrExecutionFileId != null) {
+                            updateMap.put("JC_SCR_FILE_ID", scrExecutionFileId);
+                            registerHistoryDao.create(updateMap);
+                            registeredExecutionFile.add(file.getExecutionPath() + file.getExecutionFileName());
+                        }
                     }
                 }
             } else if ("update".equalsIgnoreCase(file.getAction())) {
@@ -473,23 +483,24 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // 如果 execution file name 為空值的話，該筆資料就不需要被註冊
                 if (file.getExecutionFileName() != null && !file.getExecutionFileName().trim().isEmpty()) {
-                    // update app execution file
-                    if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
-                        updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
-                        updateMap.put("FILE_DATETIME", null);
-                        updateMap.put("FILE_SIZE", null);
-                        updateMap.put("FILE_MD5", null);
-                        updateMap.put("ID", appExecutionFile.getId());
-                        updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
-                        updateMap.put("DELETED", appExecutionFile.getDeleted());
-                        appFileDao.update1100(updateMap);
-                    } else {
-                        throw new RuntimeException("Failed to update app execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
-                    }
-                    
-                    Long scrExecutionFileId = null;
+                    // 如果 execution file 已經處理過了，就不需要再被處理
                     if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName())) {
+                        // update app execution file
+                        if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
+                            updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
+                            updateMap.put("FILE_DATETIME", null);
+                            updateMap.put("FILE_SIZE", null);
+                            updateMap.put("FILE_MD5", null);
+                            updateMap.put("ID", appExecutionFile.getId());
+                            updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
+                            updateMap.put("DELETED", appExecutionFile.getDeleted());
+                            appFileDao.update1100(updateMap);
+                        } else {
+                            throw new RuntimeException("Failed to update app execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
+                        }
+                        
                         // update scr execution file
+                        Long scrExecutionFileId = null;
                         if (Scr.Status.CREATE != scr.getStatus() && scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
                             scrFileDao.update1100(updateMap);
                             scrExecutionFileId = scrExecutionFile.getId();
@@ -528,6 +539,8 @@ public class JCS1100 extends AbstractBasePage {
                     scrFileDao.update1100(updateMap);
                     scrSourceFileId = scrSourceFile.getId();
                 } else if (Scr.Status.CREATE == scr.getStatus() && scrSourceFile == null) {
+                    updateMap.put("FILE_PATH", file.getSourcePath());
+                    updateMap.put("FILE_NAME", file.getSourceFileName());
                     scrSourceFileId = scrFileDao.create(updateMap);
                 } else {
                     throw new RuntimeException("Failed to delete scr source file [" + file.getSourcePath() + file.getSourceFileName() + "].");
@@ -540,23 +553,24 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // 如果 execution file name 為空值的話，該筆資料就不需要被註冊
                 if (file.getExecutionFileName() != null && !file.getExecutionFileName().trim().isEmpty()) {
-                    // update app execution file
-                    if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
-                        updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
-                        updateMap.put("FILE_DATETIME", null);
-                        updateMap.put("FILE_SIZE", null);
-                        updateMap.put("FILE_MD5", null);
-                        updateMap.put("DELETED", 1);
-                        updateMap.put("ID", appExecutionFile.getId());
-                        updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
-                        appFileDao.update1100(updateMap);
-                    } else {
-                        throw new RuntimeException("Failed to delete app execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
-                    }
-                    
-                    Long scrExecutionFileId = null;
+                    // 如果 execution file 已經處理過了，就不需要再被處理
                     if (!registeredExecutionFile.contains(file.getExecutionPath() + file.getExecutionFileName())) {
+                        // update app execution file
+                        if (appExecutionFile != null && !appExecutionFile.getDeleted()) {
+                            updateMap.put("FILE_TYPE", FileType.EXECUTION.ordinal());
+                            updateMap.put("FILE_DATETIME", null);
+                            updateMap.put("FILE_SIZE", null);
+                            updateMap.put("FILE_MD5", null);
+                            updateMap.put("DELETED", 1);
+                            updateMap.put("ID", appExecutionFile.getId());
+                            updateMap.put("CHECKOUT", appExecutionFile.getCheckout());
+                            appFileDao.update1100(updateMap);
+                        } else {
+                            throw new RuntimeException("Failed to delete app execution file [" + file.getExecutionPath() + file.getExecutionFileName() + "].");
+                        }
+                        
                         // update scr execution file
+                        Long scrExecutionFileId = null;
                         if (Scr.Status.CREATE != scr.getStatus() && scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
                             scrFileDao.update1100(updateMap);
                             scrExecutionFileId = scrExecutionFile.getId();
@@ -859,6 +873,40 @@ public class JCS1100 extends AbstractBasePage {
             file.setSourceFileName(fs.readString("sourceFileName"));
             file.setMd5(fs.readString("md5"));
             return file;
+        }
+
+    }
+
+    private class FileModelDeserializer implements JsonDeserializer<FileModel> {
+
+        private SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.FORMAT);
+
+        @Override
+        public FileModel deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException {
+            FileModel model = new FileModel();
+            JsonObject obj = json.getAsJsonObject();
+            model.setFileName(obj.get("fileName").getAsString());
+            model.setBuildUnit(obj.get("buildUnit").getAsString());
+            model.setFileSize(obj.get("fileSize").getAsLong());
+            String tempFileDatetime = obj.get("fileDatetime").getAsString();
+            Date fileDatetime = null;
+            if (tempFileDatetime != null && !tempFileDatetime.trim().isEmpty()) {
+                try {
+                    fileDatetime = sdf.parse(tempFileDatetime);
+                } catch (java.text.ParseException e) {
+                    throw new JsonParseException("Failed to parse date [" + tempFileDatetime + "].", e);
+                }
+            }
+            model.setFileDatetime(fileDatetime);
+            model.setAction(obj.get("action").getAsString());
+            model.setCheckin(obj.get("checkin").getAsBoolean());
+            model.setFileMd5(obj.get("fileMd5").getAsString());
+            model.setSourcePath(obj.get("sourcePath").getAsString());
+            model.setSourceFileName(obj.get("sourceFileName").getAsString());
+            model.setExecutionPath(obj.get("executionPath").getAsString());
+            model.setExecutionFileName(obj.get("executionFileName").getAsString());
+            return model;
         }
 
     }
