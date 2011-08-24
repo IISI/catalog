@@ -393,6 +393,7 @@ public class JCS1100 extends AbstractBasePage {
                 if (appSourceFile == null) {
                     appFileDao.create(updateMap);
                 } else if (appSourceFile.getDeleted()) {
+                    updateMap.put("ID", appSourceFile.getId());
                     appFileDao.update1100(updateMap);
                 } else {
                     throw new RuntimeException("Cannot add app source file [" + file.getSourcePath() + file.getSourceFileName() + "]. File already exists.");
@@ -403,8 +404,9 @@ public class JCS1100 extends AbstractBasePage {
                 if (scrSourceFile == null) {
                     scrSourceFileId = scrFileDao.create(updateMap);
                 } else if (scrSourceFile.getDeleted()) {
-                    scrFileDao.update1100(updateMap);
                     scrSourceFileId = scrSourceFile.getId();
+                    updateMap.put("ID", scrSourceFileId);
+                    scrFileDao.update1100(updateMap);
                 } else {
                     throw new RuntimeException("Cannot add scr source file [" + file.getSourcePath() + file.getSourceFileName() + "]. File already exists.");
                 }
@@ -428,6 +430,7 @@ public class JCS1100 extends AbstractBasePage {
                         if (appExecutionFile == null) {
                             appFileDao.create(updateMap);
                         } else if (appExecutionFile.getDeleted()) {
+                            updateMap.put("ID", appExecutionFile.getId());
                             appFileDao.update1100(updateMap);
                         }
                         
@@ -436,8 +439,9 @@ public class JCS1100 extends AbstractBasePage {
                         if (scrExecutionFile == null) {
                             scrExecutionFileId = scrFileDao.create(updateMap);
                         } else if (scrExecutionFile.getDeleted()) {
-                            scrFileDao.update1100(updateMap);
                             scrExecutionFileId = scrExecutionFile.getId();
+                            updateMap.put("ID", scrExecutionFileId);
+                            scrFileDao.update1100(updateMap);
                         }
                         
                         // create execution register history
@@ -466,8 +470,9 @@ public class JCS1100 extends AbstractBasePage {
                 // update scr source file
                 Long scrSourceFileId = null;
                 if (Scr.Status.CREATE != scr.getStatus() && scrSourceFile != null && !scrSourceFile.getDeleted()) {
-                    scrFileDao.update1100(updateMap);
                     scrSourceFileId = scrSourceFile.getId();
+                    updateMap.put("ID", scrSourceFileId);
+                    scrFileDao.update1100(updateMap);
                 } else if (Scr.Status.CREATE == scr.getStatus() && scrSourceFile == null) {
                     updateMap.put("FILE_PATH", file.getSourcePath());
                     updateMap.put("FILE_NAME", file.getSourceFileName());
@@ -502,8 +507,9 @@ public class JCS1100 extends AbstractBasePage {
                         // update scr execution file
                         Long scrExecutionFileId = null;
                         if (Scr.Status.CREATE != scr.getStatus() && scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
-                            scrFileDao.update1100(updateMap);
                             scrExecutionFileId = scrExecutionFile.getId();
+                            updateMap.put("ID", scrExecutionFileId);
+                            scrFileDao.update1100(updateMap);
                         } else if (Scr.Status.CREATE == scr.getStatus() && scrExecutionFile == null) {
                             updateMap.put("FILE_PATH", file.getExecutionPath());
                             updateMap.put("FILE_NAME", file.getExecutionFileName());
@@ -536,8 +542,9 @@ public class JCS1100 extends AbstractBasePage {
                 // update scr source file
                 Long scrSourceFileId = null;
                 if (Scr.Status.CREATE != scr.getStatus() && scrSourceFile != null && !scrSourceFile.getDeleted()) {
-                    scrFileDao.update1100(updateMap);
                     scrSourceFileId = scrSourceFile.getId();
+                    updateMap.put("ID", scrSourceFileId);
+                    scrFileDao.update1100(updateMap);
                 } else if (Scr.Status.CREATE == scr.getStatus() && scrSourceFile == null) {
                     updateMap.put("FILE_PATH", file.getSourcePath());
                     updateMap.put("FILE_NAME", file.getSourceFileName());
@@ -572,8 +579,9 @@ public class JCS1100 extends AbstractBasePage {
                         // update scr execution file
                         Long scrExecutionFileId = null;
                         if (Scr.Status.CREATE != scr.getStatus() && scrExecutionFile != null && !scrExecutionFile.getDeleted()) {
-                            scrFileDao.update1100(updateMap);
                             scrExecutionFileId = scrExecutionFile.getId();
+                            updateMap.put("ID", scrExecutionFileId);
+                            scrFileDao.update1100(updateMap);
                         } else if (Scr.Status.CREATE == scr.getStatus() && scrExecutionFile == null) {
                             updateMap.put("FILE_PATH", file.getExecutionPath());
                             updateMap.put("FILE_NAME", file.getExecutionFileName());
