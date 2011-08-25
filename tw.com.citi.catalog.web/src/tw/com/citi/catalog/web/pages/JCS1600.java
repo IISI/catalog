@@ -223,7 +223,9 @@ public class JCS1600 extends AbstractBasePage {
 
         scrDao.updateStatus(scr.getId(), Status.MOVE_TO_PROD);
         F.updateEndTime(fLogId, new Date());
-        return null;
+        Map<String, Object> results = new HashMap<String, Object>();
+        results.put("functionLogId", fLogId);
+        return gson.toJson(results);
     }
 
     private String getFiles(Map dataMap) {

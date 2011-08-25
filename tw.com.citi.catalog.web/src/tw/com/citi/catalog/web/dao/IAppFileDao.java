@@ -20,4 +20,6 @@ public interface IAppFileDao extends IGenericDao<AppFile, Long> {
 
     int updateFileInfoById(Timestamp fileDateTime, Long fileSize, Long id);
 
+    List<Map<String, Object>> find1600ReportData(long functionLogId);
+
 }

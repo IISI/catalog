@@ -49,6 +49,13 @@
 
     <osgi:service ref="rpt1500D" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
+    <bean id="rpt1600" class="tw.com.citi.catalog.web.report.Rpt1600">
+        <property name="functionLogDao" ref="functionLogDao"></property>
+        <property name="appFileDao" ref="appFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1600" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
