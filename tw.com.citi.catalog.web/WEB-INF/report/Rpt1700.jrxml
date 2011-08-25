@@ -21,9 +21,9 @@
 				<text><![CDATA[Citibank PC Catalog System]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="326" y="52" width="100" height="20"/>
+				<reportElement x="295" y="52" width="163" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<text><![CDATA[Move to PROD LOG]]></text>
+				<text><![CDATA[Rollback Last Production Change]]></text>
 			</staticText>
 		</band>
 	</title>
