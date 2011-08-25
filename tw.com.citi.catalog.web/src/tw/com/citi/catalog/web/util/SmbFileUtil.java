@@ -69,13 +69,13 @@ public class SmbFileUtil {
 
     private static List<FileObject> getFiles(FileObject source) throws FileSystemException {
         List<FileObject> files = new ArrayList<FileObject>();
-        FileObject[] objects = source.getChildren();
-        for (FileObject object : objects) {
-            if (FileType.FOLDER == object.getType()) {
+        if (FileType.FOLDER == source.getType()) {
+            FileObject[] objects = source.getChildren();
+            for (FileObject object : objects) {
                 files.addAll(getFiles(object));
-            } else {
-                files.add(object);
             }
+        } else {
+            files.add(source);
         }
         return files;
     }
