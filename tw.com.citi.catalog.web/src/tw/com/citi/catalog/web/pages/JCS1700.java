@@ -163,7 +163,9 @@ public class JCS1700 extends AbstractBasePage {
             fileMoveDetailDao.create(params);
         }
         F.updateEndTime(fLogId, new Date());
-        return null;
+        Map<String, Object> results = new HashMap<String, Object>();
+        results.put("functionLogId", fLogId);
+        return gson.toJson(results);
     }
 
     private String getFiles(Map dataMap) {

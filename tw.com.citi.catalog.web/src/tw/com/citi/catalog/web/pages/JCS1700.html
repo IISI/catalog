@@ -198,7 +198,13 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        // TODO show report
+                        var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form.append('<input type="hidden" name="reportName" value="Rpt1700" />');
+                        form.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                        form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                        form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                        form.submit();
+                        form.remove();
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var resp = JSON.parse(jqXHR.responseText);
