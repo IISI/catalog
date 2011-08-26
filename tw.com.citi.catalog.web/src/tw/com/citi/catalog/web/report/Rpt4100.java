@@ -15,6 +15,7 @@ import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
 import tw.com.citi.catalog.web.dao.IFunctionLogDao;
+import tw.com.citi.catalog.web.util.F;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -33,7 +34,7 @@ public class Rpt4100 implements IReport {
     public Map<String, Object> getReportParameters() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", null);
+        params.put("userId", F.getCurrentUser());
         params.put("startDate", req.getParameter("startDate"));
         params.put("endDate", req.getParameter("endDate"));
         return params;

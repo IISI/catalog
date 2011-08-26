@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -93,6 +94,17 @@ public class F {
                 return null;
             }
         });
+    }
+
+    public static String getCurrentUser() {
+        String[] args = Platform.getApplicationArgs();
+        for (String arg : args) {
+            if (arg.startsWith("userId")) {
+                String[] userId = arg.split("=");
+                return userId[1];
+            }
+        }
+        throw new RuntimeException("Can not find logged in user.");
     }
 
 }

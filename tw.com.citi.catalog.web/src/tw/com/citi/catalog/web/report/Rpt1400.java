@@ -10,6 +10,7 @@ import org.apache.wicket.protocol.http.WebRequest;
 
 import tw.com.citi.catalog.util.DateUtil;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
+import tw.com.citi.catalog.web.util.F;
 
 public class Rpt1400 implements IReport {
 
@@ -24,7 +25,7 @@ public class Rpt1400 implements IReport {
     public Map<String, Object> getReportParameters() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", req.getParameter("userId"));
+        params.put("userId", F.getCurrentUser());
         params.put("reportId", "JCS1400");
         params.put("scrNo", req.getParameter("scrNo"));
         params.put("printDate", DateUtil.format(new Date()));

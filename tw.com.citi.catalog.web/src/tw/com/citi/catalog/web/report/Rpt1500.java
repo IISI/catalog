@@ -21,6 +21,7 @@ import tw.com.citi.catalog.web.dto.Rpt1500Dto;
 import tw.com.citi.catalog.web.dto.ScrFileDto;
 import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.FileType;
+import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
 public class Rpt1500 implements IReport {
@@ -40,7 +41,7 @@ public class Rpt1500 implements IReport {
     public Map<String, Object> getReportParameters() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", null);
+        params.put("userId", F.getCurrentUser());
         params.put("reportId", "JCS1500");
         params.put("scrNo", req.getParameter("scrNo"));
         params.put("printDate", DateUtil.format(new Date()));

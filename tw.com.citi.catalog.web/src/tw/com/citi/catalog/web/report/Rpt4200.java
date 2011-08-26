@@ -19,6 +19,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import tw.com.citi.catalog.web.dao.IFunctionLogDao;
+import tw.com.citi.catalog.web.util.F;
 
 public class Rpt4200 implements IReport {
 
@@ -32,7 +33,7 @@ public class Rpt4200 implements IReport {
     @Override
     public Map<String, Object> getReportParameters() {
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", null);
+        params.put("userId", F.getCurrentUser());
         return params;
     }
 

@@ -10,6 +10,8 @@ import net.sf.jasperreports.engine.data.ListOfArrayDataSource;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
+import tw.com.citi.catalog.web.util.F;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -24,7 +26,7 @@ public class Rpt1300 implements IReport {
     public Map<String, Object> getReportParameters() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("userId", null);
+        data.put("userId", F.getCurrentUser());
         data.put("scrNo", req.getParameter("scrNo"));
         return data;
     }

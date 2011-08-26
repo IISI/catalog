@@ -13,6 +13,7 @@ import org.apache.wicket.protocol.http.WebRequest;
 import tw.com.citi.catalog.web.dao.ICompileDetailDao;
 import tw.com.citi.catalog.web.dao.IFunctionLogDao;
 import tw.com.citi.catalog.web.model.FunctionLog;
+import tw.com.citi.catalog.web.util.F;
 
 public class Rpt1300L implements IReport {
 
@@ -31,7 +32,7 @@ public class Rpt1300L implements IReport {
         Long functionLogId = Long.valueOf(req.getParameter("functionLogId"));
         FunctionLog functionLog = functionLogDao.findById(functionLogId);
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", null);
+        params.put("userId", F.getCurrentUser());
         params.put("scrNo", req.getParameter("scrNo"));
         params.put("processDate", functionLog.getStartTime());
         params.put("finishDate", functionLog.getEndTime());

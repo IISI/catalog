@@ -18,6 +18,7 @@ import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.dto.ScrFileDto;
 import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.FileType;
+import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.NetUseUtil;
 import tw.com.citi.catalog.web.util.impl.PvcsCmd;
 
@@ -36,7 +37,7 @@ public class Rpt1500D implements IReport {
     public Map<String, Object> getReportParameters() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("userId", null);
+        params.put("userId", F.getCurrentUser());
         params.put("scrNo", req.getParameter("scrNo"));
         return params;
     }

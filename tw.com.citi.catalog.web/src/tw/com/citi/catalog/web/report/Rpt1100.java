@@ -9,6 +9,7 @@ import org.apache.wicket.protocol.http.WebRequest;
 
 import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
+import tw.com.citi.catalog.web.util.F;
 
 public class Rpt1100 implements IReport {
 
@@ -27,7 +28,7 @@ public class Rpt1100 implements IReport {
         Map<String, Object> params = new HashMap<String, Object>();
         Long scrId = Long.valueOf(req.getParameter("scrId"));
         Map<String, Object> data = scrDao.queryScrInfo(scrId);
-        params.put("userId", "");
+        params.put("userId", F.getCurrentUser());
         params.put("scrNo", req.getParameter("scrNo"));
         params.put("status", req.getParameter("status"));
         params.put("createDate", req.getParameter("createDate"));
