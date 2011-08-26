@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Rpt1100" language="groovy" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="162"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<field name="fileName" class="java.lang.String"/>
 	<field name="filePath" class="java.lang.String"/>
@@ -30,7 +30,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="128" splitType="Stretch">
+		<band height="120" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="100" height="20"/>
 				<textElement/>
@@ -189,8 +189,8 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
-			<textField>
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="100" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -199,7 +199,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "appId" )]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="100" y="0" width="132" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -208,7 +208,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fileName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="232" y="0" width="140" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -217,7 +217,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{filePath}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="372" y="0" width="60" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -226,7 +226,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fileType}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="432" y="0" width="50" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -244,7 +244,7 @@
 				<textElement/>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{fileDate}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="567" y="0" width="100" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -253,7 +253,7 @@
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.Long"><![CDATA[$F{fileSize}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy HH:mm:ss">
+			<textField isStretchWithOverflow="true" pattern="MM/dd/yyyy HH:mm:ss" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="667" y="0" width="85" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -266,50 +266,50 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="70" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="30" width="100" height="20"/>
+				<reportElement x="0" y="20" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Total Files:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="50" width="100" height="20"/>
+				<reportElement x="0" y="40" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Programmer:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="200" y="50" width="100" height="20"/>
+				<reportElement x="200" y="40" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Coordinator:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="399" y="50" width="100" height="20"/>
+				<reportElement x="400" y="40" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Librarian:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="100" y="30" width="100" height="20"/>
+				<reportElement x="100" y="20" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="100" y="50" width="100" height="20"/>
+				<reportElement x="100" y="40" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "programmer" )]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="300" y="50" width="100" height="20"/>
+				<reportElement x="300" y="40" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "coordinator" )]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="501" y="50" width="100" height="20"/>
+				<reportElement x="500" y="40" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "librarian" )]]></textFieldExpression>
 			</textField>

@@ -29,7 +29,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="92" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="100" height="20"/>
 				<textElement/>
@@ -158,7 +158,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="100" height="20"/>
 				<box leftPadding="2" rightPadding="2">
@@ -226,20 +226,20 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch">
+		<band height="40" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="22" width="100" height="20"/>
+				<reportElement x="0" y="20" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Total Files:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="100" y="22" width="100" height="20"/>
+				<reportElement x="100" y="20" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>

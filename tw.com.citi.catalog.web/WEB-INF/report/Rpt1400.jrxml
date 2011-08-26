@@ -27,7 +27,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="84" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="0" width="100" height="20"/>
 				<textElement/>
@@ -136,8 +136,8 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
+		<band height="20" splitType="Prevent">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="100" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -146,7 +146,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{REPORT_PARAMETERS_MAP}.get( "appId" )]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="100" y="0" width="182" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -155,7 +155,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fileName}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="282" y="0" width="220" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -164,7 +164,7 @@
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{filePath}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="#,##0">
+			<textField isStretchWithOverflow="true" pattern="#,##0" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="502" y="0" width="100" height="20"/>
 				<box leftPadding="2" rightPadding="2">
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
@@ -186,20 +186,20 @@
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch">
+		<band height="40" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="22" width="100" height="20"/>
+				<reportElement x="0" y="20" width="100" height="20"/>
 				<textElement/>
 				<text><![CDATA[Total Files:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="100" y="22" width="100" height="20"/>
+				<reportElement x="100" y="20" width="100" height="20"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
