@@ -21,6 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import tw.com.citi.catalog.web.Activator;
 import tw.com.citi.catalog.web.dao.IFunctionLogDao;
 import tw.com.citi.catalog.web.dao.IUserDao;
+import tw.com.citi.catalog.web.dao.UserDao;
 
 public class AccessControlUtil {
 	
@@ -30,13 +31,14 @@ public class AccessControlUtil {
 
     private static PlatformTransactionManager txManager;
 	
+    
 	static {
         BundleContext context = Activator.getContext();
         try {
             ServiceReference[] refs = context.getServiceReferences("tw.com.citi.catalog.web.dao.IUserDao", null);
             for (ServiceReference ref : refs) {
                 String beanName = (String) ref.getProperty(OsgiServicePropertiesResolver.BEAN_NAME_PROPERTY_KEY);
-                if ("UserDao".equals(beanName)) {
+                if ("userDao".equals(beanName)) {
                 	userDao = (IUserDao) context.getService(ref);
                     break;
                 }
@@ -54,6 +56,7 @@ public class AccessControlUtil {
             logger.error("Cannot find UserDao.", e);
         }
     }
+   
 	
 	
     public static boolean authenticateCBCUser(String checkerId, String checkerPwd) {
@@ -83,6 +86,7 @@ public class AccessControlUtil {
             final LobHandler lobHandler = new DefaultLobHandler();
             
             //由id取得SEC_USRBASIC 並將result record的USR_PWD_C field 放入 password
+            System.out.println("userDao="+userDao);
             
             results = userDao.query("SELECT * FROM SEC_USRBASIC WHERE USR_ID_C = :userId", new RowMapper<Map<String, Object>>() {
                 @Override
@@ -104,7 +108,7 @@ public class AccessControlUtil {
             Map<String, Object> result = results.get(0);
             
             byte[] password = (byte[]) result.get("password");
-            //System.out.println("pass byte length="+password.length+",hex="+new String(Hex.encodeHex(password)));
+            System.out.println("pass byte length="+password.length+",hex="+new String(Hex.encodeHex(password)));
             String encodedPassword ="";
             if(password!=null){
             	encodedPassword = new String(Hex.encodeHex(password));
