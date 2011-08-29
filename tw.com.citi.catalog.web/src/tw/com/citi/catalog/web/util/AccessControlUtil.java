@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.codec.binary.Hex;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -17,11 +16,9 @@ import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.osgi.service.exporter.OsgiServicePropertiesResolver;
 import org.springframework.transaction.PlatformTransactionManager;
-
 import tw.com.citi.catalog.web.Activator;
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
 import tw.com.citi.catalog.web.dao.IUserDao;
-import tw.com.citi.catalog.web.dao.UserDao;
+
 
 public class AccessControlUtil {
 	
@@ -31,7 +28,6 @@ public class AccessControlUtil {
 
     private static PlatformTransactionManager txManager;
 	
-    
 	static {
         BundleContext context = Activator.getContext();
         try {
@@ -86,7 +82,7 @@ public class AccessControlUtil {
             final LobHandler lobHandler = new DefaultLobHandler();
             
             //由id取得SEC_USRBASIC 並將result record的USR_PWD_C field 放入 password
-            System.out.println("userDao="+userDao);
+            logger.debug("userDao="+userDao);
             
             results = userDao.query("SELECT * FROM SEC_USRBASIC WHERE USR_ID_C = :userId", new RowMapper<Map<String, Object>>() {
                 @Override
@@ -108,7 +104,7 @@ public class AccessControlUtil {
             Map<String, Object> result = results.get(0);
             
             byte[] password = (byte[]) result.get("password");
-            System.out.println("pass byte length="+password.length+",hex="+new String(Hex.encodeHex(password)));
+            logger.debug("pass byte length="+password.length+",hex="+new String(Hex.encodeHex(password)));
             String encodedPassword ="";
             if(password!=null){
             	encodedPassword = new String(Hex.encodeHex(password));
@@ -117,7 +113,7 @@ public class AccessControlUtil {
             
             errMsg+="get a id record,and pass="+result.get("password")+",and usr_pwd_c byte[] length="+password.length+",encodedPassword="+encodedPassword+",passwordArgument="+passwordArgument.toString()+",PasswordUtil.encodeUserPass ori_pass="+pass+","+"ori_pass="+checkerPwd+".";
             errMsg+="get a id record";
-            System.out.println(errMsg);
+            logger.debug(errMsg);
             
             
             if (encodedPassword.equalsIgnoreCase(passwordArgument.toString())) {
@@ -150,7 +146,7 @@ public class AccessControlUtil {
 
         }else{
         	errMsg+="id="+id+",and password varify fail!";
-        	System.out.println("authed fail"+errMsg);
+        	logger.debug("authed fail"+errMsg);
         	return false;
         }
 
