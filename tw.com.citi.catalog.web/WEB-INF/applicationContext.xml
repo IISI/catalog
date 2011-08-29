@@ -118,6 +118,7 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+
     <bean id="fileMoveDetailDao" class="tw.com.citi.catalog.web.dao.FileMoveDetailDao">
         <property name="dataSource" ref="dataSource"></property>
     </bean>
@@ -152,5 +153,12 @@
         <property name="scrFileDao" ref="scrFileDao"></property>
         <property name="buildUnitDao" ref="buildUnitDao"></property>
     </bean>
+    
+        
+    <bean id="userDao" class="tw.com.citi.catalog.web.dao.UserDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    
+    <osgi:service ref="userDao" interface="tw.com.citi.catalog.web.dao.IUserDao"></osgi:service>
 
 </beans>
