@@ -147,7 +147,7 @@ public class JCS1300 extends AbstractBasePage {
         Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         Long scrId = Long.parseLong(sScrId);
-        Long fLogId = F.log(scrId, Func.JCS1300, "", "", start, null);
+        Long fLogId = F.log(scrId, Func.JCS1300, "", start, null);
         retVal.put("functionLogId", fLogId);
         String localPath = (String) dataMap.get("localPath");
         String files = (String) dataMap.get("files");

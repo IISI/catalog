@@ -119,7 +119,7 @@ public class JCS1600 extends AbstractBasePage {
         }.getType());
         // move file
         Long scrId = Long.parseLong(sScrId);
-        Long fLogId = F.log(scrId, Func.JCS1600, "", "", start, null);
+        Long fLogId = F.log(scrId, Func.JCS1600, "", start, null);
         Scr scr = scrDao.findById(scrId);
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         // get path
