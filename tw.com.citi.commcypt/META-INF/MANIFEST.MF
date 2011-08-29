@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commcypt
+Bundle-SymbolicName: tw.com.citi.commcypt
+Bundle-Version: 1.0.0
+Bundle-Activator: tw.com.citi.commcypt.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .,
+ lib/commons-codec-1.4.jar
+Export-Package: tw.com.citi.commcypt,
+ tw.com.citi.commcypt.util
