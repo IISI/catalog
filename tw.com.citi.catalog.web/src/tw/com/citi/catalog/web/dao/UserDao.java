@@ -27,20 +27,9 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
 
     public static final int SORT_DIR_LEN = SORT_DIR.length();
 	
-	private SimpleJdbcTemplate jdbcTemplate;
 
-    private TransactionTemplate txTemplate;
 
     private Properties sqlProps;
-	
-    /*
-    public UserDao(DataSource ds) {
-    	jdbcTemplate = new SimpleJdbcTemplate(ds);
-        PlatformTransactionManager txManager = new DataSourceTransactionManager(ds);
-        txTemplate = new TransactionTemplate(txManager);
-    }
-    */
-
 
 	
     @Override
