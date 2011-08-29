@@ -33,11 +33,13 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
 
     private Properties sqlProps;
 	
+    /*
     public UserDao(DataSource ds) {
     	jdbcTemplate = new SimpleJdbcTemplate(ds);
         PlatformTransactionManager txManager = new DataSourceTransactionManager(ds);
         txTemplate = new TransactionTemplate(txManager);
     }
+    */
 
 
 	
@@ -93,12 +95,12 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
 
     @Override
     public <T> List<T> query(String sqlCode, RowMapper<T> rowMapper, Map<String, ?> parameters) {
-        return jdbcTemplate.query(sqlCode, rowMapper, parameters);
+        return super.jdbcTemplate.query(sqlCode, rowMapper, parameters);
     }
     
     @Override
     public <T> List<T> query(String sqlCode, Class<T> requiredType, Map<String, ?> parameters) {
-        return jdbcTemplate.query(sqlCode, new BeanPropertyRowMapper<T>(requiredType), parameters);
+        return super.jdbcTemplate.query(sqlCode, new BeanPropertyRowMapper<T>(requiredType), parameters);
     }
     
     private String makeSql(String sqlCode, Object sortIndex, Object sortDir) {
@@ -123,7 +125,7 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
 		StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM USERS");
         Map<String, Object> args = new HashMap<String, Object>();
-        List<User> list = jdbcTemplate.query(sql.toString(), getRowMapper(), args);
+        List<User> list = super.jdbcTemplate.query(sql.toString(), getRowMapper(), args);
         return list;
 	}
 
