@@ -60,7 +60,7 @@ public class F {
         }
     }
 
-    public static Long log(final long scrId, final Func function, final String maker, final String checker, final Date start, final Date end) {
+    public static Long log(final long scrId, final Func function, final String checker, final Date start, final Date end) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(txManager, new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
         return transactionTemplate.execute(new TransactionCallback<Long>() {
 
@@ -71,7 +71,7 @@ public class F {
                     Map<String, Object> params = new HashMap<String, Object>();
                     params.put("JC_SCR_ID", scrId);
                     params.put("FUNCTION_ID", function.name());
-                    params.put("MAKER", maker);
+                    params.put("MAKER", F.getCurrentUser());
                     params.put("CHECKER", checker);
                     params.put("START_TIME", start);
                     params.put("END_TIME", end);

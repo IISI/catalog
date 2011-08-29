@@ -137,7 +137,7 @@ public class JCS1100 extends AbstractBasePage {
             return checkImportFile(changeFile, hashFile, pvcsUsername, pvcsPassword, scrId);
         } else if ("register".equals(actionName)) {
             long scrId = params.getLong("actionParams[scrId]");
-            Long functionLogId = F.log(scrId, Func.JCS1100, null, null, new Date(), null);
+            Long functionLogId = F.log(scrId, Func.JCS1100, null, new Date(), null);
             String objs = params.getString("actionParams[files]");
             GsonBuilder builder = new GsonBuilder();
             builder.registerTypeAdapter(FileModel.class, new FileModelDeserializer());

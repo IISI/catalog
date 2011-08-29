@@ -118,7 +118,7 @@ public class JCS1200 extends AbstractBasePage {
         // move file
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
-        Long fLogId = F.log(scr.getId(), Func.JCS1200, "", "", start, null);
+        Long fLogId = F.log(scr.getId(), Func.JCS1200, "", start, null);
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         // get source path
         String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
