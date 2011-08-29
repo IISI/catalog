@@ -1,11 +1,16 @@
 package tw.com.citi.catalog.web.util;
 
 import java.io.Console;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+
+import tw.com.citi.commcypt.CommCypt;
+import tw.com.citi.commcypt.util.BridgeEncode;
+
 
 public class PasswordUtil {
     public static String decodePwd(String cipher) throws Exception {
@@ -92,4 +97,22 @@ public class PasswordUtil {
         Arrays.fill(password2, ' ');
         System.out.println("\nEncrypted Password :\n" + encodePwd(password));
     }
+    
+    /**
+     * dual control password encypt
+     * @param strSrc : dual control input pass
+     * @return
+     */
+    public static String encyptDualLoginPass(String strSrc){
+		
+		try {
+			CommCypt cypt=new CommCypt();
+			return cypt.run(BridgeEncode.encode(strSrc));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return strSrc;
+		}
+	}
+    
 }
