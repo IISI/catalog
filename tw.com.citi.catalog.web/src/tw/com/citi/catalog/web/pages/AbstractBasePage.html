@@ -46,7 +46,7 @@ input {
             </tr>
             <tr>
                 <td><label for="checkPwd">Password</label></td>
-                <td><input type="text" name="checkPwd" id="checkPwd" /></td>
+                <td><input type="password" name="checkPwd" id="checkPwd" /></td>
             </tr>
         </table>
     </div>
@@ -181,7 +181,7 @@ input {
                 buttons: {
                     'Confirm' : function() {
                         $(this).dialog("close");
-                        window["sendDualControl"]();
+                        window["sendDualControl"]($('#checkId').val(), $('#checkPwd').val());
                     },
                     'Cancel' : function() {
                         $(this).dialog("close");
