@@ -53,6 +53,7 @@ import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Programmer;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.ScrFile;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.FileUtil;
@@ -136,6 +137,13 @@ public class JCS1100 extends AbstractBasePage {
             long scrId = params.getLong("actionParams[scrId]");
             return checkImportFile(changeFile, hashFile, pvcsUsername, pvcsPassword, scrId);
         } else if ("register".equals(actionName)) {
+            String checkerId = params.getString("actionParams[checkerId]");
+            String checkerPwd = params.getString("actionParams[checkerPwd]");
+            logger.debug("checker id = {}, checker password = {}", checkerId, checkerPwd);
+            boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
+            if (!authenticated) {
+                throw new RuntimeException("Id/Password is invalid.");
+            }
             long scrId = params.getLong("actionParams[scrId]");
             Long functionLogId = F.log(scrId, Func.JCS1100, null, new Date(), null);
             String objs = params.getString("actionParams[files]");
