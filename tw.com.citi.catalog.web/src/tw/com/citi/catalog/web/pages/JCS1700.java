@@ -23,6 +23,7 @@ import tw.com.citi.catalog.web.model.AppPath.PathType;
 import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.ProcessResult;
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
@@ -54,11 +55,15 @@ public class JCS1700 extends AbstractBasePage {
         String result;
         String actionName = params.getString("actionName");
         String actionParams = params.getString("actionParams");
-        Map dataMap = gson.fromJson(actionParams, new TypeToken<Map<String, String>>() {
+        Map<String, String> dataMap = gson.fromJson(actionParams, new TypeToken<Map<String, String>>() {
         }.getType());
         if ("Init".equals(actionName)) {
             result = init(dataMap);
         } else if ("Rollback".equals(actionName)) {
+            boolean authenticated = AccessControlUtil.authenticateCBCUser(dataMap);
+            if (!authenticated) {
+                throw new RuntimeException("ID/Password is invalid.");
+            }
             result = rollback(dataMap);
         } else if ("Query".equals(actionName)) {
             result = query(dataMap);
@@ -70,7 +75,7 @@ public class JCS1700 extends AbstractBasePage {
         return result;
     }
 
-    private String init(Map dataMap) {
+    private String init(Map<String, String> dataMap) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("deleted", "0");
         List<Scr> scrList = scrDao.find(params, new String[] { "equal" }, "", "SCR_NO", 0, Long.MAX_VALUE);
@@ -79,7 +84,7 @@ public class JCS1700 extends AbstractBasePage {
         return gson.toJson(data);
     }
 
-    private String query(Map dataMap) {
+    private String query(Map<String, String> dataMap) {
         String sId = (String) dataMap.get("id");
         Scr scr = scrDao.findById(Long.parseLong(sId));
         App app = appDao.findById(scr.getJcAppId());
@@ -95,7 +100,7 @@ public class JCS1700 extends AbstractBasePage {
         return gson.toJson(data);
     }
 
-    private String rollback(Map dataMap) {
+    private String rollback(Map<String, String> dataMap) {
         Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         // move file
@@ -168,7 +173,7 @@ public class JCS1700 extends AbstractBasePage {
         return gson.toJson(results);
     }
 
-    private String getFiles(Map dataMap) {
+    private String getFiles(Map<String, String> dataMap) {
         String sId = (String) dataMap.get("id");
         Scr scr = scrDao.findById(Long.parseLong(sId));
         App app = appDao.findById(scr.getJcAppId());

@@ -85,10 +85,13 @@
                 }
                 
                 function initDualControl() {
-                    window.sendDualControl = function () {
+                    window.sendDualControl = function (checkerId, checkerPwd) {
                         var payload = {};
                         payload.actionName = 'compare';
                         payload.actionParams = {
+                            checkerId: checkerId,
+                            checkerPwd: checkerPwd,
+                            scrId: scrId
                         };
                         $.ajax({
                             url: __ajaxHandler,

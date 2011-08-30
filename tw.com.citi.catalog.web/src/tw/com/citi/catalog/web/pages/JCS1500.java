@@ -1,13 +1,12 @@
 package tw.com.citi.catalog.web.pages;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-
-import com.google.gson.Gson;
 
 import tw.com.citi.catalog.web.dao.IAppDao;
 import tw.com.citi.catalog.web.dao.IAppPathDao;
@@ -18,6 +17,12 @@ import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.BuildUnit;
 import tw.com.citi.catalog.web.model.Scr;
+import tw.com.citi.catalog.web.model.Scr.Status;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
+import tw.com.citi.catalog.web.util.F;
+import tw.com.citi.catalog.web.util.F.Func;
+
+import com.google.gson.Gson;
 
 public class JCS1500 extends AbstractBasePage {
 
@@ -57,6 +62,17 @@ public class JCS1500 extends AbstractBasePage {
         } else if ("findBuildUnit".equals(actionName)) {
             Long scrId = params.getAsLong("actionParams[scrId]");
             return findBuildUnit(scrId);
+        } else if ("compare".equals(actionName)) {
+            String checkerId = params.getString("actionParams[checkerId]");
+            String checkerPwd = params.getString("actionParams[checkerPwd]");
+            boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
+            if (!authenticated) {
+                throw new RuntimeException("ID/Password is invalid.");
+            }
+            long scrId = params.getAsLong("actionParams[scrId]");
+            long functionLogId = F.log(scrId, Func.JCS1500, checkerId, new Date(), null);
+            scrDao.updateStatus(scrId, Status.SOURCE_COMPARE);
+            F.updateEndTime(functionLogId, new Date());
         }
         return null;
     }
