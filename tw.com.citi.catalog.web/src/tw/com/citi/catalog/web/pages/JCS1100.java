@@ -142,7 +142,7 @@ public class JCS1100 extends AbstractBasePage {
             logger.debug("checker id = {}, checker password = {}", checkerId, checkerPwd);
             boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
             if (!authenticated) {
-                throw new RuntimeException("Id/Password is invalid.");
+                throw new RuntimeException("ID/Password is invalid.");
             }
             long scrId = params.getLong("actionParams[scrId]");
             Long functionLogId = F.log(scrId, Func.JCS1100, null, new Date(), null);
