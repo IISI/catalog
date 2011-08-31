@@ -35,6 +35,8 @@ import tw.com.citi.catalog.web.model.AppPath;
 import tw.com.citi.catalog.web.model.CheckoutFile;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.AppPath.PathType;
+import tw.com.citi.catalog.web.model.Scr.Status;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.IPvcsCmd;
 import tw.com.citi.catalog.web.util.IZipCmd;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
@@ -75,13 +77,16 @@ public class JCS1800 extends AbstractBasePage {
         
         if ("findScrNo".equals(actionName)) {
             result=  findScrNo();
+            
         }else if ("getScrInfo".equals(actionName)) {
             Long scrId = params.getAsLong("actionParams[scrId]");
             result = getScrInfo(scrId);
+            System.out.println(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
         } else if ("allCheckoutList".equals(actionName)) {
         	String checkoutFile= params.getString("actionParams[checkoutFile]");
         	result = parseCheckoutListFile(checkoutFile);
-        }   else if ("checkout".equals(actionName)) {
+        	
+        } else if ("checkout".equals(actionName)) {
         	String scrNo=params.getString("actionParams[scrNo]");
         	String appId=params.getString("actionParams[appId]");
         	String checkoutLabel=params.getString("actionParams[checkoutLabel]");
@@ -109,6 +114,7 @@ public class JCS1800 extends AbstractBasePage {
             App app=appDao.findByAppId(appId);
             String prjDb=app.getPvcsProjDb();
             String prjPath=app.getPvcsProjPath();
+            //傳送給pcli的filename string[] 
             String[] chkfiles=new String[CheckoutFileList.size()];
             for(int i=0;i<CheckoutFileList.size();i++){
             	CheckoutFile file=CheckoutFileList.get(i);
@@ -116,27 +122,39 @@ public class JCS1800 extends AbstractBasePage {
             	String srcPath=file.getSrcPath().replaceAll("\\\\", "/");
             	System.out.println("aaaa:"+srcPath);
             	file.setSrcPath(srcPath);
-            	chkfiles[i]=" source/"+file.getSrcPath()+file.getSrcFileName();
+            	chkfiles[i]=" RD/"+file.getSrcPath()+file.getSrcFileName();
             }
-            
             IPvcsCmd pvcsCmd=new PvcsCmd();
             System.out.println(prjDb+"-"+prjPath);
             pvcsCmd.getFiles(prjDb, prjPath, checkoutId, checkoutPass, chkfiles);
             
             //zip 
-            List<FileModel> fileModelList=new ArrayList<FileModel>();
+            //把checkoutFileList 搬到  C:\temp\JavaCatalog
+            String[] zipSrcArr=new String[CheckoutFileList.size()];
+            try {
+            	Runtime.getRuntime().exec(new String[] { "cmd", "/C", "rmdir /s /q C:\\temp\\JavaCatalog\\zip\\RD" });
+            	Runtime.getRuntime().exec(new String[] { "cmd", "/C", "mkdir C:\\temp\\JavaCatalog\\zip\\RD" });
+	            for(int i=0;i<CheckoutFileList.size();i++){
+	            	CheckoutFile coFile=CheckoutFileList.get(i);
+	            	String coFileRdPath=rdPath + coFile.getSrcPath();
+	            	System.out.println(coFileRdPath+"----"+"c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath()+"----"+coFile.getSrcFileName());
+	            	SmbFileUtil.copySmbToLocal(coFileRdPath, "c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath(), new String[] { coFile.getSrcFileName() });
+	            	zipSrcArr[i]="c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getFilePath();
+	            }
+            } catch (FileSystemException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             
-            
-            for(CheckoutFile coFile : CheckoutFileList){
-            	//coFile.setFilePath(rdPath+coFile.getFilePath());
-            	coFile.setFilePath("C:\\temp\\JavaCatalog\\source\\"+coFile.getFilePath());
+			//filePath=srcFilePath+srcFileName
+			for(CheckoutFile coFile : CheckoutFileList){
+            	coFile.setFilePath(rdPath+coFile.getFilePath());
             	//System.out.println("zip:"+coFile.getFilePath());
             }
-            String[] zipSrcArr=new String[CheckoutFileList.size()];
-            for(int i=0;i<CheckoutFileList.size();i++){
-            	zipSrcArr[i]=CheckoutFileList.get(i).getFilePath();
-            }
-            
+
            
            //gen hash
            List<HashFileModel> hashFileList=new ArrayList<HashFileModel>();
@@ -179,43 +197,24 @@ public class JCS1800 extends AbstractBasePage {
             //gen zip
             IZipCmd zipCmd=new ZipCmd();
             zipCmd.zip(zipfilePath+"\\source.zip", zipSrcArr, "12345678");
-            //File srcFile=new File("C:\\temp\\JavaCatalog\\source");
-            //File targetFile=new File("c:\\cdic\\rd");
-            //move from temp:source to rd
-            for(int i=0;i<CheckoutFileList.size();i++){
-            	CheckoutFile oFile=CheckoutFileList.get(i);
-            	String filePath=oFile.getSrcPath();
-            	String fileName=oFile.getSrcFileName();
-            	try {
-					SmbFileUtil.copyLocalToSmb("c:\\temp\\Javacatalog\\source\\"+filePath, rdPath+"/"+filePath , new String[] { fileName });
-				} catch (FileSystemException e) {
-					e.printStackTrace();
-				}
-            }
+            
+            
             
             try {
-				Runtime.getRuntime().exec(new String[] { "cmd", "/C", "rmdir /s /q C:\\temp\\JavaCatalog\\source" });
-				Runtime.getRuntime().exec(new String[] { "cmd", "/C", "mkdir C:\\temp\\JavaCatalog\\source" });
+            	Runtime.getRuntime().exec(new String[] { "cmd", "/C", "rmdir /s /q C:\\temp\\JavaCatalog\\zip\\RD" });
+            	Runtime.getRuntime().exec(new String[] { "cmd", "/C", "mkdir C:\\temp\\JavaCatalog\\zip\\RD" });
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			
+			//update scrStatus
+			// 更新 Scr 的 status
+			System.out.println(Long.parseLong(scrNo));
+	        scrDao.updateStatus(Long.parseLong(scrNo), Status.CHECKOUT);
             
-            /*
-            try {
-				copyDirectory(srcFile, targetFile);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}finally{
-				try {
-					Runtime.getRuntime().exec(new String[] { "cmd", "/C", "rmdir /s /q C:\\temp\\JavaCatalog\\source" });
-					Runtime.getRuntime().exec(new String[] { "cmd", "/C", "mkdir C:\\temp\\JavaCatalog\\source" });
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			*/
+            
             
         } 
         return result;
