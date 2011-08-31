@@ -63,6 +63,13 @@
 
     <osgi:service ref="rpt1700" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
+    <bean id="rpt1800" class="tw.com.citi.catalog.web.report.Rpt1800">
+        <property name="functionLogDao" ref="functionLogDao"></property>
+        <property name="appFileDao" ref="appFileDao"></property>
+    </bean>
+
+    <osgi:service ref="rpt1800" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
+
     <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
 
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -117,7 +124,6 @@
     <bean id="functionLogDao" class="tw.com.citi.catalog.web.dao.FunctionLogDao">
         <property name="dataSource" ref="dataSource"></property>
     </bean>
-
 
     <bean id="fileMoveDetailDao" class="tw.com.citi.catalog.web.dao.FileMoveDetailDao">
         <property name="dataSource" ref="dataSource"></property>
