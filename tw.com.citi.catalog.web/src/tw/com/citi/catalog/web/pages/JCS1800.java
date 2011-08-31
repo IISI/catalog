@@ -81,7 +81,7 @@ public class JCS1800 extends AbstractBasePage {
         }else if ("getScrInfo".equals(actionName)) {
             Long scrId = params.getAsLong("actionParams[scrId]");
             result = getScrInfo(scrId);
-            System.out.println(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
+            //System.out.println(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
         } else if ("allCheckoutList".equals(actionName)) {
         	String checkoutFile= params.getString("actionParams[checkoutFile]");
         	result = parseCheckoutListFile(checkoutFile);
@@ -94,6 +94,7 @@ public class JCS1800 extends AbstractBasePage {
         	String checkoutId=params.getString("actionParams[checkoutId]");
         	String checkoutPass=params.getString("actionParams[checkoutPass]");
         	String zipfilePath=params.getString("actionParams[zipfilePath]");
+        	String zipPassword=params.getString("actionParams[zipPassword]");
             String checkoutList = params.getString("actionParams[checkoutList]");
             List<CheckoutFile> CheckoutFileList=gson.fromJson(checkoutList, new TypeToken<List<CheckoutFile>>(){}.getType());
             //System.out.println("scrNo="+scrNo);
@@ -195,8 +196,9 @@ public class JCS1800 extends AbstractBasePage {
             }
             
             //gen zip
+			System.out.println("zip password="+zipPassword);
             IZipCmd zipCmd=new ZipCmd();
-            zipCmd.zip(zipfilePath+"\\source.zip", zipSrcArr, "12345678");
+            zipCmd.zip(zipfilePath+"\\source.zip", zipSrcArr, zipPassword);
             
             
             

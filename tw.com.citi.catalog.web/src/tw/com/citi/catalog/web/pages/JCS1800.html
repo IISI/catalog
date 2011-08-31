@@ -64,9 +64,20 @@
         <button id="CheckoutButton">Checkout</button>
     </div>
     <br />
+    
+    <div id="zipDialog">
+        <table>
+            <tr>
+                <td><label for="zipPassword">Password</label></td>
+                <td><input id="zipPassword" type="password" /></td>
+            </tr>
+        </table>
+    </div>
+    
     <script type="text/javascript">
     <!--
         $(function() {
+        	var zipDialog = $('#zipDialog').dialog({autoOpen: false, modal: true});
         	var checkoutList=null;
         	$('#scrNo').load(__ajaxHandler, {'actionName':'findScrNo'});
         	$('#scrNo').combobox({
@@ -127,34 +138,50 @@
             });
             
             $("#CheckoutButton").click(function(){
-            	if(checkoutList!=null){
-            		//alert(checkoutList);
-            		var payload = {};
-                    payload.actionName = 'checkout';
-                    payload.actionParams = {
-                    		scrNo:$('#scrNo').val(),
-                    		appId:$('#appId').html(),
-                    		checkoutLabel:$('#label').val(),
-                    		checkoutPath:$('#checkoutPath').html(),
-                    		checkoutId: $('#checkoutId').val(),
-                    		checkoutPass:$('#checkoutPass').val(),
-                    		zipfilePath: $('#zipFilePath').val(),
-                    		checkoutList: JSON.stringify(checkoutList)
-                    };
-                    $.ajax({
-                        url: __ajaxHandler,
-                        type: 'POST',
-                        dataType: 'json',
-                        data: payload,
-                        success: function (data) {
-                           //alert("checkout="+data);
-                           
-                           
-                        }
-                    });
-            	}else{
-            		alert("Checkout file List not import!");
-            	}
+            	zipDialog.dialog('option', 'title', 'Enter zip password')
+                .dialog('option', 'buttons', {
+                    Continue: function () {
+                        //輸入完執行
+                    	
+                    	if(checkoutList!=null){
+                    		//alert(checkoutList);
+                    		var payload = {};
+                            payload.actionName = 'checkout';
+                            payload.actionParams = {
+                            		scrNo:$('#scrNo').val(),
+                            		appId:$('#appId').html(),
+                            		checkoutLabel:$('#label').val(),
+                            		checkoutPath:$('#checkoutPath').html(),
+                            		checkoutId: $('#checkoutId').val(),
+                            		checkoutPass:$('#checkoutPass').val(),
+                            		zipPassword: $("#zipPassword").val(),
+                            		zipfilePath: $('#zipFilePath').val(),
+                            		checkoutList: JSON.stringify(checkoutList)
+                            };
+                            $.ajax({
+                                url: __ajaxHandler,
+                                type: 'POST',
+                                dataType: 'json',
+                                data: payload,
+                                success: function (data) {
+                                   //alert("checkout="+data);
+                                   
+                                   
+                                }
+                            });
+                    	}else{
+                    		alert("Checkout file List not import!");
+                    	}
+                        
+                    	
+                        $(this).dialog('close');
+                    },
+                    Cancel: function () {
+                        $(this).dialog('close');
+                    }
+                })
+                .dialog('open');
+            	
             	
             });
             
