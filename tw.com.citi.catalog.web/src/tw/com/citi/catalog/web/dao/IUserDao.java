@@ -9,7 +9,7 @@ import tw.com.citi.catalog.web.model.User;
 
 public interface IUserDao extends IGenericDao<User, Long> {
 	
-	
+	User findByUserId(String userId);
 
 	List<User> listAll();
 	

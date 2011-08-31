@@ -1,20 +1,14 @@
 package tw.com.citi.catalog.web.dao;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.StringUtils;
+
 import tw.com.citi.catalog.web.model.User;
 
 public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao {
@@ -26,11 +20,8 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
     public static final int SORT_INDEX_LEN = SORT_INDEX.length();
 
     public static final int SORT_DIR_LEN = SORT_DIR.length();
-	
-
 
     private Properties sqlProps;
-
 	
     @Override
     public void update(Map<String, Object> params) {
@@ -118,16 +109,19 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
         return list;
 	}
 
-
-
-
-
-
 	@Override
 	public <T> List<T> query(String sqlCode, RowMapper<T> rowMapper,
 			Map<String, ?> parameters, boolean isNative) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public User findByUserId(String userId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM USERS WHERE UserID = ?");
+        List<User> users = jdbcTemplate.query(sql.toString(), getRowMapper(), userId);
+        return DataAccessUtils.uniqueResult(users);
+    }
 
 }

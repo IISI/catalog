@@ -42,6 +42,7 @@ import tw.com.citi.catalog.web.dao.IProgrammerDao;
 import tw.com.citi.catalog.web.dao.IRegisterHistoryDao;
 import tw.com.citi.catalog.web.dao.IScrDao;
 import tw.com.citi.catalog.web.dao.IScrFileDao;
+import tw.com.citi.catalog.web.dao.IUserDao;
 import tw.com.citi.catalog.web.grid.IGridHandler;
 import tw.com.citi.catalog.web.model.App;
 import tw.com.citi.catalog.web.model.AppFile;
@@ -53,6 +54,7 @@ import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.model.Programmer;
 import tw.com.citi.catalog.web.model.Scr;
 import tw.com.citi.catalog.web.model.ScrFile;
+import tw.com.citi.catalog.web.model.User;
 import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.F.Func;
@@ -100,6 +102,9 @@ public class JCS1100 extends AbstractBasePage {
 
     @SpringBean(name = "registerHistoryDao")
     private IRegisterHistoryDao registerHistoryDao;
+
+    @SpringBean(name = "userDao")
+    private IUserDao userDao;
 
     @SpringBean(name = "scrFileGrid")
     private IGridHandler scrFileGrid;
@@ -186,12 +191,13 @@ public class JCS1100 extends AbstractBasePage {
         App app = appDao.findById(scr.getJcAppId());
         Coordinator coordinator = coordinatorDao.findById(scr.getJcCoordinatorId());
         Programmer programmer = programmerDao.findById(scr.getJcProgrammerId());
+        User librarian = userDao.findByUserId(F.getCurrentUser());
         Map<String, Object> results = new HashMap<String, Object>();
         results.put("scrNo", scr.getScrNo());
         results.put("appId", app.getAppId());
         results.put("status", scr.getStatus().name());
         results.put("submitTime", DateUtil.format(scr.getProcessTime()));
-        results.put("librarian", "");
+        results.put("librarian", librarian.getName());
         results.put("coordinator", coordinator.getName());
         results.put("programmer", programmer.getName());
         results.put("createTime", DateUtil.format(scr.getCreateTime()));
