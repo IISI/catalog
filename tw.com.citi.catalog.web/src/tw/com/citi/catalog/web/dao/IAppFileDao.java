@@ -20,6 +20,12 @@ public interface IAppFileDao extends IGenericDao<AppFile, Long> {
 
     int updateFileInfoById(Timestamp fileDateTime, Long fileSize, Long id);
 
+    /**
+     * 查詢 1600, 1700, 1800 報表的資料。
+     * 
+     * @param functionLogId
+     * @return
+     */
     List<Map<String, Object>> find1600ReportData(long functionLogId);
 
 }

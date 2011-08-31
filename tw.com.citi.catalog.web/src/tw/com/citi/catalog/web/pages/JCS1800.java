@@ -217,7 +217,9 @@ public class JCS1800 extends AbstractBasePage {
 	        scrDao.updateStatus(Long.parseLong(scrNo), Status.CHECKOUT);
             
             
-            
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("functionLogId", null);
+            return gson.toJson(data);
         } 
         return result;
     }

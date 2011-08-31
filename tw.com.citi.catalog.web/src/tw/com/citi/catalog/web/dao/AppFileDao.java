@@ -98,7 +98,7 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
     @Override
     public List<Map<String, Object>> find1600ReportData(long functionLogId) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT AF.FILE_NAME fileName, AF.FILE_PATH filePath, AF.FILE_SIZE fileSize, AF.FILE_DATETIME fileDate, CASE AF.FILE_TYPE WHEN 0 THEN 'SOURCE' ELSE 'EXECUTION' END fileType ");
+        sql.append("SELECT AF.FILE_NAME fileName, AF.FILE_PATH filePath, AF.FILE_SIZE fileSize, AF.FILE_DATETIME fileDate, AF.FILE_MD5 hash, CASE AF.FILE_TYPE WHEN 0 THEN 'SOURCE' ELSE 'EXECUTION' END fileType ");
         sql.append("FROM JC_FILE_MOVE_DETAIL FMD, JC_APP_FILE AF ");
         sql.append("WHERE FMD.JC_FUNCTION_LOG_ID = ? AND FMD.JC_APP_FILE_ID = AF.ID");
         return jdbcTemplate.queryForList(sql.toString(), functionLogId);

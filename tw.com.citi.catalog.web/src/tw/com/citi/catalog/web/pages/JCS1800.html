@@ -164,9 +164,13 @@
                                 dataType: 'json',
                                 data: payload,
                                 success: function (data) {
-                                   //alert("checkout="+data);
-                                   
-                                   
+                                    var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                    form.append('<input type="hidden" name="reportName" value="Rpt1800" />');
+                                    form.append('<input type="hidden" name="scrNo" value="' + $('#scrNo').children(':selected').text() + '" />');
+                                    form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                                    form.append('<input type="hidden" name="appId" value="' + $('#appId').text() + '" />');
+                                    form.submit();
+                                    form.remove();
                                 }
                             });
                     	}else{
