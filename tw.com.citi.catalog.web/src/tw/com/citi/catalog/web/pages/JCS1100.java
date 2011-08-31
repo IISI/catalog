@@ -567,7 +567,7 @@ public class JCS1100 extends AbstractBasePage {
                 
                 // create source register history
                 updateMap.put("JC_SCR_FILE_ID", scrSourceFileId);
-                updateMap.put("REGISTER_ACTION", 1);
+                updateMap.put("REGISTER_ACTION", 2);
                 registerHistoryDao.create(updateMap);
                 
                 // 如果 execution file name 為空值的話，該筆資料就不需要被註冊

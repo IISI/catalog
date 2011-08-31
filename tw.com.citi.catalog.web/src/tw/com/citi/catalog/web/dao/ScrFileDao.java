@@ -146,7 +146,7 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         sql.append("     sf.file_size fileSize,");
         sql.append("     sf.last_register_time registerDate");
         sql.append(" FROM jc_scr_file sf");
-        sql.append(" LEFT JOIN jc_register_history rh ON sf.id = rh.jc_scr_file_id AND rh.register_count = (SELECT register_count FROM JC_SCR WHERE id = sf.jc_scr_id)");
+        sql.append(" LEFT JOIN jc_register_history rh ON sf.id = rh.jc_scr_file_id AND rh.register_count = (SELECT MAX(REGISTER_COUNT) FROM JC_REGISTER_HISTORY WHERE SF.ID = JC_SCR_FILE_ID)");
         sql.append(" WHERE sf.jc_scr_id = ?");
         return jdbcTemplate.query(sql.toString(), BeanPropertyRowMapper.newInstance(Rpt1100Dto.class), scrId);
     }
