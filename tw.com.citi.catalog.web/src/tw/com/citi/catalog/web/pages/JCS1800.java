@@ -82,6 +82,18 @@ public class JCS1800 extends AbstractBasePage {
             Long scrId = params.getAsLong("actionParams[scrId]");
             result = getScrInfo(scrId);
             //System.out.println(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
+        }else if ("dualControl".equals(actionName)) {
+        	 String checkerId = params.getString("actionParams[checkerId]");
+             String checkerPwd = params.getString("actionParams[checkerPwd]");
+             //logger.debug("checker id = {}, checker password = {}", checkerId, checkerPwd);
+             boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
+             System.out.println("authenticated="+authenticated);
+             if (!authenticated) {
+            	 result="ID/Password is invalid";
+             }else{
+            	 result="success";
+             }
+             
         } else if ("allCheckoutList".equals(actionName)) {
         	String checkoutFile= params.getString("actionParams[checkoutFile]");
         	result = parseCheckoutListFile(checkoutFile);

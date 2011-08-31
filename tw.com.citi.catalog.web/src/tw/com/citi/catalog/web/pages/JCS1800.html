@@ -74,10 +74,14 @@
         </table>
     </div>
     
+
+    
     <script type="text/javascript">
     <!--
+	    
         $(function() {
         	var zipDialog = $('#zipDialog').dialog({autoOpen: false, modal: true});
+        	initDualControl();
         	var checkoutList=null;
         	$('#scrNo').load(__ajaxHandler, {'actionName':'findScrNo'});
         	$('#scrNo').combobox({
@@ -138,6 +142,10 @@
             });
             
             $("#CheckoutButton").click(function(){
+            	//$('#dualControl').dialog('open');
+            	
+            	
+            	
             	zipDialog.dialog('option', 'title', 'Enter zip password')
                 .dialog('option', 'buttons', {
                     Continue: function () {
@@ -187,6 +195,31 @@
             
         });
     //-->
+    
+    	function initDualControl() {
+                    window.sendDualControl = function (checkerId, checkerPwd) {
+                    	var payload = {};
+                        payload.actionName = 'dualControl';
+                        payload.actionParams = {
+                        		checkerId: checkerId,
+                        		checkerPwd:checkerPwd
+                        };
+                        $.ajax({
+                            url: __ajaxHandler,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: payload,
+                            success: function () {
+                               
+                               
+                            }
+                        });
+                    };
+                    window.cancelDualControl = function () {
+                        
+                    };
+                }
+    
     	function initCheckoutGrid(){
     		checkoutGrid = $('#checkoutList').jqGrid({
     			width:'700',
