@@ -151,6 +151,8 @@ public class PvcsCmd implements IPvcsCmd{
 			logger.debug("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			Process process = Runtime.getRuntime().exec(cmd);
+			
+			/*
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
@@ -158,7 +160,7 @@ public class PvcsCmd implements IPvcsCmd{
 				System.out.println("file:"+file);
 			}
 			bf.close();
-			
+			*/
 		} catch (IOException e) {
 			e.printStackTrace();
 			
@@ -246,6 +248,43 @@ public class PvcsCmd implements IPvcsCmd{
 		
 		return rc;
 	}
+	
+	@Override
+	public int[] putFiles(String projectDatabase, String projectPath,
+			String username, String password, String label, String description,
+			String path) {
+		
+		int[] rc= new int[1];
+		
+		
+		ArrayList<String> addOkFileList=new ArrayList<String>();
+		
+		try {
+			String command="pcli AddFiles -pr\""+ projectDatabase +"\" -id\"" + username + ":" + password +"\" -pp\"" + projectPath + "\" -c -m\""+description+"\" -t\""+description+"\" -v\""+label+"\" "+path;
+			logger.debug("command:"+command);
+			String[] cmd = new String[] { "cmd", "/C", command };
+			Process process = Runtime.getRuntime().exec(cmd);
+			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String file="";
+			while((file=bf.readLine())   !=   null){
+				addOkFileList.add(file);
+			}
+			bf.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//test
+		for(String s : addOkFileList){
+			logger.debug("add file:"+s);
+		}
+		
+		//判斷每個source file是否成功Check in
+		rc[0]=1;
+		
+		return rc;
+	}
+	
 
 	/**
      * 刪除 PVCS 中的檔案。
@@ -338,12 +377,14 @@ public class PvcsCmd implements IPvcsCmd{
 			System.out.println("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			Process process = Runtime.getRuntime().exec(cmd);
+			/*
 			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String file="";
 			while((file=bf.readLine())   !=   null){
 				checkoutFileList.add(file);
 			}
 			bf.close();
+			*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -355,6 +396,7 @@ public class PvcsCmd implements IPvcsCmd{
 		}
 		
 		//判斷每個soirce file是否成功check out
+		/*
 		for(int i=0; i<files.length; i++){
 			String oriFile=files[i];
 			if(checkoutFileList.contains(oriFile)){
@@ -363,7 +405,7 @@ public class PvcsCmd implements IPvcsCmd{
 				rc[i] = -1;
 			}
 		}
-		
+		*/
 		return rc;
 	}
 

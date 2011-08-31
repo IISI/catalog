@@ -64,6 +64,9 @@ public interface IPvcsCmd {
      */
     int[] putFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String[] files);
 
+    int[] putFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String path);
+
+    
     /**
      * 刪除 PVCS 中的檔案。
      * 
