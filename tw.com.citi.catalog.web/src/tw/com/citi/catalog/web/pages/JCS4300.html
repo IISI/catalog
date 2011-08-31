@@ -215,10 +215,31 @@
                                 form.remove();
                                 break;
                             case 'JCS1600':
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1600" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + selectedRow.scrNo + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + selectedRow.id + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + selectedRow.app + '" />');
+                                form.submit();
+                                form.remove();
                                 break;
                             case 'JCS1700':
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1700" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + selectedRow.scrNo + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + selectedRow.id + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + selectedRow.app + '" />');
+                                form.submit();
+                                form.remove();
                                 break;
                             case 'JCS1800':
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1800" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + selectedRow.scrNo + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + selectedRow.id + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + selectedRow.app + '" />');
+                                form.submit();
+                                form.remove();
                                 break;
                             }
                             setTimeout(function () {}, 1000);
