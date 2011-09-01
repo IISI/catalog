@@ -4,6 +4,34 @@
     xmlns:osgi="http://www.springframework.org/schema/osgi"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <osgi:reference id="appDao" interface="tw.com.citi.catalog.dao.IAppDao"></osgi:reference>
+
+    <osgi:reference id="appFileDao" interface="tw.com.citi.catalog.dao.IAppFileDao"></osgi:reference>
+
+    <osgi:reference id="appPathDao" interface="tw.com.citi.catalog.dao.IAppPathDao"></osgi:reference>
+
+    <osgi:reference id="buildUnitDao" interface="tw.com.citi.catalog.dao.IBuildUnitDao"></osgi:reference>
+
+    <osgi:reference id="compileDetailDao" interface="tw.com.citi.catalog.dao.ICompileDetailDao"></osgi:reference>
+
+    <osgi:reference id="coordinatorDao" interface="tw.com.citi.catalog.dao.ICoordinatorDao"></osgi:reference>
+
+    <osgi:reference id="fileMoveDetailDao" interface="tw.com.citi.catalog.dao.IFileMoveDetailDao"></osgi:reference>
+
+    <osgi:reference id="functionLogDao" interface="tw.com.citi.catalog.dao.IFunctionLogDao"></osgi:reference>
+
+    <osgi:reference id="programmerDao" interface="tw.com.citi.catalog.dao.IProgrammerDao"></osgi:reference>
+
+    <osgi:reference id="registerHistoryDao" interface="tw.com.citi.catalog.dao.IRegisterHistoryDao"></osgi:reference>
+
+    <osgi:reference id="scrDao" interface="tw.com.citi.catalog.dao.IScrDao"></osgi:reference>
+
+    <osgi:reference id="scrFileDao" interface="tw.com.citi.catalog.dao.IScrFileDao"></osgi:reference>
+
+    <osgi:reference id="userDao" interface="tw.com.citi.catalog.dao.IUserDao"></osgi:reference>
+
+    <osgi:reference id="txManager" interface="org.springframework.transaction.PlatformTransactionManager"></osgi:reference>
+
     <bean id="rpt1100" class="tw.com.citi.catalog.web.report.Rpt1100">
         <property name="scrDao" ref="scrDao"></property>
         <property name="scrFileDao" ref="scrFileDao"></property>
@@ -70,71 +98,6 @@
 
     <osgi:service ref="rpt1800" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
-    <bean id="settings" class="tw.com.citi.catalog.web.Settings"></bean>
-
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="#{settings.jdbc.driverClassName}"></property>
-        <property name="url" value="#{settings.jdbc.url}"></property>
-        <property name="username" value="#{settings.jdbc.username}"></property>
-        <property name="password" value="#{settings.jdbc.password}"></property>
-    </bean>
-
-    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <osgi:service ref="txManager" interface="org.springframework.transaction.PlatformTransactionManager"></osgi:service>
-
-    <bean id="coordinatorDao" class="tw.com.citi.catalog.web.dao.CoordinatorDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="programmerDao" class="tw.com.citi.catalog.web.dao.ProgrammerDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="appDao" class="tw.com.citi.catalog.web.dao.AppDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="appFileDao" class="tw.com.citi.catalog.web.dao.AppFileDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="appPathDao" class="tw.com.citi.catalog.web.dao.AppPathDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="buildUnitDao" class="tw.com.citi.catalog.web.dao.BuildUnitDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="scrFileDao" class="tw.com.citi.catalog.web.dao.ScrFileDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="scrDao" class="tw.com.citi.catalog.web.dao.ScrDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="registerHistoryDao" class="tw.com.citi.catalog.web.dao.RegisterHistoryDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="functionLogDao" class="tw.com.citi.catalog.web.dao.FunctionLogDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="fileMoveDetailDao" class="tw.com.citi.catalog.web.dao.FileMoveDetailDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <bean id="compileDetailDao" class="tw.com.citi.catalog.web.dao.CompileDetailDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-
-    <osgi:service ref="functionLogDao" interface="tw.com.citi.catalog.web.dao.IFunctionLogDao"></osgi:service>
-
     <bean id="coordinatorGrid" class="tw.com.citi.catalog.web.grid.CoordinatorGrid">
         <property name="coordinatorDao" ref="coordinatorDao"></property>
     </bean>
@@ -154,17 +117,10 @@
 
     <bean id="checkoutGrid" class="tw.com.citi.catalog.web.grid.CheckoutGrid">
     </bean>
-    
+
     <bean id="scrFileGrid" class="tw.com.citi.catalog.web.grid.ScrFileGrid">
         <property name="scrFileDao" ref="scrFileDao"></property>
         <property name="buildUnitDao" ref="buildUnitDao"></property>
     </bean>
-    
-        
-    <bean id="userDao" class="tw.com.citi.catalog.web.dao.UserDao">
-        <property name="dataSource" ref="dataSource"></property>
-    </bean>
-    
-    <osgi:service ref="userDao" interface="tw.com.citi.catalog.web.dao.IUserDao"></osgi:service>
 
 </beans>

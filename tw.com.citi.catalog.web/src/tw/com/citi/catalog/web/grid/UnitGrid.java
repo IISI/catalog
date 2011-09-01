@@ -3,7 +3,7 @@ package tw.com.citi.catalog.web.grid;
 import java.util.List;
 import java.util.Map;
 
-import tw.com.citi.catalog.web.dao.IBuildUnitDao;
+import tw.com.citi.catalog.dao.IBuildUnitDao;
 
 public class UnitGrid extends AbstractGridHandler {
 

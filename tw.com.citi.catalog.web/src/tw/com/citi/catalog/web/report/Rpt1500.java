@@ -14,13 +14,13 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.com.citi.catalog.dao.IAppPathDao;
+import tw.com.citi.catalog.dao.IScrFileDao;
+import tw.com.citi.catalog.dto.Rpt1500Dto;
+import tw.com.citi.catalog.dto.ScrFileDto;
+import tw.com.citi.catalog.model.AppPath;
+import tw.com.citi.catalog.model.FileType;
 import tw.com.citi.catalog.util.DateUtil;
-import tw.com.citi.catalog.web.dao.AppPathDao;
-import tw.com.citi.catalog.web.dao.ScrFileDao;
-import tw.com.citi.catalog.web.dto.Rpt1500Dto;
-import tw.com.citi.catalog.web.dto.ScrFileDto;
-import tw.com.citi.catalog.web.model.AppPath;
-import tw.com.citi.catalog.web.model.FileType;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 
@@ -28,9 +28,9 @@ public class Rpt1500 implements IReport {
 
     final Logger logger = LoggerFactory.getLogger(Rpt1500.class);
 
-    private AppPathDao appPathDao;
+    private IAppPathDao appPathDao;
 
-    private ScrFileDao scrFileDao;
+    private IScrFileDao scrFileDao;
 
     @Override
     public InputStream getReportFile() {
@@ -103,11 +103,11 @@ public class Rpt1500 implements IReport {
         return null;
     }
 
-    public void setAppPathDao(AppPathDao appPathDao) {
+    public void setAppPathDao(IAppPathDao appPathDao) {
         this.appPathDao = appPathDao;
     }
 
-    public void setScrFileDao(ScrFileDao scrFileDao) {
+    public void setScrFileDao(IScrFileDao scrFileDao) {
         this.scrFileDao = scrFileDao;
     }
 

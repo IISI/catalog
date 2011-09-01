@@ -8,6 +8,7 @@ public class User implements IModel<Long> {
 	private Long id;
     private String userId;
     private String grpName;
+    private String name;
 
     public String getUserId() {
         return userId;
@@ -36,4 +37,13 @@ public class User implements IModel<Long> {
 		// TODO Auto-generated method stub
 		this.id=id;
 	}
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }

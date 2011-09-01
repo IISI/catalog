@@ -18,8 +18,8 @@ import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import tw.com.citi.catalog.dao.IFunctionLogDao;
 import tw.com.citi.catalog.web.Activator;
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
 
 public class F {
 
@@ -38,7 +38,7 @@ public class F {
     static {
         BundleContext context = Activator.getContext();
         try {
-            ServiceReference[] refs = context.getServiceReferences("tw.com.citi.catalog.web.dao.IFunctionLogDao", null);
+            ServiceReference[] refs = context.getServiceReferences("tw.com.citi.catalog.dao.IFunctionLogDao", null);
             for (ServiceReference ref : refs) {
                 String beanName = (String) ref.getProperty(OsgiServicePropertiesResolver.BEAN_NAME_PROPERTY_KEY);
                 if ("functionLogDao".equals(beanName)) {

@@ -6,11 +6,11 @@ import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 
-import tw.com.citi.catalog.web.dao.IAppDao;
-import tw.com.citi.catalog.web.dao.IAppPathDao;
-import tw.com.citi.catalog.web.model.App;
-import tw.com.citi.catalog.web.model.AppGridData;
-import tw.com.citi.catalog.web.model.AppPath;
+import tw.com.citi.catalog.dao.IAppDao;
+import tw.com.citi.catalog.dao.IAppPathDao;
+import tw.com.citi.catalog.model.App;
+import tw.com.citi.catalog.model.AppGridData;
+import tw.com.citi.catalog.model.AppPath;
 
 public class AppGrid extends AbstractGridHandler {
 

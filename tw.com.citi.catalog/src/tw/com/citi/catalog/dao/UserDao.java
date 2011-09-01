@@ -1,20 +1,16 @@
 package tw.com.citi.catalog.dao;
 
-import java.io.IOException;
-import java.util.HashMap;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.StringUtils;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobHandler;
+
 import tw.com.citi.catalog.model.User;
 
 public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao {
@@ -26,20 +22,8 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
     public static final int SORT_INDEX_LEN = SORT_INDEX.length();
 
     public static final int SORT_DIR_LEN = SORT_DIR.length();
-	
-	private SimpleJdbcTemplate jdbcTemplate;
-
-    private TransactionTemplate txTemplate;
 
     private Properties sqlProps;
-	
-    public UserDao(DataSource ds) {
-    	jdbcTemplate = new SimpleJdbcTemplate(ds);
-        PlatformTransactionManager txManager = new DataSourceTransactionManager(ds);
-        txTemplate = new TransactionTemplate(txManager);
-    }
-
-
 	
     @Override
     public void update(Map<String, Object> params) {
@@ -91,16 +75,6 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
     	return null;
     }
 
-    @Override
-    public <T> List<T> query(String sqlCode, RowMapper<T> rowMapper, Map<String, ?> parameters) {
-        return jdbcTemplate.query(sqlCode, rowMapper, parameters);
-    }
-    
-    @Override
-    public <T> List<T> query(String sqlCode, Class<T> requiredType, Map<String, ?> parameters) {
-        return jdbcTemplate.query(sqlCode, new BeanPropertyRowMapper<T>(requiredType), parameters);
-    }
-    
     private String makeSql(String sqlCode, Object sortIndex, Object sortDir) {
         StringBuilder sql = new StringBuilder(sqlProps.getProperty(sqlCode));
 
@@ -117,26 +91,26 @@ public class UserDao extends AbstractGenericDao<User, Long> implements IUserDao 
         return sql.toString();
     }
     
-	@Override
-	public List<User> listAll() {
-		// TODO Auto-generated method stub
-		StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM USERS");
-        Map<String, Object> args = new HashMap<String, Object>();
-        List<User> list = jdbcTemplate.query(sql.toString(), getRowMapper(), args);
-        return list;
-	}
+    @Override
+    public User findByUserId(String userId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM USERS WHERE UserID = ?");
+        List<User> users = jdbcTemplate.query(sql.toString(), getRowMapper(), userId);
+        return DataAccessUtils.uniqueResult(users);
+    }
 
+    @Override
+    public List<byte[]> findUserBasicByUserId(String userId) {
+        return jdbcTemplate.query("SELECT * FROM SEC_USRBASIC WHERE USR_ID_C = ?", new RowMapper<byte[]>() {
 
+            private LobHandler lobHandler = new DefaultLobHandler();
 
-
-
-
-	@Override
-	public <T> List<T> query(String sqlCode, RowMapper<T> rowMapper,
-			Map<String, ?> parameters, boolean isNative) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            @Override
+            public byte[] mapRow(ResultSet rs, int rowNum)
+                    throws SQLException {
+                return lobHandler.getBlobAsBytes(rs, "USR_PWD_C");
+            }
+        }, userId);
+    }
 
 }

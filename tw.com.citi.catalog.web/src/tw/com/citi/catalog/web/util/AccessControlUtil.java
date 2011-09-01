@@ -1,24 +1,18 @@
 package tw.com.citi.catalog.web.util;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.codec.binary.Hex;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.lob.DefaultLobHandler;
-import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.osgi.service.exporter.OsgiServicePropertiesResolver;
-import org.springframework.transaction.PlatformTransactionManager;
-import tw.com.citi.catalog.web.Activator;
-import tw.com.citi.catalog.web.dao.IUserDao;
 
+import tw.com.citi.catalog.dao.IUserDao;
+import tw.com.citi.catalog.web.Activator;
 
 public class AccessControlUtil {
 	
@@ -26,24 +20,14 @@ public class AccessControlUtil {
 	
 	private static IUserDao userDao;
 
-    private static PlatformTransactionManager txManager;
-	
 	static {
         BundleContext context = Activator.getContext();
         try {
-            ServiceReference[] refs = context.getServiceReferences("tw.com.citi.catalog.web.dao.IUserDao", null);
+            ServiceReference[] refs = context.getServiceReferences("tw.com.citi.catalog.dao.IUserDao", null);
             for (ServiceReference ref : refs) {
                 String beanName = (String) ref.getProperty(OsgiServicePropertiesResolver.BEAN_NAME_PROPERTY_KEY);
                 if ("userDao".equals(beanName)) {
                 	userDao = (IUserDao) context.getService(ref);
-                    break;
-                }
-            }
-            refs = context.getServiceReferences("org.springframework.transaction.PlatformTransactionManager", null);
-            for (ServiceReference ref : refs) {
-                String beanName = (String) ref.getProperty(OsgiServicePropertiesResolver.BEAN_NAME_PROPERTY_KEY);
-                if ("txManager".equals(beanName)) {
-                    txManager = (PlatformTransactionManager) context.getService(ref);
                     break;
                 }
             }
@@ -73,37 +57,16 @@ public class AccessControlUtil {
             passwordArgument.append("0");
         }
 
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("userId", id);
 		errMsg+="SELECT * FROM SEC_USRBASIC WHERE USR_ID_C = "+ id ;
 		
-        List<Map<String, Object>> results = null;
-        try {
-            final LobHandler lobHandler = new DefaultLobHandler();
-            
-            //由id取得SEC_USRBASIC 並將result record的USR_PWD_C field 放入 password
-            logger.debug("userDao="+userDao);
-            
-            results = userDao.query("SELECT * FROM SEC_USRBASIC WHERE USR_ID_C = :userId", new RowMapper<Map<String, Object>>() {
-                @Override
-                public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    Map<String, Object> result = new HashMap<String, Object>();
-                    result.put("password", lobHandler.getBlobAsBytes(rs, "USR_PWD_C"));
-                    return result;
-                }
-            }, parameters);
-           
-            
-            
-            errMsg+=",results size="+results.size()+",";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<byte[]> results = null;
+        
+        //由id取得SEC_USRBASIC 並將result record的USR_PWD_C field 放入 password
+        results = userDao.findUserBasicByUserId(id);
 
         if (results != null && results.size() > 0) {
-            Map<String, Object> result = results.get(0);
+            byte[] password = results.get(0);
             
-            byte[] password = (byte[]) result.get("password");
             logger.debug("pass byte length="+password.length+",hex="+new String(Hex.encodeHex(password)));
             String encodedPassword ="";
             if(password!=null){
@@ -111,7 +74,7 @@ public class AccessControlUtil {
 
             }
             
-            errMsg+="get a id record,and pass="+result.get("password")+",and usr_pwd_c byte[] length="+password.length+",encodedPassword="+encodedPassword+",passwordArgument="+passwordArgument.toString()+",PasswordUtil.encodeUserPass ori_pass="+pass+","+"ori_pass="+checkerPwd+".";
+            errMsg+="get a id record,and pass="+password+",and usr_pwd_c byte[] length="+password.length+",encodedPassword="+encodedPassword+",passwordArgument="+passwordArgument.toString()+",PasswordUtil.encodeUserPass ori_pass="+pass+","+"ori_pass="+checkerPwd+".";
             errMsg+="get a id record";
             logger.debug(errMsg);
             

@@ -1,20 +1,10 @@
 package tw.com.citi.catalog.dao;
 
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.StringUtils;
+import java.util.StringTokenizer;
 
 import tw.com.citi.catalog.model.AppFunction;
 import tw.com.citi.catalog.model.User;
@@ -28,21 +18,9 @@ public class AppFunctionDao extends AbstractGenericDao<AppFunction, Long> implem
     public static final int SORT_INDEX_LEN = SORT_INDEX.length();
 
     public static final int SORT_DIR_LEN = SORT_DIR.length();
-	
-	private SimpleJdbcTemplate jdbcTemplate;
-
-    private TransactionTemplate txTemplate;
 
     private Properties sqlProps;
-	
-    public AppFunctionDao(DataSource ds) {
-    	jdbcTemplate = new SimpleJdbcTemplate(ds);
-        PlatformTransactionManager txManager = new DataSourceTransactionManager(ds);
-        txTemplate = new TransactionTemplate(txManager);
-    }
 
-
-	
     @Override
     public void update(Map<String, Object> params) {
         
@@ -93,17 +71,6 @@ public class AppFunctionDao extends AbstractGenericDao<AppFunction, Long> implem
     	return null;
     }
 
-    @Override
-    public <T> List<T> query(String sqlCode, RowMapper<T> rowMapper, Map<String, ?> parameters) {
-        return jdbcTemplate.query(sqlCode, rowMapper, parameters);
-    }
-    
-    @Override
-    public <T> List<T> query(String sqlCode, Class<T> requiredType, Map<String, ?> parameters) {
-        return jdbcTemplate.query(makeSql(sqlCode, parameters.get(SORT_INDEX), parameters.get(SORT_DIR)),
-                new BeanPropertyRowMapper<T>(requiredType), parameters);
-    }
-    
     private String makeSql(String sqlCode, Object sortIndex, Object sortDir) {
         StringBuilder sql = new StringBuilder(sqlProps.getProperty(sqlCode));
 
@@ -120,29 +87,22 @@ public class AppFunctionDao extends AbstractGenericDao<AppFunction, Long> implem
         return sql.toString();
     }
     
-	@Override
-	public List<AppFunction> listAll() {
-		// TODO Auto-generated method stub
-		StringBuilder sql = new StringBuilder();
-        sql.append("SELECT * FROM USERS");
-        Map<String, Object> args = new HashMap<String, Object>();
-        List<AppFunction> list = jdbcTemplate.query(sql.toString(), getRowMapper(), args);
-        return list;
-	}
-
-
-
-
-
-
-	@Override
-	public <T> List<T> query(String sqlCode, RowMapper<T> rowMapper,
-			Map<String, ?> parameters, boolean isNative) {
-		if (isNative) {
-            return jdbcTemplate.query(sqlCode, rowMapper, parameters);
-        } else {
-            return jdbcTemplate.query(sqlProps.getProperty(sqlCode), rowMapper, parameters);
+    @Override
+    public List<AppFunction> findUserFunctions(User user) {
+        List<AppFunction> functions = new ArrayList<AppFunction>();
+        StringTokenizer tokenizer = new StringTokenizer(user.getGrpName(), ";");
+        if (tokenizer.countTokens() > 0) {
+            StringBuffer sql = new StringBuffer();
+            sql.append("SELECT FUNCCODE, FUNCDESC FROM FUNCLIST WHERE MAJORSYSCODE='JCS' AND (");
+            while (tokenizer.hasMoreElements()) {
+                sql.append(tokenizer.nextToken().trim()).append("=1 OR ");
+            }
+            sql.delete(sql.lastIndexOf(" OR "), sql.length());
+            sql.append(" )");
+            
+            functions = jdbcTemplate.query(sql.toString(), getRowMapper());
         }
-	}
+        return functions;
+    }
 
 }

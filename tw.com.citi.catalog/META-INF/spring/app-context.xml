@@ -13,9 +13,7 @@
 	
 	<bean id="tw.com.citi.catalog.handler.java.SelectFilePathHandler" class="tw.com.citi.catalog.handler.java.SelectFilePathHandler"></bean>
 
-
 	<bean id="settings" class="tw.com.citi.catalog.Settings"></bean>
-
 
     <bean id="secDataSourceProxy" class="org.springframework.jdbc.datasource.DelegatingDataSource">
         <constructor-arg ref="secDataSource"></constructor-arg>
@@ -33,21 +31,75 @@
         <property name="checkoutTimeout" value="10000"></property>
     </bean>
 
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="#{settings.jdbc.driverClassName}"></property>
+        <property name="url" value="#{settings.jdbc.url}"></property>
+        <property name="username" value="#{settings.jdbc.username}"></property>
+        <property name="password" value="#{settings.jdbc.password}"></property>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
     </bean>
 
     <bean id="pcapDao" class="tw.com.citi.catalog.dao.PcapDao">
-        <constructor-arg ref="secDataSource"></constructor-arg>
+        <property name="dataSource" ref="secDataSource"></property>
     </bean>
     
     <bean id="userDao" class="tw.com.citi.catalog.dao.UserDao">
-        <constructor-arg ref="secDataSource"></constructor-arg>
+        <property name="dataSource" ref="secDataSource"></property>
     </bean>
     
     <bean id="appFunctionDao" class="tw.com.citi.catalog.dao.AppFunctionDao">
-        <constructor-arg ref="secDataSource"></constructor-arg>
+        <property name="dataSource" ref="secDataSource"></property>
     </bean>
-    
 
+    <bean id="coordinatorDao" class="tw.com.citi.catalog.dao.CoordinatorDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="programmerDao" class="tw.com.citi.catalog.dao.ProgrammerDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="appDao" class="tw.com.citi.catalog.dao.AppDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="appFileDao" class="tw.com.citi.catalog.dao.AppFileDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="appPathDao" class="tw.com.citi.catalog.dao.AppPathDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="buildUnitDao" class="tw.com.citi.catalog.dao.BuildUnitDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="scrFileDao" class="tw.com.citi.catalog.dao.ScrFileDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="scrDao" class="tw.com.citi.catalog.dao.ScrDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="registerHistoryDao" class="tw.com.citi.catalog.dao.RegisterHistoryDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="functionLogDao" class="tw.com.citi.catalog.dao.FunctionLogDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="fileMoveDetailDao" class="tw.com.citi.catalog.dao.FileMoveDetailDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <bean id="compileDetailDao" class="tw.com.citi.catalog.dao.CompileDetailDao">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
 
 </beans>

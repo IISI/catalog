@@ -1,14 +1,11 @@
 package tw.com.citi.catalog;
 
 import java.awt.Dimension;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.dbcp.BasicDataSource;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Point;
@@ -20,16 +17,15 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
-import org.springframework.jdbc.support.lob.DefaultLobHandler;
-import org.springframework.jdbc.support.lob.LobHandler;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-
+import tw.com.citi.catalog.dao.IGenericDao;
 import tw.com.citi.catalog.dao.IPcapDao;
+import tw.com.citi.catalog.dao.IUserDao;
 import tw.com.citi.catalog.model.PCAP;
 import tw.com.citi.catalog.util.PasswordUtil;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /*
 import tw.com.citi.catalog.web.dao.IPCAPDao;
@@ -41,8 +37,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	private boolean authed = false;
     private boolean dsPrepared = false;
-    
-    private IPcapDao pcapDao;
     
     public ApplicationWorkbenchWindowAdvisor(
             IWorkbenchWindowConfigurer configurer) {
@@ -125,8 +119,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         	
             Map<String, String> p = new HashMap<String, String>();
             p.put("dbName", dbName);
-            System.out.println("getDao="+getDao("pcapDao"));
-            List<PCAP> pcaps = getDao("pcapDao").listAll();
+            System.out.println("getDao="+getPcapDao());
+            List<PCAP> pcaps = getPcapDao().findAll();
             
             System.out.println("### pcaps: "+pcaps); 
             System.out.println("### select pcap records size: "+pcaps.size()); 
@@ -197,25 +191,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             passwordArgument.append("0");
         }
 
-        List<Map<String, Object>> results = null;
+        List<byte[]> results;
         try {
-            final LobHandler lobHandler = new DefaultLobHandler();
-            results = getDao("pcapDao").query("SELECT * FROM SEC_USRBASIC WHERE USR_ID_C = :userId", new RowMapper<Map<String, Object>>() {
-
-                @Override
-                public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    Map<String, Object> result = new HashMap<String, Object>();
-                    result.put("password", lobHandler.getBlobAsBytes(rs, "USR_PWD_C"));
-                    return result;
-                }
-            }, parameters);
+            results = getUserDao().findUserBasicByUserId(parameters.get("userId"));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Can not find UserDao object.", e);
         }
         
         if (results != null && results.size() > 0) {
-            Map<String, Object> result = results.get(0);
-            byte[] password = (byte[]) result.get("password");
+            byte[] password = results.get(0);
             
             String encodedPassword = new String(Hex.encodeHex(password));
             if (encodedPassword.equalsIgnoreCase(passwordArgument.toString())) {
@@ -240,17 +224,20 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             PlatformUI.getWorkbench().close();
         }
     }
-    
-   
-    private IPcapDao getDao(String beanName) throws Exception {
+
+    private IUserDao getUserDao() throws Exception {
+        BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
+        ServiceReference[] daoRefs = bc.getServiceReferences(IUserDao.class.getName(),
+                "(org.springframework.osgi.bean.name=userDao)");
+        return (IUserDao) bc.getService(daoRefs[0]);
+    }
+
+    private IPcapDao getPcapDao() throws Exception {
         BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
         ServiceReference[] daoRefs = bc.getServiceReferences(IPcapDao.class.getName(),
-                "(org.springframework.osgi.bean.name=" + beanName + ")");
-        IPcapDao pcapDao = (IPcapDao) bc.getService(daoRefs[0]);
-        return pcapDao;
+                "(org.springframework.osgi.bean.name=pcapDao)");
+        return (IPcapDao) bc.getService(daoRefs[0]);
     }
-    
-    
 
     private DelegatingDataSource getDataSource(String beanName) throws Exception {
         BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
@@ -311,13 +298,5 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         
         ds.setTargetDataSource(cpds);
     }
-
-	public void setPcapDao(IPcapDao pcapDao) {
-		this.pcapDao = pcapDao;
-	}
-    
-    
-
-    
 
 }

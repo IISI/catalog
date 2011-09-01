@@ -9,16 +9,16 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
-import tw.com.citi.catalog.web.dao.IAppDao;
-import tw.com.citi.catalog.web.dao.ICoordinatorDao;
-import tw.com.citi.catalog.web.dao.IProgrammerDao;
-import tw.com.citi.catalog.web.dao.IScrDao;
+import tw.com.citi.catalog.dao.IAppDao;
+import tw.com.citi.catalog.dao.ICoordinatorDao;
+import tw.com.citi.catalog.dao.IProgrammerDao;
+import tw.com.citi.catalog.dao.IScrDao;
+import tw.com.citi.catalog.model.App;
+import tw.com.citi.catalog.model.Coordinator;
+import tw.com.citi.catalog.model.Programmer;
+import tw.com.citi.catalog.model.Scr;
+import tw.com.citi.catalog.model.Scr.Status;
 import tw.com.citi.catalog.web.grid.IGridHandler;
-import tw.com.citi.catalog.web.model.App;
-import tw.com.citi.catalog.web.model.Coordinator;
-import tw.com.citi.catalog.web.model.Programmer;
-import tw.com.citi.catalog.web.model.Scr;
-import tw.com.citi.catalog.web.model.Scr.Status;
 import tw.com.citi.catalog.web.util.AccessControlUtil;
 
 import com.google.gson.Gson;

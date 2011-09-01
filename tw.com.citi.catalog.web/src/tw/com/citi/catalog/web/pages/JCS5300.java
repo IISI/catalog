@@ -6,10 +6,10 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.util.StringUtils;
 
-import tw.com.citi.catalog.web.dao.IProgrammerDao;
-import tw.com.citi.catalog.web.dao.IScrDao;
+import tw.com.citi.catalog.dao.IProgrammerDao;
+import tw.com.citi.catalog.dao.IScrDao;
+import tw.com.citi.catalog.model.Programmer;
 import tw.com.citi.catalog.web.grid.IGridHandler;
-import tw.com.citi.catalog.web.model.Programmer;
 import tw.com.citi.catalog.web.util.AccessControlUtil;
 
 import com.google.gson.Gson;

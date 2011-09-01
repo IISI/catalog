@@ -6,20 +6,45 @@
     <set id="javaHandlers" interface="tw.com.iisi.rabbithq.editors.IJavaHandler" cardinality="0..N"></set>
 
     <service ref="tw.com.citi.catalog.handler.java.SelectFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
-    
-    <service ref="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
-    
-	<service ref="tw.com.citi.catalog.handler.java.SelectFilePathHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
-	
-	<service ref="secDataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
-	
-	<service ref="dataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
 
-	<service ref="pcapDao" interface="tw.com.citi.catalog.dao.IPcapDao"></service>
-	
-	<service ref="userDao" interface="tw.com.citi.catalog.dao.IUserDao"></service>
-	
-	<service ref="appFunctionDao" interface="tw.com.citi.catalog.dao.IAppFunctionDao"></service>
-	
-	
+    <service ref="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
+
+    <service ref="tw.com.citi.catalog.handler.java.SelectFilePathHandler" interface="tw.com.iisi.rabbithq.editors.IJavaHandler"></service>
+
+    <service ref="secDataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
+
+    <service ref="dataSourceProxy" interface="org.springframework.jdbc.datasource.DelegatingDataSource"></service>
+
+    <service ref="txManager" interface="org.springframework.transaction.PlatformTransactionManager"></service>
+
+    <service ref="appDao" interface="tw.com.citi.catalog.dao.IAppDao"></service>
+
+    <service ref="appFileDao" interface="tw.com.citi.catalog.dao.IAppFileDao"></service>
+
+    <service ref="appFunctionDao" interface="tw.com.citi.catalog.dao.IAppFunctionDao"></service>
+
+    <service ref="appPathDao" interface="tw.com.citi.catalog.dao.IAppPathDao"></service>
+
+    <service ref="buildUnitDao" interface="tw.com.citi.catalog.dao.IBuildUnitDao"></service>
+
+    <service ref="compileDetailDao" interface="tw.com.citi.catalog.dao.ICompileDetailDao"></service>
+
+    <service ref="coordinatorDao" interface="tw.com.citi.catalog.dao.ICoordinatorDao"></service>
+
+    <service ref="fileMoveDetailDao" interface="tw.com.citi.catalog.dao.IFileMoveDetailDao"></service>
+
+    <service ref="functionLogDao" interface="tw.com.citi.catalog.dao.IFunctionLogDao"></service>
+
+    <service ref="pcapDao" interface="tw.com.citi.catalog.dao.IPcapDao"></service>
+
+    <service ref="programmerDao" interface="tw.com.citi.catalog.dao.IProgrammerDao"></service>
+
+    <service ref="registerHistoryDao" interface="tw.com.citi.catalog.dao.IRegisterHistoryDao"></service>
+
+    <service ref="scrDao" interface="tw.com.citi.catalog.dao.IScrDao"></service>
+
+    <service ref="scrFileDao" interface="tw.com.citi.catalog.dao.IScrFileDao"></service>
+
+    <service ref="userDao" interface="tw.com.citi.catalog.dao.IUserDao"></service>
+
 </beans:beans>

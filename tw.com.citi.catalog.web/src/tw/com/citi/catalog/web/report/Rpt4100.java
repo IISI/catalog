@@ -14,7 +14,7 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
+import tw.com.citi.catalog.dao.IFunctionLogDao;
 import tw.com.citi.catalog.web.util.F;
 
 import com.google.gson.Gson;

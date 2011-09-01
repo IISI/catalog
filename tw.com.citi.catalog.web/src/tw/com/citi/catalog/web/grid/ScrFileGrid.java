@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import tw.com.citi.catalog.web.dao.IBuildUnitDao;
-import tw.com.citi.catalog.web.dao.IScrFileDao;
-import tw.com.citi.catalog.web.model.BuildUnit;
-import tw.com.citi.catalog.web.model.ScrFile;
+import tw.com.citi.catalog.dao.IBuildUnitDao;
+import tw.com.citi.catalog.dao.IScrFileDao;
+import tw.com.citi.catalog.model.BuildUnit;
+import tw.com.citi.catalog.model.ScrFile;
 
 public class ScrFileGrid extends AbstractGridHandler {
 

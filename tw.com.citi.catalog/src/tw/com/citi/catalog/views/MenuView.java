@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -69,13 +70,14 @@ public class MenuView extends ViewPart {
      */
     public static final String ID = "tw.com.citi.catalog.views.MenuView";
 
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
     private Action action1;
     private Action action2;
     private Action singleClickAction;
 
-    
     /*
      * The content provider class is responsible for providing objects to the
      * view. It can wrap existing objects in adapters or simply return objects
@@ -498,25 +500,23 @@ public class MenuView extends ViewPart {
             return array2;
         }
 
-        private IAppFunctionDao getAppFunctionDao(String beanName) throws Exception {
+        private IAppFunctionDao getAppFunctionDao() throws Exception {
             BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
             ServiceReference[] daoRefs = bc.getServiceReferences(IAppFunctionDao.class.getName(),
-                    "(org.springframework.osgi.bean.name=" + beanName + ")");
+                    "(org.springframework.osgi.bean.name=appFunctionDao)");
             IAppFunctionDao dao = (IAppFunctionDao) bc.getService(daoRefs[0]);
             return dao;
         }
         
-        private IUserDao getUserDao(String beanName) throws Exception {
+        private IUserDao getUserDao() throws Exception {
             BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
             ServiceReference[] daoRefs = bc.getServiceReferences(IUserDao.class.getName(),
-                    "(org.springframework.osgi.bean.name=" + beanName + ")");
+                    "(org.springframework.osgi.bean.name=userDao)");
             IUserDao dao = (IUserDao) bc.getService(daoRefs[0]);
             return dao;
         }
 
         private List<AppFunction> getFunctionList() {
-        	
-        	
         	
         	System.out.println("$$$$ func list start");
             List<AppFunction> functions = new ArrayList<AppFunction>();
@@ -537,54 +537,11 @@ public class MenuView extends ViewPart {
             System.out.println("$$$$ userId="+params.get("userId"));
 
             try {
-            	
-                List<User> grpList = getUserDao("userDao").query("SELECT UserId, GrpName FROM USERS WHERE UserId = :userId", User.class, params);
-                System.out.println("$$$$ grpList size="+grpList.size());
-                if (grpList != null && grpList.size() > 0) {
-                    User user = grpList.get(0);
-                    String grpName = user.getGrpName();
-                    System.out.println("Find one record from USERS where userId="+params.get("userId")+", grpName="+grpName);
-                    
-                    
-                    System.out.println("$$$$ grpName bf split token="+grpName);
-                    StringTokenizer st = new StringTokenizer(grpName, ";");
-                    System.out.println("$$$$ grpName af split token="+grpName);
-                    if (st.countTokens() > 0) {
-                        StringBuffer sql = new StringBuffer();
-                        sql.append("SELECT FUNCCODE, FUNCDESC FROM FUNCLIST WHERE MAJORSYSCODE='JCS' ");
-                        int grpIndex = 0;
-                        while (st.hasMoreElements()) {
-                            if (grpIndex == 0) {
-                                sql.append("AND (");
-                            } else {
-                                sql.append("OR ");
-                            }
-                            sql.append(st.nextToken().trim()).append("=1 ");
-                            grpIndex++;
-                        }
-                        sql.append(" )");
-                        
-                        
-                        System.out.println("$$$$ sql="+sql.toString());
-
-                        functions = getAppFunctionDao("appFunctionDao").query(sql.toString(), new RowMapper<AppFunction>() {
-
-                            @Override
-                            public AppFunction mapRow(ResultSet rs, int rowNum) throws SQLException {
-                                AppFunction func = new AppFunction();
-                                func.setFuncCode(rs.getString("FUNCCODE"));
-                                func.setFuncDesc(rs.getString("FUNCDESC"));
-                                return func;
-                            }
-                        }, params, true);
-                        
-                        System.out.println("$$$$ functions="+functions);
-                    }
-                }
+                User user = getUserDao().findByUserId(params.get("userId"));
+                functions = getAppFunctionDao().findUserFunctions(user);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Failed to get function list of user.", e);
             }
-
             return functions;
         }
 

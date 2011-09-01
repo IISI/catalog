@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
+import tw.com.citi.catalog.dao.IScrFileDao;
 import tw.com.citi.catalog.util.DateUtil;
-import tw.com.citi.catalog.web.dao.IScrFileDao;
 import tw.com.citi.catalog.web.util.F;
 
 public class Rpt1400 implements IReport {

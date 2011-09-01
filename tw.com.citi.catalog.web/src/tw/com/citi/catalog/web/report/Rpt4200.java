@@ -18,7 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
+import tw.com.citi.catalog.dao.IFunctionLogDao;
 import tw.com.citi.catalog.web.util.F;
 
 public class Rpt4200 implements IReport {

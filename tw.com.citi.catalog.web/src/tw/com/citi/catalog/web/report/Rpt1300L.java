@@ -1,7 +1,6 @@
 package tw.com.citi.catalog.web.report;
 
 import java.io.InputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,9 +9,9 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
-import tw.com.citi.catalog.web.dao.ICompileDetailDao;
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
-import tw.com.citi.catalog.web.model.FunctionLog;
+import tw.com.citi.catalog.dao.ICompileDetailDao;
+import tw.com.citi.catalog.dao.IFunctionLogDao;
+import tw.com.citi.catalog.model.FunctionLog;
 import tw.com.citi.catalog.web.util.F;
 
 public class Rpt1300L implements IReport {

@@ -20,7 +20,10 @@ Require-Bundle: org.eclipse.ui,
  com.google.gson;bundle-version="1.7.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: tw.com.citi.catalog.util
+Export-Package: tw.com.citi.catalog.dao,
+ tw.com.citi.catalog.dto,
+ tw.com.citi.catalog.model,
+ tw.com.citi.catalog.util
 Bundle-ClassPath: libs/c3p0-0.9.1.2.jar,
  libs/sqljdbc4.jar,
  .

@@ -21,8 +21,6 @@ import tw.com.citi.catalog.annotation.Mapper;
 import tw.com.citi.catalog.annotation.Table;
 import tw.com.citi.catalog.model.IModel;
 
-
-
 @Repository
 public abstract class AbstractGenericDao<T extends IModel<ID>, ID extends Serializable> implements IGenericDao<T, ID> {
 

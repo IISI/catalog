@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
-import tw.com.citi.catalog.web.dao.IBuildUnitDao;
+import tw.com.citi.catalog.dao.IBuildUnitDao;
 
 public class CheckoutGrid extends AbstractGridHandler {
 

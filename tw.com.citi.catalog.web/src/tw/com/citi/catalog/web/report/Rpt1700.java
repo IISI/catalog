@@ -9,9 +9,9 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
 
-import tw.com.citi.catalog.web.dao.IAppFileDao;
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
-import tw.com.citi.catalog.web.model.FunctionLog;
+import tw.com.citi.catalog.dao.IAppFileDao;
+import tw.com.citi.catalog.dao.IFunctionLogDao;
+import tw.com.citi.catalog.model.FunctionLog;
 import tw.com.citi.catalog.web.util.F;
 
 public class Rpt1700 implements IReport {

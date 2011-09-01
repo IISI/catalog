@@ -5,9 +5,9 @@ import java.util.List;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
-import tw.com.citi.catalog.web.dao.IScrDao;
+import tw.com.citi.catalog.dao.IScrDao;
+import tw.com.citi.catalog.model.Scr;
 import tw.com.citi.catalog.web.grid.IGridHandler;
-import tw.com.citi.catalog.web.model.Scr;
 
 public class JCS4300 extends AbstractBasePage {
 

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import tw.com.citi.catalog.web.dao.IFunctionLogDao;
+import tw.com.citi.catalog.dao.IFunctionLogDao;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
