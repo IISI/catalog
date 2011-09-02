@@ -8,12 +8,12 @@
     </bean>
 
     <bean id="tw.com.citi.catalog.handler.java.SelectFileHandler" class="tw.com.citi.catalog.handler.java.SelectFileHandler"></bean>
-	
-	<bean id="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler" class="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler"></bean>
-	
-	<bean id="tw.com.citi.catalog.handler.java.SelectFilePathHandler" class="tw.com.citi.catalog.handler.java.SelectFilePathHandler"></bean>
 
-	<bean id="settings" class="tw.com.citi.catalog.Settings"></bean>
+    <bean id="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler" class="tw.com.citi.catalog.handler.java.SelectGeneralFileHandler"></bean>
+
+    <bean id="tw.com.citi.catalog.handler.java.SelectFilePathHandler" class="tw.com.citi.catalog.handler.java.SelectFilePathHandler"></bean>
+
+    <bean id="settings" class="tw.com.citi.catalog.conf.Settings"></bean>
 
     <bean id="secDataSourceProxy" class="org.springframework.jdbc.datasource.DelegatingDataSource">
         <constructor-arg ref="secDataSource"></constructor-arg>
@@ -45,11 +45,11 @@
     <bean id="pcapDao" class="tw.com.citi.catalog.dao.PcapDao">
         <property name="dataSource" ref="secDataSource"></property>
     </bean>
-    
+
     <bean id="userDao" class="tw.com.citi.catalog.dao.UserDao">
         <property name="dataSource" ref="secDataSource"></property>
     </bean>
-    
+
     <bean id="appFunctionDao" class="tw.com.citi.catalog.dao.AppFunctionDao">
         <property name="dataSource" ref="secDataSource"></property>
     </bean>

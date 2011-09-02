@@ -1,11 +1,11 @@
-package tw.com.citi.catalog.web;
+package tw.com.citi.catalog.conf;
 
 public class Jdbc {
 
     private String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 
-    private String url = "jdbc:sqlserver://192.168.11.17:1433;databaseName=citi_catalog";
-
+    private String url = "jdbc:sqlserver://127.0.0.1:1433;databaseName=citi_catalog";
+    
     private String username = "sa";
 
     private String password = "passw0rd";

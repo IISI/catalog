@@ -1,4 +1,4 @@
-package tw.com.citi.catalog.web;
+package tw.com.citi.catalog.conf;
 
 public class Jcifs {
     private String functionalId = "CitiTest";

@@ -21,7 +21,7 @@ import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.local.LocalFileSystem;
 
-import tw.com.citi.catalog.web.Settings;
+import tw.com.citi.catalog.conf.Settings;
 import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
 
 public class SmbFileUtil {

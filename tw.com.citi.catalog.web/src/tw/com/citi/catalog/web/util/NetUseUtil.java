@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.com.citi.catalog.web.Settings;
+import tw.com.citi.catalog.conf.Settings;
 
 public class NetUseUtil {
     private static Logger logger = LoggerFactory.getLogger(NetUseUtil.class);
