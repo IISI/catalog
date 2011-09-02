@@ -16,10 +16,10 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 
-import tw.com.citi.catalog.dao.IGenericDao;
 import tw.com.citi.catalog.dao.IPcapDao;
 import tw.com.citi.catalog.dao.IUserDao;
 import tw.com.citi.catalog.model.PCAP;
@@ -27,13 +27,9 @@ import tw.com.citi.catalog.util.PasswordUtil;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-/*
-import tw.com.citi.catalog.web.dao.IPCAPDao;
-import tw.com.citi.catalog.web.model.PCAP;
-import tw.com.citi.catalog.web.util.PasswordUtil;
-*/
-
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
+
+    final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private boolean authed = false;
     private boolean dsPrepared = false;
@@ -49,7 +45,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     }
 
     public void preWindowOpen() {
-    	System.out.println("catalog prewindowopen");
+    	logger.debug("catalog prewindowopen");
         IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
         prepareDataSource();
         Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize(); 
@@ -66,9 +62,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         dsPrepared = false;
         String[] args = Platform.getApplicationArgs();
         
-        //System.out.println("#### Platform.getApplicationArgs() args="+args.toString());
+        //logger.debug("#### Platform.getApplicationArgs() args="+args.toString());
         for(int i=0;i<args.length;i++){
-        	System.out.println("#### Platform.getApplicationArgs() arg"+i+"="+args[i]);
+        	logger.debug("#### Platform.getApplicationArgs() arg"+i+"="+args[i]);
         }
  
         String dbName = "db_pcapp";
@@ -102,7 +98,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         
         try {
             setDataSource(user, password, serverName, dbPort, dbName, "secDataSourceProxy");
-        	//System.out.println("pcapDao="+pcapDao);
+        	//logger.debug("pcapDao="+pcapDao);
         	
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,15 +111,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
         // select from PCAP
         try {
-        	System.out.println("select from PCAP start");
+        	logger.debug("select from PCAP start");
         	
             Map<String, String> p = new HashMap<String, String>();
             p.put("dbName", dbName);
-            System.out.println("getDao="+getPcapDao());
+            logger.debug("getDao="+getPcapDao());
             List<PCAP> pcaps = getPcapDao().findAll();
             
-            System.out.println("### pcaps: "+pcaps); 
-            System.out.println("### select pcap records size: "+pcaps.size()); 
+            logger.debug("### pcaps: "+pcaps); 
+            logger.debug("### select pcap records size: "+pcaps.size()); 
             if (pcaps != null && pcaps.size() > 0) {
 
             	
@@ -138,7 +134,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                     sb.append(String.valueOf(c)).append(";");
                 }
                 password = PasswordUtil.decodePwd(sb.toString());
-                System.out.println("### password: "+password); 
+                logger.debug("### password: "+password); 
                 
                 
                 
@@ -159,7 +155,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             return;
         }
         dsPrepared = true;
-        System.out.println(" ^^^^^ dsPrepared="+dsPrepared);
+        logger.debug(" ^^^^^ dsPrepared="+dsPrepared);
         //LoggerFactory.getLogger(ApplicationWorkbenchWindowAdvisor.class).info("## dsPrepared: "+dsPrepared); 
     }
     
@@ -242,17 +238,17 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     private DelegatingDataSource getDataSource(String beanName) throws Exception {
         BundleContext bc = Platform.getBundle(Activator.PLUGIN_ID).getBundleContext();
         
-        System.out.println("beanName="+beanName);
+        logger.debug("beanName="+beanName);
         ServiceReference[] refs = bc.getServiceReferences(DelegatingDataSource.class.getName(),
                 "(org.springframework.osgi.bean.name=" + beanName + ")");
-        System.out.println("af refs="+refs);
+        logger.debug("af refs="+refs);
         while (refs == null) {
             refs = bc.getServiceReferences(DelegatingDataSource.class.getName(), "(org.springframework.osgi.bean.name="
                     + beanName + ")");
             Thread.sleep(1000);
         }
         DelegatingDataSource dataSource = (DelegatingDataSource) bc.getService(refs[0]);
-        System.out.println("af dataSource="+dataSource);
+        logger.debug("af dataSource="+dataSource);
         return dataSource;
     }
     
@@ -260,9 +256,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             String dataSourceBeanName) throws Exception {
     	
     	DelegatingDataSource ds = null;
-    	System.out.println("bf get datasource");
+    	logger.debug("bf get datasource");
         ds = getDataSource(dataSourceBeanName);
-        System.out.println("af get datasource");
+        logger.debug("af get datasource");
         //BasicDataSource bds = new BasicDataSource();
         ComboPooledDataSource cpds = new ComboPooledDataSource();
         cpds.setDriverClass("com.microsoft.sqlserver.jdbc.SQLServerDriver");
@@ -279,9 +275,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         cpds.setPassword(password);
         cpds.setJdbcUrl("jdbc:sqlserver://" + serverName + ":" + serverPort + ";databaseName=" + dbName);
         
-        System.out.println("cpds jdbc="+cpds.getJdbcUrl());
-        System.out.println("cpds user="+cpds.getUser());
-        System.out.println("cpds pass="+cpds.getPassword());
+        logger.debug("cpds jdbc="+cpds.getJdbcUrl());
+        logger.debug("cpds user="+cpds.getUser());
+        logger.debug("cpds pass="+cpds.getPassword());
         cpds.setForceIgnoreUnresolvedTransactions(true);
         cpds.setIdleConnectionTestPeriod(10800);
         cpds.setMinPoolSize(0);

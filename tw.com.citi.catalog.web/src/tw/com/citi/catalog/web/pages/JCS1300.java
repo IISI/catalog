@@ -259,12 +259,11 @@ public class JCS1300 extends AbstractBasePage {
             String line = "";
             while ((line = bf.readLine()) != null) {
                 result += line + "\n";
-                System.out.println(line + "\n");
+                logger.debug(line + "\n");
             }
             bf.close();
             logger.debug(result);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e.getMessage() + "\n" + result, e);
         }
         Map<String, Object> results = new HashMap<String, Object>();

@@ -157,7 +157,7 @@ public class PvcsCmd implements IPvcsCmd{
 			String file="";
 			while((file=bf.readLine())   !=   null){
 				addOkFileList.add(file);
-				System.out.println("file:"+file);
+				logger.debug("file:"+file);
 			}
 			bf.close();
 			*/
@@ -169,7 +169,7 @@ public class PvcsCmd implements IPvcsCmd{
 		//test
 		/*
 		for(String s : addOkFileList){
-			System.out.println("add file:"+s);
+			logger.debug("add file:"+s);
 		}
 		*/
 		
@@ -374,7 +374,6 @@ public class PvcsCmd implements IPvcsCmd{
 		try {
 			String command="pcli get -pr\""+projectDatabase+"\" -id\""+username+":"+password+"\" -pp\""+projectPath+"\" -l -nm -o "+checkoutFileArray;
 			logger.debug("command:"+command);
-			System.out.println("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			Process process = Runtime.getRuntime().exec(cmd);
 			/*

@@ -139,7 +139,7 @@ public class JCS1600 extends AbstractBasePage {
         	//String fileName=file.get("fileName");
         	//String fileType=file.get("fileType");
         	///String fileStatus=file.get("fileStatus");
-        	//System.out.println("id="+fileId+", path="+filePath+", name="+fileName+", fileType="+fileType+",fileStatus="+fileStatus);
+        	//logger.debug("id="+fileId+", path="+filePath+", name="+fileName+", fileType="+fileType+",fileStatus="+fileStatus);
         	List<RegisterHistory> registerHistoryList=registerHistoryDao.query(sqlCode, RegisterHistory.class, params);
         	
         	 
@@ -158,21 +158,21 @@ public class JCS1600 extends AbstractBasePage {
         			isDelFiles=true;
         			String delFilePath=file.get("filePath");
         			String delFileName=file.get("fileName");
-        			System.out.println("DEL: "+delFilePath+delFileName);
+        			logger.debug("DEL: "+delFilePath+delFileName);
         			delFileNameList.add(delFilePath+delFileName);
         		}
-        		System.out.println("id="+scrFileId+", action="+registerAction);
+        		logger.debug("id="+scrFileId+", action="+registerAction);
         	}
         	
         }
         
-        System.out.println("isAdd="+isAddFiles);
-        System.out.println("isPutFiles="+isPutFiles);
-        System.out.println("isDelFiles="+isDelFiles+", size="+delFileNameList.size());
+        logger.debug("isAdd="+isAddFiles);
+        logger.debug("isPutFiles="+isPutFiles);
+        logger.debug("isDelFiles="+isDelFiles+", size="+delFileNameList.size());
         //---------------------------------------------------------------------------------------------------
         //AppPath appPath = appPathDao.findByScrId(Long.parseLong(sScrId), PathType.APP_BASE).get(0);
         //String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat("RD\\") : appPath.getPath().concat("\\RD\\");
-        //System.out.println("rdPath="+rdPath);
+        //logger.debug("rdPath="+rdPath);
         
         
         
@@ -222,7 +222,7 @@ public class JCS1600 extends AbstractBasePage {
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
-            System.out.println("" + filePath + "-" + fileName);
+            logger.debug("" + filePath + "-" + fileName);
             String fileType = file.get("fileType");
             String fileStatus = file.get("fileStatus");
             AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), filePath, fileName);
@@ -275,7 +275,7 @@ public class JCS1600 extends AbstractBasePage {
         if(isAddFiles){
         	//新增
             int[] rc = pvcsCmd.addFiles(prjDb, prjPath, "thomaschan", "1234", "Check In", "Check In", rdPath);
-            System.out.println("pvcs check in done!");
+            logger.debug("pvcs check in done!");
         }
         
         if(isPutFiles){
@@ -284,16 +284,16 @@ public class JCS1600 extends AbstractBasePage {
         	Date date = new Date();
         	String strDate = sdFormat.format(date);
         	int[] rc = pvcsCmd.putFiles(prjDb, prjPath, "thomaschan", "1234", "Check In at "+strDate, "Check In at "+strDate, "RD/*");
-            System.out.println("pvcs recheck in done!");
+            logger.debug("pvcs recheck in done!");
         }
         
         if(isDelFiles){
         	//有檔案要刪除
-        	System.out.println("pvcs del start!");
+        	logger.debug("pvcs del start!");
         	String[] delFileArr=new String[delFileNameList.size()];
         	delFileArr=delFileNameList.toArray(delFileArr);
         	int[] rc = pvcsCmd.deleteFiles(prjDb, prjPath, "thomaschan", "1234", delFileArr);
-            System.out.println("pvcs del done!");
+            logger.debug("pvcs del done!");
             
             //update scr status
         }
@@ -333,7 +333,7 @@ public class JCS1600 extends AbstractBasePage {
                 if (file.getDeleted()) {
                     file.setFileStatus(FileStatus.DELETE);
                 } else {
-                    System.out.println(qaSourcePath + " : " + file.getFilePath() + " : " + file.getFileName());
+                    logger.debug(qaSourcePath + " : " + file.getFilePath() + " : " + file.getFileName());
                     if (FileType.SOURCE == file.getFileType()) {
                         path = qaSourcePath;
                     } else {

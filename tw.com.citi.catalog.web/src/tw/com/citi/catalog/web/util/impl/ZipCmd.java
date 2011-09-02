@@ -74,7 +74,6 @@ public class ZipCmd implements IZipCmd{
 		String result="";
 		try {
 			String command="pkzipc -add -path=root -passphrase="+password+" -cryptalgorithm=aes,256 -cd=encrypt "+zipFile+" "+fileStr;
-			System.out.println("command:"+command);
 			logger.debug("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			process = Runtime.getRuntime().exec(cmd);
@@ -105,7 +104,6 @@ public class ZipCmd implements IZipCmd{
 		String result="";
 		try {
 			String command="pkzipc -add -path=root -passphrase="+password+" -cryptalgorithm=aes,256 -cd=encrypt "+sourceDir+"\\*";
-			System.out.println("command:"+command);
 			logger.debug("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			process = Runtime.getRuntime().exec(cmd);

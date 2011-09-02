@@ -8,11 +8,16 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tw.com.citi.commcypt.CommCypt;
 import tw.com.citi.commcypt.util.BridgeEncode;
 
-
 public class PasswordUtil {
+
+    static final Logger logger = LoggerFactory.getLogger(PasswordUtil.class);
+
     public static String decodePwd(String cipher) throws Exception {
         StringBuffer plain = new StringBuffer();
         if (cipher == null || "".equals(cipher.trim())) {
@@ -84,10 +89,10 @@ public class PasswordUtil {
 
     public static void main(String[] args) throws Exception {
         if (args != null && args.length > 0) {
-            System.out.println("input : " + args[0]);
-            System.out.println("output: " + encodePwd(args[0]));
-            System.out.println("output: 0x" + encodePwdToBinaryString(args[0]));
-            System.out.println("output: " + decodePwd(encodePwd(args[0])));
+            logger.debug("input : " + args[0]);
+            logger.debug("output: " + encodePwd(args[0]));
+            logger.debug("output: 0x" + encodePwdToBinaryString(args[0]));
+            logger.debug("output: " + decodePwd(encodePwd(args[0])));
         }
         Console console = System.console();
         char[] password1 = console.readPassword("\nPlease input first half functional password: ");
@@ -95,7 +100,7 @@ public class PasswordUtil {
         String password = new String(password1) + new String(password2);
         Arrays.fill(password1, ' ');
         Arrays.fill(password2, ' ');
-        System.out.println("\nEncrypted Password :\n" + encodePwd(password));
+        logger.debug("\nEncrypted Password :\n" + encodePwd(password));
     }
     
     /**

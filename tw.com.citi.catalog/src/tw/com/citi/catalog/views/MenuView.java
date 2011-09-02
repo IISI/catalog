@@ -214,7 +214,7 @@ public class MenuView extends ViewPart {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 gsonBuilder.registerTypeAdapter(JsonArray.class, new CustomerDeserializer());
                 jsonArr = gsonBuilder.create().fromJson(reader, JsonArray.class);
-                //System.out.println("&&& json size="+jsonArr.get(0).getAsJsonObject().get("nodes"));
+                //logger.debug("&&& json size="+jsonArr.get(0).getAsJsonObject().get("nodes"));
                 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -408,7 +408,7 @@ public class MenuView extends ViewPart {
                     return;
                 IWorkbenchPage page = MenuView.this.getViewSite().getPage();
 
-                System.out.println(obj.getUrl());
+                logger.debug(obj.getUrl());
                 BrowserEditorInput editorInput = new BrowserEditorInput(obj.getUrl());
                         //"http://localhost:8080/catalog/app/" + obj.toString());
                 IEditorPart editorPart = page.getActiveEditor();
@@ -465,7 +465,7 @@ public class MenuView extends ViewPart {
                 boolean allowed = false;
                 JsonElement id = function.get("id");
                 if (id != null) {
-                	System.out.println("function list="+getFunctionList().size());
+                	logger.debug("function list="+getFunctionList().size());
                     for (AppFunction func : getFunctionList()) {
                         String funcCode = func.getFuncCode() == null ? null : func.getFuncCode().trim();
                         if (id.getAsString().equals("") || id.getAsString().equals(funcCode)) {
@@ -518,7 +518,7 @@ public class MenuView extends ViewPart {
 
         private List<AppFunction> getFunctionList() {
         	
-        	System.out.println("$$$$ func list start");
+        	logger.debug("$$$$ func list start");
             List<AppFunction> functions = new ArrayList<AppFunction>();
             if (functionList != null) {
                 return functionList;
@@ -527,14 +527,14 @@ public class MenuView extends ViewPart {
             String[] args = Platform.getApplicationArgs();
             Map<String, String> params = new HashMap<String, String>();
             for (String arg : args) {
-            	System.out.println("$$$$ arg="+arg);
+            	logger.debug("$$$$ arg="+arg);
                 String[] keyValue = arg.split("=", 2);
                 if ("userId".equalsIgnoreCase(keyValue[0])) {
                     params.put("userId", keyValue[1]);
                 }
             }
             
-            System.out.println("$$$$ userId="+params.get("userId"));
+            logger.debug("$$$$ userId="+params.get("userId"));
 
             try {
                 User user = getUserDao().findByUserId(params.get("userId"));

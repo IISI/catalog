@@ -80,13 +80,13 @@ public class JCS1800 extends AbstractBasePage {
         }else if ("getScrInfo".equals(actionName)) {
             Long scrId = params.getAsLong("actionParams[scrId]");
             result = getScrInfo(scrId);
-            //System.out.println(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
+            //logger.debug(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
         }else if ("dualControl".equals(actionName)) {
         	 String checkerId = params.getString("actionParams[checkerId]");
              String checkerPwd = params.getString("actionParams[checkerPwd]");
              //logger.debug("checker id = {}, checker password = {}", checkerId, checkerPwd);
              boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
-             System.out.println("authenticated="+authenticated);
+             logger.debug("authenticated="+authenticated);
              if (!authenticated) {
             	 result="ID/Password is invalid";
              }else{
@@ -108,19 +108,19 @@ public class JCS1800 extends AbstractBasePage {
         	String zipPassword=params.getString("actionParams[zipPassword]");
             String checkoutList = params.getString("actionParams[checkoutList]");
             List<CheckoutFile> CheckoutFileList=gson.fromJson(checkoutList, new TypeToken<List<CheckoutFile>>(){}.getType());
-            //System.out.println("scrNo="+scrNo);
-            //System.out.println("appId="+appId);
-            //System.out.println("checkoutLabel="+checkoutLabel);
-            //System.out.println("checkoutPath="+checkoutPath);
-            //System.out.println("checkoutId="+checkoutId);
-            //System.out.println("checkoutPass="+checkoutPass);
-            //System.out.println("zipfilePath="+zipfilePath);
-            //System.out.println("CheckoutFileList="+CheckoutFileList.size());
+            //logger.debug("scrNo="+scrNo);
+            //logger.debug("appId="+appId);
+            //logger.debug("checkoutLabel="+checkoutLabel);
+            //logger.debug("checkoutPath="+checkoutPath);
+            //logger.debug("checkoutId="+checkoutId);
+            //logger.debug("checkoutPass="+checkoutPass);
+            //logger.debug("zipfilePath="+zipfilePath);
+            //logger.debug("CheckoutFileList="+CheckoutFileList.size());
             
             
             AppPath appPath = appPathDao.findByScrId(Long.parseLong(scrNo), PathType.APP_BASE).get(0);
             String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat("RD\\") : appPath.getPath().concat("\\RD\\");
-            System.out.println("rdPath="+rdPath);
+            logger.debug("rdPath="+rdPath);
     
             //pvcs checkout
             App app=appDao.findByAppId(appId);
@@ -130,14 +130,14 @@ public class JCS1800 extends AbstractBasePage {
             String[] chkfiles=new String[CheckoutFileList.size()];
             for(int i=0;i<CheckoutFileList.size();i++){
             	CheckoutFile file=CheckoutFileList.get(i);
-            	System.out.println("ppppp:"+file.getFilePath());
+            	logger.debug("ppppp:"+file.getFilePath());
             	String srcPath=file.getSrcPath().replaceAll("\\\\", "/");
-            	System.out.println("aaaa:"+srcPath);
+            	logger.debug("aaaa:"+srcPath);
             	file.setSrcPath(srcPath);
             	chkfiles[i]=" RD/"+file.getSrcPath()+file.getSrcFileName();
             }
             IPvcsCmd pvcsCmd=new PvcsCmd();
-            System.out.println(prjDb+"-"+prjPath);
+            logger.debug(prjDb+"-"+prjPath);
             pvcsCmd.getFiles(prjDb, prjPath, checkoutId, checkoutPass, chkfiles);
             
             //zip 
@@ -149,7 +149,7 @@ public class JCS1800 extends AbstractBasePage {
 	            for(int i=0;i<CheckoutFileList.size();i++){
 	            	CheckoutFile coFile=CheckoutFileList.get(i);
 	            	String coFileRdPath=rdPath + coFile.getSrcPath();
-	            	System.out.println(coFileRdPath+"----"+"c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath()+"----"+coFile.getSrcFileName());
+	            	logger.debug(coFileRdPath+"----"+"c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath()+"----"+coFile.getSrcFileName());
 	            	SmbFileUtil.copySmbToLocal(coFileRdPath, "c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath(), new String[] { coFile.getSrcFileName() });
 	            	zipSrcArr[i]="c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getFilePath();
 	            }
@@ -164,7 +164,7 @@ public class JCS1800 extends AbstractBasePage {
 			//filePath=srcFilePath+srcFileName
 			for(CheckoutFile coFile : CheckoutFileList){
             	coFile.setFilePath(rdPath+coFile.getFilePath());
-            	//System.out.println("zip:"+coFile.getFilePath());
+            	//logger.debug("zip:"+coFile.getFilePath());
             }
 
            
@@ -180,7 +180,7 @@ public class JCS1800 extends AbstractBasePage {
 	            	CheckoutFile chkFile=CheckoutFileList.get(i);
 	            	HashFileModel hashFile=new HashFileModel();
 	            	File beChkFile=new File(chkFile.getFilePath());
-	            	System.out.println(chkFile.getSrcPath());
+	            	logger.debug(chkFile.getSrcPath());
 	            	String md5=HashUtil.getMD5Checksum(beChkFile);
 	            	hashFile.setMd5(md5);
 	            	//write to file
@@ -207,7 +207,7 @@ public class JCS1800 extends AbstractBasePage {
             }
             
             //gen zip
-			System.out.println("zip password="+zipPassword);
+			logger.debug("zip password="+zipPassword);
             IZipCmd zipCmd=new ZipCmd();
             zipCmd.zip(zipfilePath+"\\source.zip", zipSrcArr, zipPassword);
             
@@ -224,7 +224,7 @@ public class JCS1800 extends AbstractBasePage {
 			
 			//update scrStatus
 			// 更新 Scr 的 status
-			System.out.println(Long.parseLong(scrNo));
+			logger.debug(scrNo);
 	        scrDao.updateStatus(Long.parseLong(scrNo), Status.CHECKOUT);
             
             
@@ -262,37 +262,33 @@ public class JCS1800 extends AbstractBasePage {
     }
     
     private String parseCheckoutListFile(String filePath){
-    	String result=null;
     	List<Map<String,Object>> resultsList=new ArrayList<Map<String,Object>>();
-    	try
-        {    
+        try {
             BufferedReader in = new BufferedReader(new FileReader(filePath));
             if (!in.ready())
                 throw new IOException();
-            
+
             String line;
             while ((line = in.readLine()) != null) {
-            	
-            	String[] lineArr=line.split("\\|");
-            	String colBuildUnit=lineArr[0];
-            	String colBuildPath=lineArr[1]+lineArr[2];
-            	Map<String, Object> results = new HashMap<String, Object>();;
-            	results.put("filePath", colBuildPath);
-            	results.put("buildUnit", colBuildUnit);
-            	results.put("srcPath", lineArr[1]);
-            	results.put("srcFileName", lineArr[2]);
-            	resultsList.add(results);
+
+                String[] lineArr = line.split("\\|");
+                String colBuildUnit = lineArr[0];
+                String colBuildPath = lineArr[1] + lineArr[2];
+                Map<String, Object> results = new HashMap<String, Object>();
+                results.put("filePath", colBuildPath);
+                results.put("buildUnit", colBuildUnit);
+                results.put("srcPath", lineArr[1]);
+                results.put("srcFileName", lineArr[2]);
+                resultsList.add(results);
             }
-                
+
             in.close();
-        }
-        catch (IOException e)
-        {
-            System.out.println(e);
+        } catch (IOException e) {
+            logger.warn("Failed to parse check out file.", e);
             return null;
         }
     	
-    	//System.out.println(testGson.toJson(resultsList));
+    	//logger.debug(testGson.toJson(resultsList));
     	
     	return gson.toJson(resultsList);
     }
@@ -512,6 +508,5 @@ public class JCS1800 extends AbstractBasePage {
         }
 
     }
-
 
 }

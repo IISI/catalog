@@ -8,11 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tw.com.citi.catalog.dao.IBuildUnitDao;
 
+import com.google.gson.Gson;
+
 public class CheckoutGrid extends AbstractGridHandler {
+
+    final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private transient Gson gson = new Gson();
 	
@@ -36,33 +41,30 @@ public class CheckoutGrid extends AbstractGridHandler {
     
     private List<Map<String,String>> parseCheckoutListFile(String filePath){
     	List<Map<String,String>> resultsList=new ArrayList<Map<String,String>>();
-    	try
-        {    
+        try {
             BufferedReader in = new BufferedReader(new FileReader(filePath));
             if (!in.ready())
                 throw new IOException();
-            
+
             String line;
             while ((line = in.readLine()) != null) {
-            	
-            	String[] lintArr=line.split("\\|");
-            	String colBuildUnit=lintArr[0];
-            	String colBilePath=lintArr[1]+lintArr[2];
-            	Map<String, String> results = new HashMap<String, String>();;
-            	results.put("filePath", colBuildUnit);
-            	results.put("buildUnit", colBilePath);
-            	resultsList.add(results);
+
+                String[] lintArr = line.split("\\|");
+                String colBuildUnit = lintArr[0];
+                String colBilePath = lintArr[1] + lintArr[2];
+                Map<String, String> results = new HashMap<String, String>();
+                results.put("filePath", colBuildUnit);
+                results.put("buildUnit", colBilePath);
+                resultsList.add(results);
             }
-                
+
             in.close();
-        }
-        catch (IOException e)
-        {
-            System.out.println(e);
+        } catch (IOException e) {
+            logger.warn("Failed to parse check out file.", e);
             return null;
         }
     	
-    	System.out.println(gson.toJson(resultsList));
+    	logger.debug(gson.toJson(resultsList));
     	
     	return resultsList;
     }

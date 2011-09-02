@@ -20,11 +20,15 @@ import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.auth.StaticUserAuthenticator;
 import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.local.LocalFileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tw.com.citi.catalog.conf.Settings;
 import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
 
 public class SmbFileUtil {
+
+    static final Logger logger = LoggerFactory.getLogger(SmbFileUtil.class);
 
     private static Settings settings;
     private static FileSystemManager fsManager;
@@ -361,7 +365,7 @@ public class SmbFileUtil {
                     List<File> targetFiles = new ArrayList<File>();
                     for (String fileName : sourceFileNames) {
                     	
-                    	//System.out.println("src url:"+source.getURL().getFile());
+                    	//logger.debug("src url:"+source.getURL().getFile());
                     	
                         File file = new File(target + "\\" + fileName);
                         if (file != null && file.exists()) {
