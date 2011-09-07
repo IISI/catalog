@@ -576,8 +576,21 @@
                 var unzipButton = $('#unzipButton');
                 var checkImportButton = $('#checkImportButton');
                 var importImportButton = $('#importImportButton');
-                var zipDialog = $('#zipDialog').dialog({autoOpen: false, modal: true});
-                var pvcsDialog = $('#pvcsDialog').dialog({autoOpen: false, modal: true});
+                var zipDialog = $('#zipDialog').dialog({
+                    autoOpen: false,
+                    modal: true,
+                    open: function (event, ui) {
+                        $('#zipPassword').val('');
+                    }
+                });
+                var pvcsDialog = $('#pvcsDialog').dialog({
+                    autoOpen: false,
+                    modal: true,
+                    open: function (event, ui) {
+                        $('#pvcsUsername').val('');
+                        $('#pvcsPassword').val('');
+                    }
+                });
                 
                 function hookButtonEvent() {
                     $('#changeFileButton').click(function () {
