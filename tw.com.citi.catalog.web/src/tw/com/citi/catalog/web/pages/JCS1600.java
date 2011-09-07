@@ -131,7 +131,7 @@ public class JCS1600 extends AbstractBasePage {
     	List<String> delFileNameList=new ArrayList<String>();
         for (Map<String, String> file : fileList) {
         	String scrFileId=file.get("id");
-        	String sqlCode="select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId";
+        	String sqlCode="select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId where file_type=0";
         	Map<String,String> params=new HashMap<String,String>();
         	params.put("scrId", sScrId);
         	params.put("scrFileId", scrFileId);

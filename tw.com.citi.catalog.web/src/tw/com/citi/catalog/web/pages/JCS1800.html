@@ -80,9 +80,9 @@
     <!--
 	    
         $(function() {
-        	var zipDialog = $('#zipDialog').dialog({autoOpen: false, modal: true});
+        	zipDialog = $('#zipDialog').dialog({autoOpen: false, modal: true});
         	initDualControl();
-        	var checkoutList=null;
+        	checkoutList=null;
         	$('#scrNo').load(__ajaxHandler, {'actionName':'findScrNo'});
         	$('#scrNo').combobox({
                 selected: function (event, ui) {
@@ -142,10 +142,9 @@
             });
             
             $("#CheckoutButton").click(function(){
-            	//$('#dualControl').dialog('open');
+            	$('#dualControl').dialog('open');
             	
-            	
-            	
+            	/*
             	zipDialog.dialog('option', 'title', 'Enter zip password')
                 .dialog('option', 'buttons', {
                     Continue: function () {
@@ -156,6 +155,7 @@
                     		var payload = {};
                             payload.actionName = 'checkout';
                             payload.actionParams = {
+                            		checkId: checkId,
                             		scrNo:$('#scrNo').val(),
                             		appId:$('#appId').html(),
                             		checkoutLabel:$('#label').val(),
@@ -193,12 +193,64 @@
                     }
                 })
                 .dialog('open');
-            	
+            	*/
             	
             });
             
         });
     //-->
+    
+    	function runCheckOut(){
+    		//alert("zip diag");
+    		zipDialog.dialog('option', 'title', 'Enter zip password')
+            .dialog('option', 'buttons', {
+                Continue: function () {
+                    //輸入完執行
+                	//alert(checkoutList);
+                	if(checkoutList!=null){
+                		
+                		var payload = {};
+                        payload.actionName = 'checkout';
+                        payload.actionParams = {
+                        		checkId: checkId,
+                        		scrNo:$('#scrNo').val(),
+                        		appId:$('#appId').html(),
+                        		checkoutLabel:$('#label').val(),
+                        		checkoutPath:$('#checkoutPath').html(),
+                        		checkoutId: $('#checkoutId').val(),
+                        		checkoutPass:$('#checkoutPass').val(),
+                        		zipPassword: $("#zipPassword").val(),
+                        		zipfilePath: $('#zipFilePath').val(),
+                        		checkoutList: JSON.stringify(checkoutList)
+                        };
+                        $.ajax({
+                            url: __ajaxHandler,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: payload,
+                            success: function (data) {
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1800" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + $('#scrNo').children(':selected').text() + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + $('#appId').text() + '" />');
+                                form.submit();
+                                form.remove();
+                            }
+                        });
+                	}else{
+                		alert("Checkout file List not import!");
+                	}
+                    
+                	
+                    $(this).dialog('close');
+                },
+                Cancel: function () {
+                    $(this).dialog('close');
+                }
+            })
+            .dialog('open');
+    	}
     
     	function initDualControl() {
                     window.sendDualControl = function (checkerId, checkerPwd) {
@@ -213,8 +265,14 @@
                             type: 'POST',
                             dataType: 'json',
                             data: payload,
-                            success: function () {
-                               
+                            success: function (data) {
+                               if(data.result=='success'){
+                            	   checkId=checkerId; 
+                            	   //alert("success");
+                            	   runCheckOut();
+                               }else{
+                            	   alert("驗證失敗!");
+                               }
                                
                             }
                         });

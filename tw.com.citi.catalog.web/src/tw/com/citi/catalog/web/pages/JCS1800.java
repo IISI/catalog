@@ -33,9 +33,11 @@ import tw.com.citi.catalog.model.Scr.Status;
 import tw.com.citi.catalog.util.HashUtil;
 import tw.com.citi.catalog.web.grid.IGridHandler;
 import tw.com.citi.catalog.web.util.AccessControlUtil;
+import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.IPvcsCmd;
 import tw.com.citi.catalog.web.util.IZipCmd;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
+import tw.com.citi.catalog.web.util.F.Func;
 import tw.com.citi.catalog.web.util.impl.PvcsCmd;
 import tw.com.citi.catalog.web.util.impl.ZipCmd;
 
@@ -73,12 +75,12 @@ public class JCS1800 extends AbstractBasePage {
     public String handleRequest(PageParameters params){
         String result = null;
         String actionName = params.getString("actionName");
-        
+
         if ("findScrNo".equals(actionName)) {
             result=  findScrNo();
             
         }else if ("getScrInfo".equals(actionName)) {
-            Long scrId = params.getAsLong("actionParams[scrId]");
+        	Long scrId = params.getAsLong("actionParams[scrId]");
             result = getScrInfo(scrId);
             //logger.debug(AccessControlUtil.authenticateCBCUser("TESTUSR1", null));
         }else if ("dualControl".equals(actionName)) {
@@ -87,11 +89,13 @@ public class JCS1800 extends AbstractBasePage {
              //logger.debug("checker id = {}, checker password = {}", checkerId, checkerPwd);
              boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
              logger.debug("authenticated="+authenticated);
+             ExecuteResult r=new ExecuteResult();
              if (!authenticated) {
-            	 result="ID/Password is invalid";
+            	 r.setResult("fail");
              }else{
-            	 result="success";
+            	 r.setResult("success");
              }
+             result=gson.toJson(r);
              
         } else if ("allCheckoutList".equals(actionName)) {
         	String checkoutFile= params.getString("actionParams[checkoutFile]");
@@ -100,20 +104,22 @@ public class JCS1800 extends AbstractBasePage {
         } else if ("checkout".equals(actionName)) {
         	String scrNo=params.getString("actionParams[scrNo]");
         	String appId=params.getString("actionParams[appId]");
-        	String checkoutLabel=params.getString("actionParams[checkoutLabel]");
-        	String checkoutPath=params.getString("actionParams[checkoutPath]");
-        	String checkoutId=params.getString("actionParams[checkoutId]");
-        	String checkoutPass=params.getString("actionParams[checkoutPass]");
-        	String zipfilePath=params.getString("actionParams[zipfilePath]");
-        	String zipPassword=params.getString("actionParams[zipPassword]");
+        	String checkoutLabel = params.getString("actionParams[checkoutLabel]");
+        	String checkoutPath = params.getString("actionParams[checkoutPath]");
+        	String checkoutId = params.getString("actionParams[checkoutId]");
+        	String checkoutPass = params.getString("actionParams[checkoutPass]");
+        	String zipfilePath = params.getString("actionParams[zipfilePath]");
+        	String zipPassword = params.getString("actionParams[zipPassword]");
             String checkoutList = params.getString("actionParams[checkoutList]");
+            String authedCheckId = params.getString("actionParams[checkId]");
+            
             List<CheckoutFile> CheckoutFileList=gson.fromJson(checkoutList, new TypeToken<List<CheckoutFile>>(){}.getType());
-            //logger.debug("scrNo="+scrNo);
-            //logger.debug("appId="+appId);
-            //logger.debug("checkoutLabel="+checkoutLabel);
-            //logger.debug("checkoutPath="+checkoutPath);
-            //logger.debug("checkoutId="+checkoutId);
-            //logger.debug("checkoutPass="+checkoutPass);
+            System.out.println("scrNo="+scrNo);
+            System.out.println("appId="+appId);
+            System.out.println("checkoutLabel="+checkoutLabel);
+            System.out.println("checkoutPath="+checkoutPath);
+            System.out.println("checkoutId="+checkoutId);
+            System.out.println("checkoutPass="+checkoutPass);
             //logger.debug("zipfilePath="+zipfilePath);
             //logger.debug("CheckoutFileList="+CheckoutFileList.size());
             
@@ -149,7 +155,7 @@ public class JCS1800 extends AbstractBasePage {
 	            for(int i=0;i<CheckoutFileList.size();i++){
 	            	CheckoutFile coFile=CheckoutFileList.get(i);
 	            	String coFileRdPath=rdPath + coFile.getSrcPath();
-	            	logger.debug(coFileRdPath+"----"+"c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath()+"----"+coFile.getSrcFileName());
+	            	System.out.println(coFileRdPath+"----"+"c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath()+"----"+coFile.getSrcFileName());
 	            	SmbFileUtil.copySmbToLocal(coFileRdPath, "c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getSrcPath(), new String[] { coFile.getSrcFileName() });
 	            	zipSrcArr[i]="c:\\temp\\Javacatalog\\zip\\RD\\" + coFile.getFilePath();
 	            }
@@ -227,11 +233,20 @@ public class JCS1800 extends AbstractBasePage {
 			logger.debug(scrNo);
 	        scrDao.updateStatus(Long.parseLong(scrNo), Status.CHECKOUT);
             
+	        //update F
+	        
+	        //System.out.println(authedCheckId);
+	        //long functionLogId = F.log(Long.parseLong(scrNo), Func.JCS1800, authedCheckId, new Date(), null);
+	        //F.updateEndTime(functionLogId, new Date());
+	       
             
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("functionLogId", null);
             return gson.toJson(data);
         } 
+        
+        
+        
         return result;
     }
     
@@ -507,6 +522,30 @@ public class JCS1800 extends AbstractBasePage {
             this.md5 = md5;
         }
 
+    }
+    
+    class ExecuteResult{
+    	
+    	String result;
+    	String errMsg;
+    	
+    	public String getResult(){
+    		return result;
+    	}
+    	
+    	public void setResult(String result){
+    		this.result=result;
+    	}
+    	
+    	public String getErrMsg(){
+    		return errMsg;
+    	}
+    	
+    	public void setErrMsg(String errMsg){
+    		this.errMsg=errMsg;
+    	}
+    	
+    	
     }
 
 }
