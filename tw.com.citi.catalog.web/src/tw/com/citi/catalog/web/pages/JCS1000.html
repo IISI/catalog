@@ -318,6 +318,9 @@
             });
             
             function saveScr() {
+            	checkerId=$("#checkId");
+            	checkerPwd=$("#checkPwd");
+            	
                 var payload = {};
                 payload.actionName = actionText;
                 payload.actionParams = JSON.stringify({
@@ -348,6 +351,9 @@
             }
             
             function deleteScr() {
+            	checkerId=$("#checkId");
+            	checkerPwd=$("#checkPwd");
+            	
                 var payload = {};
                 payload.actionName = 'Delete';
                 payload.actionParams = JSON.stringify({
