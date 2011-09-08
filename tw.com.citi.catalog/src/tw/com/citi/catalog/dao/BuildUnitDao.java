@@ -20,8 +20,9 @@ public class BuildUnitDao extends AbstractGenericDao<BuildUnit, Long> implements
     public BuildUnit findUnique(String appId, String unitId) {
         RowMapper<BuildUnit> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(BuildUnit.class);
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT BU.* FROM ").append(getTableName())
-                .append(" BU INNER JOIN JC_APP APP ON APP.APP_ID = :appId WHERE UNIT_ID = :unitId");
+        sql.append("SELECT BU.* FROM ")
+                .append(getTableName())
+                .append(" BU INNER JOIN JC_APP APP ON APP.ID = BU.JC_APP_ID WHERE APP.APP_ID = :appId AND UNIT_ID = :unitId");
         Map<String, String> params = new HashMap<String, String>();
         params.put("appId", appId);
         params.put("unitId", unitId);
