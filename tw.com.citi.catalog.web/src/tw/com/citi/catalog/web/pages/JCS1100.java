@@ -243,7 +243,7 @@ public class JCS1100 extends AbstractBasePage {
                         file.setError(true);
                         result.setQualified(false);
                     }
-                    if (file.isCheckin() && isFileVersioned(versionedFiles, file.getSourcePath() + file.getSourceFileName())) {
+                    if (file.isCheckin() && isFileVersioned(versionedFiles, (app.getPvcsProjPath() + "/" + file.getSourcePath() + file.getSourceFileName()).replace("\\", "/").replaceAll("/+", "/"))) {
                         file.setError(true);
                         result.setQualified(false);
                     }
@@ -253,7 +253,7 @@ public class JCS1100 extends AbstractBasePage {
                         result.setQualified(false);
                     }
                     ScrFile scrFile = scrFileDao.findByUK(scrId, file.getSourcePath(), file.getSourceFileName());
-                    if (file.isCheckin() && isFileVersioned(versionedFiles, file.getSourcePath() + file.getSourceFileName())) {
+                    if (file.isCheckin() && isFileVersioned(versionedFiles, (app.getPvcsProjPath() + "/" + file.getSourcePath() + file.getSourceFileName()).replace("\\", "/").replaceAll("/+", "/"))) {
                         if (!scrFile.getCheckout()) {
                             file.setError(true);
                             result.setQualified(false);
