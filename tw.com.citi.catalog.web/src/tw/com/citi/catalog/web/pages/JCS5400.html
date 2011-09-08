@@ -223,6 +223,9 @@
             });
             
             function saveCoordinator() {
+            	checkerId=$("#checkId");
+            	checkerPwd=$("#checkPwd");
+            	
                 var payload = {};
                 payload.actionName = actionText;
                 payload.actionParams = JSON.stringify({
@@ -252,6 +255,9 @@
             }
 
             function deleteCoordinator() {
+            	checkerId=$("#checkId");
+            	checkerPwd=$("#checkPwd");
+            	
                 var payload = {};
                 payload.actionName = 'Delete';
                 payload.actionParams = JSON.stringify({

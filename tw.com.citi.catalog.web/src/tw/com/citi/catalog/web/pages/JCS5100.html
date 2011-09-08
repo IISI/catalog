@@ -562,6 +562,9 @@
             });
             
             function saveApp() {
+            	checkerId=$("#checkId");
+            	checkerPwd=$("#checkPwd");
+            	
                 var payload = {};
                 payload.actionName = actionText;
                 var units = [];
@@ -607,6 +610,9 @@
             }
 
             function deleteApp() {
+            	checkerId=$("#checkId");
+            	checkerPwd=$("#checkPwd");
+            	
                 var payload = {};
                 payload.actionName = 'Delete';
                 payload.actionParams = JSON.stringify({
