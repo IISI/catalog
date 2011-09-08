@@ -55,7 +55,7 @@ public class JCS1400 extends AbstractBasePage {
             Long scrId = params.getAsLong("actionParams[scrId]");
             return findBuildUnit(scrId);
         } else if ("print".equals(actionName)) {
-            String checkerId = params.getString("actionparams[checkerId]");
+            String checkerId = params.getString("actionParams[checkerId]");
             String checkerPwd = params.getString("actionParams[checkerPwd]");
             boolean authenticated = AccessControlUtil.authenticateCBCUser(checkerId, checkerPwd);
             if (!authenticated) {
