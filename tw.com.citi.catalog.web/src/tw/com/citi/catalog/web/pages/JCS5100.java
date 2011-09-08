@@ -18,9 +18,9 @@ import tw.com.citi.catalog.dao.IBuildUnitDao;
 import tw.com.citi.catalog.dao.IScrFileDao;
 import tw.com.citi.catalog.model.AppFile;
 import tw.com.citi.catalog.model.AppPath;
+import tw.com.citi.catalog.model.AppPath.PathType;
 import tw.com.citi.catalog.model.BuildUnit;
 import tw.com.citi.catalog.model.ScrFile;
-import tw.com.citi.catalog.model.AppPath.PathType;
 import tw.com.citi.catalog.web.grid.IGridHandler;
 import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
@@ -109,7 +109,13 @@ public class JCS5100 extends AbstractBasePage {
         if (!SmbFileUtil.writeable(basePath)) {
             throw new IllegalArgumentException("Cannot access base path.");
         }
-        return "";
+        Map<String, Object> data = new HashMap<String, Object>();
+        basePath = basePath.trim();
+        if (!basePath.endsWith("/") && !basePath.endsWith("\\")) {
+            basePath += "\\";
+        }
+        data.put("basePath", basePath);
+        return gson.toJson(data);
     }
 
     private String add(Map<String, String> dataMap) throws FileSystemException {
