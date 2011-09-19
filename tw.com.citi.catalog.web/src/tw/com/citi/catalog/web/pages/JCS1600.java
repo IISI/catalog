@@ -265,6 +265,11 @@ public class JCS1600 extends AbstractBasePage {
         // PVCS Checkin 處理
         // checkin
         IPvcsCmd pvcsCmd = new PvcsCmd();
+        
+        String pvcsId = (String) dataMap.get("pvcsId");
+        String pvcsPwd = (String) dataMap.get("pvcsPwd");
+        System.out.println("pvcs login:"+pvcsId+" ,"+pvcsPwd);
+        
         String sId = (String) dataMap.get("scrId");
         Scr scrTmp = scrDao.findById(Long.parseLong(sId));
         App appTmp = appDao.findById(scr.getJcAppId());
@@ -274,7 +279,7 @@ public class JCS1600 extends AbstractBasePage {
         String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat("RD\\") : appPath.getPath().concat("\\RD\\");
         if(isAddFiles){
         	//新增
-            int[] rc = pvcsCmd.addFiles(prjDb, prjPath, "thomaschan", "1234", "Check In", "Check In", rdPath);
+            int[] rc = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In", "Check In", rdPath);
             logger.debug("pvcs check in done!");
         }
         
@@ -283,7 +288,7 @@ public class JCS1600 extends AbstractBasePage {
         	SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
         	Date date = new Date();
         	String strDate = sdFormat.format(date);
-        	int[] rc = pvcsCmd.putFiles(prjDb, prjPath, "thomaschan", "1234", "Check In at "+strDate, "Check In at "+strDate, "RD/*");
+        	int[] rc = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In at "+strDate, "Check In at "+strDate, "RD/*");
             logger.debug("pvcs recheck in done!");
         }
         
@@ -292,7 +297,7 @@ public class JCS1600 extends AbstractBasePage {
         	logger.debug("pvcs del start!");
         	String[] delFileArr=new String[delFileNameList.size()];
         	delFileArr=delFileNameList.toArray(delFileArr);
-        	int[] rc = pvcsCmd.deleteFiles(prjDb, prjPath, "thomaschan", "1234", delFileArr);
+        	int[] rc = pvcsCmd.deleteFiles(prjDb, prjPath, pvcsId, pvcsPwd, delFileArr);
             logger.debug("pvcs del done!");
             
             //update scr status

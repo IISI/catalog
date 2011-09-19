@@ -66,9 +66,26 @@
         <button id="moveButton">Move</button>
     </div>
     <br />
+    
+    <div id="pvcsDialog">
+        <table>
+        	<tr>
+                <td><label for="pvcsId">User</label></td>
+                <td><input id="pvcsId" type="text" /></td>
+            </tr>
+            <tr>
+                <td><label for="pvcsPwd">Password</label></td>
+                <td><input id="pvcsPwd" type="password" /></td>
+            </tr>
+        </table>
+    </div>
+    
     <script type="text/javascript">
     <!--
         $(function() {
+        	
+        	pvcsDialog = $('#pvcsDialog').dialog({autoOpen: false, modal: true});
+        	
             var scrNo = $('#scrNo');
             var appId = $('#appId');
             var status = $('#status');
@@ -308,7 +325,19 @@
 
             function dualControl() {
                 sendDualControl = function() {
-                    moveFiles();
+                	pvcsDialog.dialog('option', 'title', 'Enter PVCS id and password')
+                    .dialog('option', 'buttons', {
+                        Continue: function () {
+                        	moveFiles();
+                        	$(this).dialog('close');
+                        },
+                        Cancel: function () {
+                            $(this).dialog('close');
+                        }
+                    })
+                    .dialog('open');
+                	
+                    
                 };
                 cancelDualControl = function() {
                 };
@@ -328,7 +357,9 @@
                     buildUnitId: buildUnit.val(),
                     files: JSON.stringify(files), 
                     checkerId: checkerId.val(),
-                    checkerPwd: checkerPwd.val()
+                    checkerPwd: checkerPwd.val(),
+                    pvcsId: $("#pvcsId").val(),
+                    pvcsPwd: $("#pvcsPwd").val()
                 });
                 $.ajax({
                     url: __ajaxHandler,
