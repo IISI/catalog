@@ -251,7 +251,9 @@ public class JCS1800 extends AbstractBasePage {
     }
     
     private String findScrNo() {
+    	System.out.println("bf find all scrDao="+scrDao);
         List<Scr> scrList = scrDao.findAll();
+        System.out.println("af find all ");
         StringBuilder sb = new StringBuilder();
         for (Scr scr : scrList) {
             sb.append("<option value='").append(scr.getId()).append("'>");
