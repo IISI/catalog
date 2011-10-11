@@ -133,7 +133,8 @@ public class JCS1100 extends AbstractBasePage {
         } else if ("unzipFile".equals(actionName)) {
             String zipFile = params.getString("actionParams[zipFile]");
             String zipPassword = params.getString("actionParams[zipPassword]");
-            return unzipFile(zipFile, zipPassword);
+            long scrId = params.getAsLong("actionParams[scrId]");
+            return unzipFile(zipFile, zipPassword, scrId);
         } else if ("checkImportFile".equals(actionName)) {
             String changeFile = params.getString("actionParams[changeFile]");
             String hashFile = params.getString("actionParams[hashFile]");
@@ -205,10 +206,19 @@ public class JCS1100 extends AbstractBasePage {
         return gson.toJson(results);
     }
 
-    private String unzipFile(String zipFile, String zipPassword) {
+    private String unzipFile(String zipFile, String zipPassword, long scrId) {
         File tempDir = FileUtil.prepareTempDirectory();
         IZipCmd zipCmd = new ZipCmd();
         int result = zipCmd.unzip(zipFile, tempDir.getAbsolutePath(), zipPassword);
+        
+        List<AppPath> appPaths = appPathDao.findByScrId(scrId, PathType.APP_BASE);
+        String basePath = appPaths.get(0).getPath();
+        String rdPath = basePath + "//RD";
+        result += zipCmd.unzip(zipFile, rdPath, zipPassword);
+        
+        String sourcePath = basePath + "//Source//" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+        result += zipCmd.unzip(zipFile, sourcePath, zipPassword);
+        
         Map<String, Object> results = new HashMap<String, Object>();
         if (result == 0) {
             results.put("success", true);
@@ -648,6 +658,8 @@ public class JCS1100 extends AbstractBasePage {
                 }
             }
         }
+        
+        FileUtil.deleteTempDirectory();
         return null;
     }
 

@@ -637,7 +637,8 @@
                                         payload.actionName = 'unzipFile';
                                         payload.actionParams = {
                                             zipFile: zipFile.val(),
-                                            zipPassword: $('#zipPassword').val()
+                                            zipPassword: $('#zipPassword').val(),
+                                            scrId = global.scrId
                                         };
                                         $.ajax({
                                             url: __ajaxHandler,
