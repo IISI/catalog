@@ -250,7 +250,7 @@
                                     id: file.id,
                                     fileName: file.fileName,
                                     filePath: file.filePath,
-                                    fileType: file.fileType,
+                                    fileType: file.fileType == 0 ? 'SOURCE' : 'EXECUTION',
                                     fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
                                 };
                                 copyFrom.addRowData(file.id, scrFile);
@@ -374,6 +374,20 @@
                         form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
                         form.submit();
                         form.remove();
+                        payload.actionName = 'CheckIn';
+                        $.ajax({
+                            url: __ajaxHandler,
+                            type: 'POST',
+                            dataType: 'json',
+                            data: payload,
+                            success: function(data, textStatus, jqXHR) {
+                                dialog.html('PVCS Check In OK.').dialog('open');
+                            },
+                            error: function(jqXHR, textStatus, errorThrown) {
+                                var resp = JSON.parse(jqXHR.responseText);
+                                dialog.html(resp.message).dialog('open');
+                            }
+                        });
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var resp = JSON.parse(jqXHR.responseText);

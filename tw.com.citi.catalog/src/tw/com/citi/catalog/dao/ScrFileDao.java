@@ -188,4 +188,15 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
         return jdbcTemplate.query(sql.toString(), BeanPropertyRowMapper.newInstance(ScrFileDto.class), args);
     }
 
+    @Override
+    public int updateCheckOutFlag(Long id) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ID", id);
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET CHECKOUT = 0 ");
+        sql.append(" WHERE ID = :ID");
+        return jdbcTemplate.update(sql.toString(), params);
+    }
+
 }

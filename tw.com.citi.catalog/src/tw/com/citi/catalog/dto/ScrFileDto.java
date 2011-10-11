@@ -20,6 +20,7 @@ public class ScrFileDto {
     private Boolean deleted;
     private int registerAction;
     private FileStatus fileStatus;
+    private int fileType;
 
     public Long getId() {
         return id;
@@ -168,6 +169,14 @@ public class ScrFileDto {
 
     public FileStatus getFileStatus() {
         return fileStatus;
+    }
+
+    public void setFileType(int fileType) {
+        this.fileType = fileType;
+    }
+
+    public int getFileType() {
+        return fileType;
     }
 
 }
