@@ -175,7 +175,7 @@ public class ScrFileDao extends AbstractGenericDao<ScrFile, Long> implements ISc
     public List<ScrFileDto> findBy(long scrId, Long buildUnitId, FileType fileType) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT sf.*, rh.register_action FROM ").append(getTableName()).append(" sf");
-        sql.append(" LEFT JOIN jc_register_history rh ON sf.id = rh.jc_scr_file_id");
+        sql.append(" INNER JOIN jc_register_history rh ON sf.id = rh.jc_scr_file_id");
         sql.append(" AND rh.register_count = (SELECT register_count FROM jc_scr WHERE id = sf.jc_scr_id)");
         sql.append(" WHERE sf.jc_scr_id = :scrId AND sf.file_type = :fileType");
         if (buildUnitId != null) {

@@ -2,6 +2,8 @@ package tw.com.citi.catalog.dto;
 
 import java.sql.Timestamp;
 
+import tw.com.citi.catalog.model.FileStatus;
+
 public class ScrFileDto {
 
     private Long id;
@@ -17,6 +19,7 @@ public class ScrFileDto {
     private Timestamp lastCompileTime;
     private Boolean deleted;
     private int registerAction;
+    private FileStatus fileStatus;
 
     public Long getId() {
         return id;
@@ -157,6 +160,14 @@ public class ScrFileDto {
         } else if (!jcScrId.equals(other.jcScrId))
             return false;
         return true;
+    }
+
+    public void setFileStatus(FileStatus fileStatus) {
+        this.fileStatus = fileStatus;
+    }
+
+    public FileStatus getFileStatus() {
+        return fileStatus;
     }
 
 }
