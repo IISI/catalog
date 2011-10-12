@@ -21,6 +21,7 @@ import tw.com.citi.catalog.dao.IFileMoveDetailDao;
 import tw.com.citi.catalog.dao.IRegisterHistoryDao;
 import tw.com.citi.catalog.dao.IScrDao;
 import tw.com.citi.catalog.dao.IScrFileDao;
+import tw.com.citi.catalog.dto.ScrFileDto;
 import tw.com.citi.catalog.model.App;
 import tw.com.citi.catalog.model.AppFile;
 import tw.com.citi.catalog.model.AppPath;
@@ -64,7 +65,7 @@ public class JCS1600 extends AbstractBasePage {
 
     @SpringBean(name = "fileMoveDetailDao")
     private IFileMoveDetailDao fileMoveDetailDao;
-    
+
     @SpringBean(name = "registerHistoryDao")
     private IRegisterHistoryDao registerHistoryDao;
 
@@ -85,6 +86,8 @@ public class JCS1600 extends AbstractBasePage {
             result = query(dataMap);
         } else if ("GetFiles".equals(actionName)) {
             result = getFiles(dataMap);
+        } else if ("CheckIn".equals(actionName)) {
+            result = pvcsCheckIn(dataMap);
         } else {
             throw new IllegalArgumentException("Cannot find actionName: " + actionName);
         }
@@ -117,67 +120,107 @@ public class JCS1600 extends AbstractBasePage {
         return gson.toJson(data);
     }
 
+    private String pvcsCheckIn(Map dataMap) {
+        String sScrId = (String) dataMap.get("scrId");
+        String files = (String) dataMap.get("files");
+        List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
+        }.getType());
+        Long scrId = Long.parseLong(sScrId);
+        Scr scr = scrDao.findById(scrId);
+        // -----------------------------------calculate pvcs action /add/put/del
+        boolean isAddFiles = false;
+        boolean isPutFiles = false;
+        boolean isDelFiles = false;
+        List<String> delFileNameList = new ArrayList<String>();
+        for (Map<String, String> file : fileList) {
+            String scrFileId = file.get("id");
+            String sqlCode = "select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId and file_type=0";
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("scrId", sScrId);
+            params.put("scrFileId", scrFileId);
+            // String filePath=file.get("filePath");
+            // String fileName=file.get("fileName");
+            // String fileType=file.get("fileType");
+            // /String fileStatus=file.get("fileStatus");
+            // logger.debug("id="+fileId+", path="+filePath+", name="+fileName+", fileType="+fileType+",fileStatus="+fileStatus);
+            List<RegisterHistory> registerHistoryList = registerHistoryDao
+                    .query(sqlCode, RegisterHistory.class, params);
+
+            if (registerHistoryList.size() > 0) {
+                RegisterHistory registerHistory = registerHistoryList.get(registerHistoryList.size() - 1);
+                int registerAction = registerHistory.getRegisterAction();
+                if (registerAction == 0) {
+                    // 新增
+                    isAddFiles = true;
+                } else if (registerAction == 1) {
+                    // 修改
+                    isPutFiles = true;
+                } else if (registerAction == 2) {
+                    // 刪除
+                    isDelFiles = true;
+                    String delFilePath = file.get("filePath");
+                    String delFileName = file.get("fileName");
+                    logger.debug("DEL: " + delFilePath + delFileName);
+                    delFileNameList.add(delFilePath + delFileName);
+                }
+                logger.debug("id=" + scrFileId + ", action=" + registerAction);
+            }
+
+        }
+
+        logger.debug("isAdd=" + isAddFiles);
+        logger.debug("isPutFiles=" + isPutFiles);
+        logger.debug("isDelFiles=" + isDelFiles + ", size=" + delFileNameList.size());
+        // ---------------------------------------------------------------------------------------------------
+        // PVCS Checkin 處理
+        // checkin
+        IPvcsCmd pvcsCmd = new PvcsCmd();
+
+        String pvcsId = (String) dataMap.get("pvcsId");
+        String pvcsPwd = (String) dataMap.get("pvcsPwd");
+        System.out.println("pvcs login:" + pvcsId + " ," + pvcsPwd);
+
+        String sId = (String) dataMap.get("scrId");
+        Scr scrTmp = scrDao.findById(Long.parseLong(sId));
+        App appTmp = appDao.findById(scr.getJcAppId());
+        String prjDb = appTmp.getPvcsProjDb();
+        String prjPath = appTmp.getPvcsProjPath();
+        AppPath appPath = appPathDao.findByScrId(Long.parseLong(sId), PathType.APP_BASE).get(0);
+        String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat(
+                "RD\\") : appPath.getPath().concat("\\RD\\");
+        if (isAddFiles) {
+            // 新增
+            int[] rc = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In", "Check In", rdPath);
+            logger.debug("pvcs check in done!");
+        }
+
+        if (isPutFiles) {
+            // 重新checkin
+            SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+            Date date = new Date();
+            String strDate = sdFormat.format(date);
+            int[] rc = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In at " + strDate, "Check In at "
+                    + strDate, "RD/*");
+            logger.debug("pvcs recheck in done!");
+        }
+
+        if (isDelFiles) {
+            // 有檔案要刪除
+            logger.debug("pvcs del start!");
+            String[] delFileArr = new String[delFileNameList.size()];
+            delFileArr = delFileNameList.toArray(delFileArr);
+            int[] rc = pvcsCmd.deleteFiles(prjDb, prjPath, pvcsId, pvcsPwd, delFileArr);
+            logger.debug("pvcs del done!");
+        }
+        return null;
+    }
+
     private String move(Map dataMap) {
         Date start = new Date();
         String sScrId = (String) dataMap.get("scrId");
         String files = (String) dataMap.get("files");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
-        
-        //-----------------------------------calculate pvcs action /add/put/del
-        boolean isAddFiles=false;
-    	boolean isPutFiles=false;
-    	boolean isDelFiles=false;
-    	List<String> delFileNameList=new ArrayList<String>();
-        for (Map<String, String> file : fileList) {
-        	String scrFileId=file.get("id");
-        	String sqlCode="select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId and file_type=0";
-        	Map<String,String> params=new HashMap<String,String>();
-        	params.put("scrId", sScrId);
-        	params.put("scrFileId", scrFileId);
-        	//String filePath=file.get("filePath");
-        	//String fileName=file.get("fileName");
-        	//String fileType=file.get("fileType");
-        	///String fileStatus=file.get("fileStatus");
-        	//logger.debug("id="+fileId+", path="+filePath+", name="+fileName+", fileType="+fileType+",fileStatus="+fileStatus);
-        	List<RegisterHistory> registerHistoryList=registerHistoryDao.query(sqlCode, RegisterHistory.class, params);
-        	
-        	 
-        	
-        	if(registerHistoryList.size()>0){
-        		RegisterHistory registerHistory=registerHistoryList.get(registerHistoryList.size()-1);
-        		int registerAction=registerHistory.getRegisterAction();
-        		if(registerAction==0){
-        			//新增
-        			isAddFiles=true;
-        		}else if(registerAction==1){
-        			//修改
-        			isPutFiles=true;
-        		}else if(registerAction==2){
-        			//刪除
-        			isDelFiles=true;
-        			String delFilePath=file.get("filePath");
-        			String delFileName=file.get("fileName");
-        			logger.debug("DEL: "+delFilePath+delFileName);
-        			delFileNameList.add(delFilePath+delFileName);
-        		}
-        		logger.debug("id="+scrFileId+", action="+registerAction);
-        	}
-        	
-        }
-        
-        logger.debug("isAdd="+isAddFiles);
-        logger.debug("isPutFiles="+isPutFiles);
-        logger.debug("isDelFiles="+isDelFiles+", size="+delFileNameList.size());
-        //---------------------------------------------------------------------------------------------------
-        //AppPath appPath = appPathDao.findByScrId(Long.parseLong(sScrId), PathType.APP_BASE).get(0);
-        //String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat("RD\\") : appPath.getPath().concat("\\RD\\");
-        //logger.debug("rdPath="+rdPath);
-        
-        
-        
-        
-        
         // move file
         Long scrId = Long.parseLong(sScrId);
         Long fLogId = F.log(scrId, Func.JCS1600, "", start, null);
@@ -190,13 +233,12 @@ public class JCS1600 extends AbstractBasePage {
         List<String> prodSourcePath = (List<String>) appPaths.get(PathType.PROD_SOURCE);
         List<String> prodExecutionPath = (List<String>) appPaths.get(PathType.PROD_EXECUTION);
         // rename current BACKUP folder
+        // 備份失敗時將 rename 後的 BACKUP folder 還原
+        String tempId = String.valueOf(System.currentTimeMillis());
         try {
             if (SmbFileUtil.exist(prodBackupPath, null)) {
-                SmbFileUtil.renameTo(
-                        prodBackupPath,
-                        null,
-                        prodBackupPath.trim().substring(0, prodBackupPath.trim().length() - 1) + "_"
-                                + String.valueOf(System.currentTimeMillis()), null);
+                SmbFileUtil.renameTo(prodBackupPath, null,
+                        prodBackupPath.trim().substring(0, prodBackupPath.trim().length() - 1) + "_" + tempId, null);
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
@@ -204,18 +246,82 @@ public class JCS1600 extends AbstractBasePage {
             throw new RuntimeException("Rename backup folder error.", e);
         }
         // 備份現有的 PROD source/execution 到 BACKUP
-        try {
-            if (SmbFileUtil.exist(prodSourcePath.get(0), null)) {
-                SmbFileUtil.copyFolder(prodSourcePath.get(0), prodBackupPath + "source\\");
+        String sourcePath;
+        String targetPath;
+        for (Map<String, String> file : fileList) {
+            String filePath = file.get("filePath");
+            String fileName = file.get("fileName");
+            // String status = file.get("fileStatus");
+            String fileType = file.get("fileType");
+            if ("SOURCE".equalsIgnoreCase(fileType)) {
+                sourcePath = prodSourcePath.get(0) + filePath;
+                targetPath = prodBackupPath + "source\\";
+            } else {
+                sourcePath = prodExecutionPath.get(0) + filePath;
+                targetPath = prodBackupPath + "execution\\";
             }
-            if (SmbFileUtil.exist(prodExecutionPath.get(0), null)) {
-                SmbFileUtil.copyFolder(prodExecutionPath.get(0), prodBackupPath + "execution\\");
+            try {
+                if (SmbFileUtil.exist(sourcePath, fileName)) {
+                    SmbFileUtil.copyFile(sourcePath, targetPath, new String[] { fileName });
+                }
+            } catch (FileSystemException e) {
+                e.printStackTrace();
+                // 複製失敗時，刪除 BACKUP folder，將原本 rename 的 backup folder 復原
+                try {
+                    SmbFileUtil.deleteFile(prodBackupPath, null);
+                    SmbFileUtil.renameTo(prodBackupPath.trim().substring(0, prodBackupPath.trim().length() - 1) + "_"
+                            + tempId, null, prodBackupPath, null);
+                } catch (FileSystemException e1) {
+                    // 還原
+                    e1.printStackTrace();
+                    throw new RuntimeException("Rollback backup folder error. There should be a folder named with _"
+                            + tempId + ", please rename back manually.", e1);
+                }
+                throw new RuntimeException("Backup file error. " + fileName, e);
             }
-        } catch (FileSystemException e) {
-            e.printStackTrace();
-            F.updateEndTime(fLogId, new Date());
-            throw new RuntimeException("Backup current PROD folder error.", e);
         }
+        // 避免檔案被佔用時，複製檔案失敗
+        // rename PROD folder 下，所有會被更新的檔案，
+        // 如果 rename 失敗，就代表有檔案被佔用，
+        List<String> renamedFiles = new ArrayList<String>();
+        for (Map<String, String> file : fileList) {
+            String filePath = file.get("filePath");
+            String fileName = file.get("fileName");
+            logger.debug("" + filePath + "-" + fileName);
+            String fileType = file.get("fileType");
+            List<String> prodPaths = new ArrayList<String>();
+            if ("SOURCE".equalsIgnoreCase(fileType)) {
+                prodPaths = prodSourcePath;
+            } else {
+                prodPaths = prodExecutionPath;
+            }
+            for (String prodPath : prodPaths) {
+                try {
+                    if (SmbFileUtil.exist(prodPath + filePath, fileName)) {
+                        SmbFileUtil.renameTo(prodPath + filePath, fileName, prodPath + filePath, fileName + "_"
+                                + tempId);
+                        renamedFiles.add(fileName);
+                    }
+                } catch (FileSystemException e) {
+                    e.printStackTrace();
+                    // rename 失敗，代表該檔案無法 rename，還原已經 rename 成功的檔案
+                    for (String renamedFile : renamedFiles) {
+                        try {
+                            SmbFileUtil.renameTo(prodPath + filePath, renamedFile + "_" + tempId, prodPath + filePath,
+                                    renamedFile);
+                        } catch (FileSystemException e1) {
+                            e1.printStackTrace();
+                            // 還原 renamed file 失敗
+                            throw new RuntimeException(
+                                    "Rollback renamed file error. There should be files named with _" + tempId
+                                            + ", please rename back manually.", e1);
+                        }
+                    }
+                    throw new RuntimeException("Rename file error. " + fileName, e);
+                }
+            }
+        }
+
         // 複製 QA source/execution 到 PROD
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("JC_FUNCTION_LOG_ID", fLogId);
@@ -243,11 +349,6 @@ public class JCS1600 extends AbstractBasePage {
                         SmbFileUtil.deleteFile(prodPath + filePath, fileName);
                     } else {
                         SmbFileUtil.copyFile(qaPath + filePath, prodPath + filePath, new String[] { fileName });
-
-                        // for check in pvcs
-                        // copy to c:\temp\Javacatalog\source
-                        //SmbFileUtil.copySmbToLocal(qaPath + filePath, "c:\\temp\\Javacatalog\\source" + filePath, new String[] { fileName });
-
                     }
                     params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
                     fileMoveDetailDao.create(params);
@@ -261,46 +362,15 @@ public class JCS1600 extends AbstractBasePage {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
-
-        // PVCS Checkin 處理
-        // checkin
-        IPvcsCmd pvcsCmd = new PvcsCmd();
-        
-        String pvcsId = (String) dataMap.get("pvcsId");
-        String pvcsPwd = (String) dataMap.get("pvcsPwd");
-        System.out.println("pvcs login:"+pvcsId+" ,"+pvcsPwd);
-        
-        String sId = (String) dataMap.get("scrId");
-        Scr scrTmp = scrDao.findById(Long.parseLong(sId));
-        App appTmp = appDao.findById(scr.getJcAppId());
-        String prjDb = appTmp.getPvcsProjDb();
-        String prjPath = appTmp.getPvcsProjPath();
-        AppPath appPath = appPathDao.findByScrId(Long.parseLong(sId), PathType.APP_BASE).get(0);
-        String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat("RD\\") : appPath.getPath().concat("\\RD\\");
-        if(isAddFiles){
-        	//新增
-            int[] rc = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In", "Check In", rdPath);
-            logger.debug("pvcs check in done!");
-        }
-        
-        if(isPutFiles){
-        	//重新checkin
-        	SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
-        	Date date = new Date();
-        	String strDate = sdFormat.format(date);
-        	int[] rc = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In at "+strDate, "Check In at "+strDate, "RD/*");
-            logger.debug("pvcs recheck in done!");
-        }
-        
-        if(isDelFiles){
-        	//有檔案要刪除
-        	logger.debug("pvcs del start!");
-        	String[] delFileArr=new String[delFileNameList.size()];
-        	delFileArr=delFileNameList.toArray(delFileArr);
-        	int[] rc = pvcsCmd.deleteFiles(prjDb, prjPath, pvcsId, pvcsPwd, delFileArr);
-            logger.debug("pvcs del done!");
-            
-            //update scr status
+        // 將 AppFile 及 ScrFile 的 CheckOut flag 設為 false
+        for (Map<String, String> file : fileList) {
+            String filePath = file.get("filePath");
+            String fileName = file.get("fileName");
+            logger.debug("" + filePath + "-" + fileName);
+            AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), filePath, fileName);
+            ScrFile scrFile = scrFileDao.findByUK(scr.getId(), filePath, fileName);
+            appFileDao.updateCheckOutFlag(appFile.getId());
+            scrFileDao.updateCheckOutFlag(scrFile.getId());
         }
 
         scrDao.updateStatus(scr.getId(), Status.MOVE_TO_PROD);
@@ -308,38 +378,38 @@ public class JCS1600 extends AbstractBasePage {
         Map<String, Object> results = new HashMap<String, Object>();
         results.put("functionLogId", fLogId);
         return gson.toJson(results);
-        
+
     }
 
     private String getFiles(Map dataMap) {
         String sScrId = (String) dataMap.get("scrId");
         String sBuildUnitId = (String) dataMap.get("buildUnitId");
         Scr scr = scrDao.findById(Long.parseLong(sScrId));
-        List<ScrFile> files = new ArrayList<ScrFile>();
+        List<ScrFileDto> files = new ArrayList<ScrFileDto>();
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         Long buildUnitId;
         if ("all".equalsIgnoreCase(sBuildUnitId)) {
             // 全選
             buildUnitId = null;
-            files = scrFileDao.findByScrId(scr.getId());
         } else {
             buildUnitId = Long.parseLong(sBuildUnitId);
             BuildUnit unit = buildUnitDao.findById(buildUnitId);
             List<Long> ids = new ArrayList<Long>();
             ids.add(unit.getId());
-            files = scrFileDao.findByBuildUnitIds(ids);
         }
+        files.addAll(scrFileDao.findBy(Long.parseLong(sScrId), buildUnitId, FileType.SOURCE));
+        files.addAll(scrFileDao.findBy(Long.parseLong(sScrId), buildUnitId, FileType.EXECUTION));
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         String qaExecutionPath = (String) appPaths.get(PathType.QA_EXECUTION);
         // check 檔案是否真的存在 qaSourcePath
         String path;
-        for (ScrFile file : files) {
+        for (ScrFileDto file : files) {
             try {
                 if (file.getDeleted()) {
                     file.setFileStatus(FileStatus.DELETE);
                 } else {
                     logger.debug(qaSourcePath + " : " + file.getFilePath() + " : " + file.getFileName());
-                    if (FileType.SOURCE == file.getFileType()) {
+                    if (FileType.SOURCE.ordinal() == file.getFileType()) {
                         path = qaSourcePath;
                     } else {
                         path = qaExecutionPath;

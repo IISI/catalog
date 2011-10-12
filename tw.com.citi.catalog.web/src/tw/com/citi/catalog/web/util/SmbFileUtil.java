@@ -206,9 +206,9 @@ public class SmbFileUtil {
 
     public static void copyLocalToSmb(String sourceFolder, String targetFolder, String[] sourceFileNames)
             throws FileSystemException {
-    	copyLocalToSmb(sourceFolder, targetFolder, null, null, sourceFileNames);
+        copyLocalToSmb(sourceFolder, targetFolder, null, null, sourceFileNames);
     }
-    
+
     public static void copyLocalToSmb(String sourceFolder, String targetFolder, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
         if (sourceFolder == null) {
@@ -221,7 +221,7 @@ public class SmbFileUtil {
         FileObject target = fsManager.resolveFile("smb:" + replaceSlash(targetFolder), opts);
         copyLocalToSmb(source, target, prefix, suffix, sourceFileNames);
     }
-    
+
     public static void copyLocalToSmb(FileObject source, FileObject target, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
         List<FileObject> files = new ArrayList<FileObject>();
@@ -308,8 +308,7 @@ public class SmbFileUtil {
             throws FileSystemException {
         copyFile(sourceFolder, targetFolder, null, null, sourceFileNames);
     }
-    
-    
+
     public static void copySmbToLocal(String sourceFolder, String targetFolder, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
         if (sourceFolder == null) {
@@ -322,12 +321,12 @@ public class SmbFileUtil {
         FileObject target = fsManager.resolveFile("file://" + replaceSlash(targetFolder), opts);
         copySmbToLocal(source, target, prefix, suffix, sourceFileNames);
     }
-    
+
     public static void copySmbToLocal(String sourceFolder, String targetFolder, String[] sourceFileNames)
-    throws FileSystemException {
-    	copySmbToLocal(sourceFolder, targetFolder, null, null, sourceFileNames);
-	}
-    
+            throws FileSystemException {
+        copySmbToLocal(sourceFolder, targetFolder, null, null, sourceFileNames);
+    }
+
     public static void copySmbToLocal(FileObject source, FileObject target, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
         List<FileObject> files = new ArrayList<FileObject>();
@@ -364,9 +363,9 @@ public class SmbFileUtil {
                 if (target.getFileSystem() instanceof LocalFileSystem) {
                     List<File> targetFiles = new ArrayList<File>();
                     for (String fileName : sourceFileNames) {
-                    	
-                    	//logger.debug("src url:"+source.getURL().getFile());
-                    	
+
+                        // logger.debug("src url:"+source.getURL().getFile());
+
                         File file = new File(target + "\\" + fileName);
                         if (file != null && file.exists()) {
                             targetFiles.add(file);
@@ -480,9 +479,15 @@ public class SmbFileUtil {
 
     public static void deleteFile(String path, String fileName) throws FileSystemException {
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
-        FileObject file = fsManager.resolveFile(folder, fileName);
-        if (exist(path, fileName)) {
-            file.delete();
+        if (fileName == null) {
+            if (exist(path, null)) {
+                folder.delete();
+            }
+        } else {
+            FileObject file = fsManager.resolveFile(folder, fileName);
+            if (exist(path, fileName)) {
+                file.delete();
+            }
         }
     }
 

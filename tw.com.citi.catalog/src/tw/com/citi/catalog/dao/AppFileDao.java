@@ -104,4 +104,15 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
         return jdbcTemplate.queryForList(sql.toString(), functionLogId);
     }
 
+    @Override
+    public int updateCheckOutFlag(Long id) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ID", id);
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE ").append(getTableName());
+        sql.append(" SET CHECKOUT = 0 ");
+        sql.append(" WHERE ID = :ID");
+        return jdbcTemplate.update(sql.toString(), params);
+    }
+
 }

@@ -19,6 +19,8 @@ public interface IAppFileDao extends IGenericDao<AppFile, Long> {
     int updateLastCompileTimeByJcAppId(Timestamp lastCompileTime, Long jcAppId);
 
     int updateFileInfoById(Timestamp fileDateTime, Long fileSize, Long id);
+    
+    int updateCheckOutFlag(Long id);
 
     /**
      * 查詢 1600, 1700, 1800 報表的資料。

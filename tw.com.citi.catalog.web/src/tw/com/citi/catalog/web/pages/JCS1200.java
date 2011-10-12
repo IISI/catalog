@@ -19,14 +19,15 @@ import tw.com.citi.catalog.dao.IBuildUnitDao;
 import tw.com.citi.catalog.dao.IFileMoveDetailDao;
 import tw.com.citi.catalog.dao.IScrDao;
 import tw.com.citi.catalog.dao.IScrFileDao;
+import tw.com.citi.catalog.dto.ScrFileDto;
 import tw.com.citi.catalog.model.App;
 import tw.com.citi.catalog.model.AppFile;
+import tw.com.citi.catalog.model.AppPath.PathType;
 import tw.com.citi.catalog.model.BuildUnit;
 import tw.com.citi.catalog.model.FileStatus;
+import tw.com.citi.catalog.model.FileType;
 import tw.com.citi.catalog.model.ProcessResult;
 import tw.com.citi.catalog.model.Scr;
-import tw.com.citi.catalog.model.ScrFile;
-import tw.com.citi.catalog.model.AppPath.PathType;
 import tw.com.citi.catalog.model.Scr.Status;
 import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.F;
@@ -86,7 +87,7 @@ public class JCS1200 extends AbstractBasePage {
         return result;
     }
 
-    private String init(Map<String ,String> dataMap) {
+    private String init(Map<String, String> dataMap) {
         Map<String, String> params = new HashMap<String, String>();
         params.put("deleted", "0");
         List<Scr> scrList = scrDao.find(params, new String[] { "equal" }, "", "SCR_NO", 0, Long.MAX_VALUE);
@@ -165,26 +166,23 @@ public class JCS1200 extends AbstractBasePage {
         String sScrId = (String) dataMap.get("scrId");
         String sBuildUnitId = (String) dataMap.get("buildUnitId");
         Scr scr = scrDao.findById(Long.parseLong(sScrId));
-        List<ScrFile> files = new ArrayList<ScrFile>();
+        List<ScrFileDto> files = new ArrayList<ScrFileDto>();
         Map<PathType, Object> appPaths = appPathDao.getAppPathsByAppId(scr.getJcAppId());
         Long buildUnitId;
         String buildUnit = "";
         if ("all".equalsIgnoreCase(sBuildUnitId)) {
             // 全選
             buildUnitId = null;
-            // get Files in RD_PATH
-            files = scrFileDao.findSourceFilesByScrId(Long.parseLong(sScrId));
         } else {
             buildUnitId = Long.parseLong(sBuildUnitId);
             BuildUnit unit = buildUnitDao.findById(buildUnitId);
-            // get Files in RD_PATH
-            files = scrFileDao.findSourceFilesByBuildUnitId(buildUnitId);
             buildUnit = unit.getUnitId() + "\\";
         }
+        files = scrFileDao.findBy(Long.parseLong(sScrId), buildUnitId, FileType.SOURCE);
         String rdPath = appPaths.get(PathType.APP_BASE) + "RD\\";
         String qaSourcePath = (String) appPaths.get(PathType.QA_SOURCE);
         // check 檔案是否真的存在 rdPath
-        for (ScrFile file : files) {
+        for (ScrFileDto file : files) {
             try {
                 if (file.getDeleted()) {
                     file.setFileStatus(FileStatus.DELETE);
