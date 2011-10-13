@@ -3,6 +3,7 @@ package tw.com.citi.catalog.model;
 import tw.com.citi.catalog.annotation.Mapper;
 import tw.com.citi.catalog.annotation.Table;
 import tw.com.citi.catalog.mapper.FileMoveDetailMapper;
+import tw.com.citi.catalog.model.AppPath.PathType;
 
 @Table("JC_FILE_MOVE_DETAIL")
 @Mapper(FileMoveDetailMapper.class)
@@ -17,6 +18,8 @@ public class FileMoveDetail implements IModel<Long> {
     private String targetPath;
 
     private ProcessResult processResult;
+    
+    private PathType pathType;
 
     @Override
     public Long getId() {
@@ -58,6 +61,14 @@ public class FileMoveDetail implements IModel<Long> {
 
     public Long getJcAppFileId() {
         return jcAppFileId;
+    }
+
+    public void setPathType(PathType pathType) {
+        this.pathType = pathType;
+    }
+
+    public PathType getPathType() {
+        return pathType;
     }
 
 }
