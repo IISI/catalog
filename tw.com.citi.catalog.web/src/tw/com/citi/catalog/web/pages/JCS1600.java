@@ -246,13 +246,16 @@ public class JCS1600 extends AbstractBasePage {
             throw new RuntimeException("Rename backup folder error.", e);
         }
         // 備份現有的 PROD source/execution 到 BACKUP
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("JC_FUNCTION_LOG_ID", fLogId);
         String sourcePath;
         String targetPath;
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
-            // String status = file.get("fileStatus");
             String fileType = file.get("fileType");
+            AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), filePath, fileName);
+            params.put("JC_APP_FILE_ID", appFile.getId());
             if ("SOURCE".equalsIgnoreCase(fileType)) {
                 sourcePath = prodSourcePath.get(0) + filePath;
                 targetPath = prodBackupPath + "source\\";
@@ -261,8 +264,12 @@ public class JCS1600 extends AbstractBasePage {
                 targetPath = prodBackupPath + "execution\\";
             }
             try {
+                params.put("TARGET_PATH", targetPath);
+                params.put("PATH_TYPE", PathType.PROD_BACKUP.ordinal());
                 if (SmbFileUtil.exist(sourcePath, fileName)) {
                     SmbFileUtil.copyFile(sourcePath, targetPath, new String[] { fileName });
+                    params.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+                    fileMoveDetailDao.create(params);
                 }
             } catch (FileSystemException e) {
                 e.printStackTrace();
@@ -277,6 +284,8 @@ public class JCS1600 extends AbstractBasePage {
                     throw new RuntimeException("Rollback backup folder error. There should be a folder named with _"
                             + tempId + ", please rename back manually.", e1);
                 }
+                params.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
+                fileMoveDetailDao.create(params);
                 throw new RuntimeException("Backup file error. " + fileName, e);
             }
         }
@@ -323,8 +332,6 @@ public class JCS1600 extends AbstractBasePage {
         }
 
         // 複製 QA source/execution 到 PROD
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("JC_FUNCTION_LOG_ID", fLogId);
         for (Map<String, String> file : fileList) {
             String filePath = file.get("filePath");
             String fileName = file.get("fileName");
@@ -339,9 +346,11 @@ public class JCS1600 extends AbstractBasePage {
                 if ("SOURCE".equalsIgnoreCase(fileType)) {
                     qaPath = qaSourcePath;
                     prodPaths = prodSourcePath;
+                    params.put("PATH_TYPE", PathType.PROD_SOURCE.ordinal());
                 } else {
                     qaPath = qaExecutionPath;
                     prodPaths = prodExecutionPath;
+                    params.put("PATH_TYPE", PathType.PROD_EXECUTION.ordinal());
                 }
                 for (String prodPath : prodPaths) {
                     params.put("TARGET_PATH", prodPath);
