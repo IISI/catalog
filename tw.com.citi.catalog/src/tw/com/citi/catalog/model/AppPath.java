@@ -9,7 +9,7 @@ import tw.com.citi.catalog.mapper.AppPathMapper;
 public class AppPath implements IModel<Long> {
 
     public enum PathType {
-        QA_SOURCE, QA_EXECUTION, PROD_BACKUP, PROD_SOURCE, PROD_EXECUTION, APP_BASE
+        QA_SOURCE, QA_EXECUTION, PROD_BACKUP, PROD_SOURCE, PROD_EXECUTION, APP_BASE, PVCS
     }
 
     private Long id;

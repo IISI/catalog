@@ -24,7 +24,6 @@ import tw.com.citi.catalog.dao.IScrFileDao;
 import tw.com.citi.catalog.dto.ScrFileDto;
 import tw.com.citi.catalog.model.App;
 import tw.com.citi.catalog.model.AppFile;
-import tw.com.citi.catalog.model.AppPath;
 import tw.com.citi.catalog.model.AppPath.PathType;
 import tw.com.citi.catalog.model.BuildUnit;
 import tw.com.citi.catalog.model.FileStatus;
@@ -34,9 +33,9 @@ import tw.com.citi.catalog.model.RegisterHistory;
 import tw.com.citi.catalog.model.Scr;
 import tw.com.citi.catalog.model.Scr.Status;
 import tw.com.citi.catalog.model.ScrFile;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.F.Func;
-import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.IPvcsCmd;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 import tw.com.citi.catalog.web.util.impl.PvcsCmd;
@@ -128,15 +127,20 @@ public class JCS1600 extends AbstractBasePage {
     private String pvcsCheckIn(Map dataMap) {
         String sScrId = (String) dataMap.get("scrId");
         String files = (String) dataMap.get("files");
+        String fLogId = (String) dataMap.get("functionLogId");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
+        Map<String, Object> moveDetail = new HashMap<String, Object>();
+        moveDetail.put("JC_FUNCTION_LOG_ID", fLogId);
         // -----------------------------------calculate pvcs action /add/put/del
         boolean isAddFiles = false;
         boolean isPutFiles = false;
         boolean isDelFiles = false;
-        List<String> delFileNameList = new ArrayList<String>();
+        List<String[]> addFileNameList = new ArrayList<String[]>();
+        List<String[]> putFileNameList = new ArrayList<String[]>();
+        List<String[]> delFileNameList = new ArrayList<String[]>();
         for (Map<String, String> file : fileList) {
             String scrFileId = file.get("id");
             String sqlCode = "select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId and file_type=0";
@@ -154,19 +158,21 @@ public class JCS1600 extends AbstractBasePage {
             if (registerHistoryList.size() > 0) {
                 RegisterHistory registerHistory = registerHistoryList.get(registerHistoryList.size() - 1);
                 int registerAction = registerHistory.getRegisterAction();
+                String filePath = file.get("filePath");
+                String fileName = file.get("fileName");
                 if (registerAction == 0) {
                     // 新增
                     isAddFiles = true;
+                    addFileNameList.add(new String[] { filePath, fileName });
                 } else if (registerAction == 1) {
                     // 修改
                     isPutFiles = true;
+                    putFileNameList.add(new String[] { filePath, fileName });
                 } else if (registerAction == 2) {
                     // 刪除
                     isDelFiles = true;
-                    String delFilePath = file.get("filePath");
-                    String delFileName = file.get("fileName");
-                    logger.debug("DEL: " + delFilePath + delFileName);
-                    delFileNameList.add(delFilePath + delFileName);
+                    logger.debug("DEL: " + filePath + fileName);
+                    delFileNameList.add(new String[] { filePath, fileName });
                 }
                 logger.debug("id=" + scrFileId + ", action=" + registerAction);
             }
@@ -190,13 +196,25 @@ public class JCS1600 extends AbstractBasePage {
         App appTmp = appDao.findById(scr.getJcAppId());
         String prjDb = appTmp.getPvcsProjDb();
         String prjPath = appTmp.getPvcsProjPath();
-        AppPath appPath = appPathDao.findByScrId(Long.parseLong(sId), PathType.APP_BASE).get(0);
-        String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat(
-                "RD\\") : appPath.getPath().concat("\\RD\\");
+        String label = scrTmp.getScrNo() + scrTmp.getRegisterCount();
+        boolean error = false;
+        moveDetail.put("PATH_TYPE", PathType.PVCS.ordinal());
         if (isAddFiles) {
             // 新增
-            int[] rc = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In", "Check In", rdPath);
-            logger.debug("pvcs check in done!");
+            for (String[] fileInfo : addFileNameList) {
+                AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), fileInfo[0], fileInfo[1]);
+                moveDetail.put("TARGET_PATH", fileInfo[0]);
+                moveDetail.put("JC_APP_FILE_ID", appFile.getId());
+                int rc = pvcsCmd.addFile(prjDb, prjPath + fileInfo[0], pvcsId, pvcsPwd, label, "Check In", fileInfo[1]);
+                if (rc == 0) {
+                    moveDetail.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+                } else {
+                    moveDetail.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
+                    error = true;
+                }
+                fileMoveDetailDao.create(moveDetail);
+            }
+            logger.debug("pvcs add done!");
         }
 
         if (isPutFiles) {
@@ -204,20 +222,45 @@ public class JCS1600 extends AbstractBasePage {
             SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
             Date date = new Date();
             String strDate = sdFormat.format(date);
-            int[] rc = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, "Check In at " + strDate, "Check In at "
-                    + strDate, "RD/*");
-            logger.debug("pvcs recheck in done!");
+            for (String[] fileInfo : putFileNameList) {
+                AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), fileInfo[0], fileInfo[1]);
+                moveDetail.put("TARGET_PATH", fileInfo[0]);
+                moveDetail.put("JC_APP_FILE_ID", appFile.getId());
+                int rc = pvcsCmd.putFile(prjDb, prjPath + fileInfo[0], pvcsId, pvcsPwd, label,
+                        "Check In at " + strDate, fileInfo[1]);
+                if (rc == 0) {
+                    moveDetail.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+                } else {
+                    moveDetail.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
+                    error = true;
+                }
+                fileMoveDetailDao.create(moveDetail);
+            }
+            logger.debug("pvcs put done!");
         }
 
         if (isDelFiles) {
             // 有檔案要刪除
             logger.debug("pvcs del start!");
-            String[] delFileArr = new String[delFileNameList.size()];
-            delFileArr = delFileNameList.toArray(delFileArr);
-            int[] rc = pvcsCmd.deleteFiles(prjDb, prjPath, pvcsId, pvcsPwd, delFileArr);
+            for (String[] fileInfo : delFileNameList) {
+                AppFile appFile = appFileDao.findByUK(scr.getJcAppId(), fileInfo[0], fileInfo[1]);
+                moveDetail.put("TARGET_PATH", fileInfo[0]);
+                moveDetail.put("JC_APP_FILE_ID", appFile.getId());
+                int rc = pvcsCmd.deleteFile(prjDb, prjPath + fileInfo[0], pvcsId, pvcsPwd, fileInfo[1]);
+                if (rc == 0) {
+                    moveDetail.put("PROCESS_RESULT", ProcessResult.SUCCESS.ordinal());
+                } else {
+                    moveDetail.put("PROCESS_RESULT", ProcessResult.FAILURE.ordinal());
+                    error = true;
+                }
+                fileMoveDetailDao.create(moveDetail);
+            }
             logger.debug("pvcs del done!");
         }
-        return null;
+        Map<String, Object> results = new HashMap<String, Object>();
+        results.put("PVCS", error ? " Fail." : "OK.");
+        results.put("functionLogId", fLogId);
+        return gson.toJson(results);
     }
 
     private String move(Map dataMap) {
