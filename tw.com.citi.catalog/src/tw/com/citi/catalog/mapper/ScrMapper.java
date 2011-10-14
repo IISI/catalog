@@ -14,14 +14,14 @@ public class ScrMapper implements RowMapper<Scr> {
     public Scr mapRow(ResultSet rs, int rowNum) throws SQLException {
         Scr scr = new Scr();
         scr.setId(rs.getLong("ID"));
-        scr.setScrNo(rs.getNString("SCR_NO"));
+        scr.setScrNo(rs.getString("SCR_NO"));
         scr.setJcAppId(rs.getLong("JC_APP_ID"));
         scr.setCreateTime(rs.getTimestamp("CREATE_TIME"));
         scr.setStatus(Status.values()[rs.getInt("STATUS")]);
         scr.setProcessTime(rs.getTimestamp("PROCESS_TIME"));
         scr.setJcCoordinatorId(rs.getLong("JC_COORDINATOR_ID"));
         scr.setJcProgrammerId(rs.getLong("JC_PROGRAMMER_ID"));
-        scr.setDescription(rs.getNString("DESCRIPTION"));
+        scr.setDescription(rs.getString("DESCRIPTION"));
         scr.setRegisterCount(rs.getLong("REGISTER_COUNT"));
         scr.setDeleted(rs.getBoolean("DELETED"));
         return scr;
