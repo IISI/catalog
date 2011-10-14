@@ -36,6 +36,7 @@ import tw.com.citi.catalog.model.Scr.Status;
 import tw.com.citi.catalog.model.ScrFile;
 import tw.com.citi.catalog.web.util.F;
 import tw.com.citi.catalog.web.util.F.Func;
+import tw.com.citi.catalog.web.util.AccessControlUtil;
 import tw.com.citi.catalog.web.util.IPvcsCmd;
 import tw.com.citi.catalog.web.util.SmbFileUtil;
 import tw.com.citi.catalog.web.util.impl.PvcsCmd;
@@ -81,6 +82,10 @@ public class JCS1600 extends AbstractBasePage {
         if ("Init".equals(actionName)) {
             result = init(dataMap);
         } else if ("Move".equals(actionName)) {
+            boolean authenticated = AccessControlUtil.authenticateCBCUser(dataMap);
+            if (!authenticated) {
+                throw new RuntimeException("ID/Password is invalid.");
+            }
             result = move(dataMap);
         } else if ("Query".equals(actionName)) {
             result = query(dataMap);
