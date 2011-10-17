@@ -2,9 +2,12 @@ package tw.com.citi.catalog.model;
 
 import java.sql.Timestamp;
 
+import tw.com.citi.catalog.annotation.Mapper;
 import tw.com.citi.catalog.annotation.Table;
+import tw.com.citi.catalog.mapper.RegisterHistoryMapper;
 
 @Table("JC_REGISTER_HISTORY")
+@Mapper(RegisterHistoryMapper.class)
 public class RegisterHistory implements IModel<Long> {
 
     private long id;
