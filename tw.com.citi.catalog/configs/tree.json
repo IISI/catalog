@@ -7,6 +7,12 @@
 				'text' : '維護作業',
 				'icon' : '',
 				'nodes' : [
+                    {   
+                        'id' : 'JCS5000',
+                        'text' : 'JCS5000 Folder Access Information Config',
+                        'icon' : '',
+                        'url' : 'http://localhost:8088/catalog/app/JCS5000'
+                    },
 					{	
 						'id' : 'JCS5100',
 						'text' : 'JCS5100 Application Maintain',

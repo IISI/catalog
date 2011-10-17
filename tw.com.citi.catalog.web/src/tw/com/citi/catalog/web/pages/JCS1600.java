@@ -306,10 +306,10 @@ public class JCS1600 extends AbstractBasePage {
             params.put("JC_APP_FILE_ID", appFile.getId());
             if ("SOURCE".equalsIgnoreCase(fileType)) {
                 sourcePath = prodSourcePath.get(0) + filePath;
-                targetPath = prodBackupPath + "source\\";
+                targetPath = prodBackupPath + "source\\" + filePath;
             } else {
                 sourcePath = prodExecutionPath.get(0) + filePath;
-                targetPath = prodBackupPath + "execution\\";
+                targetPath = prodBackupPath + "execution\\" + filePath;
             }
             try {
                 params.put("TARGET_PATH", targetPath);

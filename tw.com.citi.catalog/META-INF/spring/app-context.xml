@@ -102,4 +102,8 @@
         <property name="dataSource" ref="dataSourceProxy"></property>
     </bean>
 
+    <bean id="paramsDao" class="tw.com.citi.catalog.dao.ParamsDao">
+        <property name="dataSource" ref="dataSourceProxy"></property>
+    </bean>
+
 </beans>

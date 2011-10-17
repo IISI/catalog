@@ -30,6 +30,8 @@
 
     <osgi:reference id="userDao" interface="tw.com.citi.catalog.dao.IUserDao"></osgi:reference>
 
+    <osgi:reference id="paramsDao" interface="tw.com.citi.catalog.dao.IParamsDao"></osgi:reference>
+
     <osgi:reference id="txManager" interface="org.springframework.transaction.PlatformTransactionManager"></osgi:reference>
 
     <bean id="rpt1100" class="tw.com.citi.catalog.web.report.Rpt1100">

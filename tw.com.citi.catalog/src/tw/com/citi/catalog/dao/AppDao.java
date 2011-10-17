@@ -4,12 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
-
 import tw.com.citi.catalog.model.App;
-import tw.com.citi.catalog.model.AppFile;
-import tw.com.citi.catalog.model.AppPath;
 
 public class AppDao extends AbstractGenericDao<App, Long> implements IAppDao {
 
@@ -39,21 +34,19 @@ public class AppDao extends AbstractGenericDao<App, Long> implements IAppDao {
         }
     }
 
-	@Override
-	public App findByAppId(String appId) {
-		// TODO Auto-generated method stub
-		RowMapper<App> rowMapper = ParameterizedBeanPropertyRowMapper.newInstance(App.class);
-		Map<String, Object> args = new HashMap<String, Object>();
+    @Override
+    public App findByAppId(String appId) {
+        Map<String, Object> args = new HashMap<String, Object>();
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM JC_APP WHERE APP_ID=:appId");
         args.put("appId", appId);
-		List<App> results = jdbcTemplate.query(sql.toString(), getRowMapper(), args);
-		if(results.size()>0){
-			return results.get(0);
-		}else{
-			return null;
-		}
-		
-	}
+        List<App> results = jdbcTemplate.query(sql.toString(), getRowMapper(), args);
+        if (results.size() > 0) {
+            return results.get(0);
+        } else {
+            return null;
+        }
+
+    }
 
 }
