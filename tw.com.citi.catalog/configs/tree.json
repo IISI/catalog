@@ -7,29 +7,35 @@
 				'text' : '維護作業',
 				'icon' : '',
 				'nodes' : [
+                    {   
+                        'id' : 'JCS5000',
+                        'text' : 'JCS5000 Folder Access Information Config',
+                        'icon' : '',
+                        'url' : 'http://localhost:8080/catalog/app/JCS5000'
+                    },
 					{	
 						'id' : 'JCS5100',
 						'text' : 'JCS5100 Application Maintain',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS5100'
+						'url' : 'http://localhost:8080/catalog/app/JCS5100'
 					},
 					{
 						'id' : 'JCS5300',
 						'text' : 'JCS5300 Programmer Maintain',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS5300'
+						'url' : 'http://localhost:8080/catalog/app/JCS5300'
 					},
 					{
 						'id' : 'JCS5400',
 						'text' : 'JCS5400 Coordinator Maintain',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS5400'
+						'url' : 'http://localhost:8080/catalog/app/JCS5400'
 					},
 					{
 						'id' : 'JCS1000',
 						'text' : 'JCS1000 SCR Maintain',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1000'
+						'url' : 'http://localhost:8080/catalog/app/JCS1000'
 					}
 				]
 			},
@@ -41,55 +47,55 @@
 						'id' : 'JCS1100',
 						'text' : 'JCS1100 Register',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1100'
+						'url' : 'http://localhost:8080/catalog/app/JCS1100'
 					},
 					{
 						'id' : 'JCS1200',
 						'text' : 'JCS1200 Move File from RD to QA',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1200'
+						'url' : 'http://localhost:8080/catalog/app/JCS1200'
 					},
 					{
 						'id' : 'JCS1300',
 						'text' : 'JCS1300 Compile',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1300'
+						'url' : 'http://localhost:8080/catalog/app/JCS1300'
 					},
 					{
 						'id' : 'JCS1400',
 						'text' : 'JCS1400 Last Compile Date Time',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1400'
+						'url' : 'http://localhost:8080/catalog/app/JCS1400'
 					},
 					{
 						'id' : 'JCS1500',
 						'text' : 'JCS1500 Source Compare',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1500'
+						'url' : 'http://localhost:8080/catalog/app/JCS1500'
 					},
 					{
 						'id' : 'JCS1600',
 						'text' : 'JCS1600 Move File from QA to PROD',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1600'
+						'url' : 'http://localhost:8080/catalog/app/JCS1600'
 					},
 					{
 						'id' : 'JCS1700',
 						'text' : 'JCS1700 Rollback Last PROD Change',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1700'
+						'url' : 'http://localhost:8080/catalog/app/JCS1700'
 					},
 					{
 						'id' : 'JCS1800',
 						'text' : 'JCS1800 Checkout Files from PVCS',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS1800'
+						'url' : 'http://localhost:8080/catalog/app/JCS1800'
 					},
 					{
 						'id' : 'JCS4300',
 						'text' : 'JCS4300 Reprint Log',
 						'icon' : '',
-						'url' : 'http://localhost:8088/catalog/app/JCS4300'
+						'url' : 'http://localhost:8080/catalog/app/JCS4300'
 					}
 				]
 			}

@@ -22,11 +22,18 @@ public interface IAppPathDao extends IGenericDao<AppPath, Long> {
     List<AppPath> findByAppId(Long appId);
 
     void delete(List<AppPath> appPaths);
-    
+
     AppPath findUnique(String path);
-    
+
     Map<PathType, Object> getAppPathsByAppId(Long appId);
 
     List<AppPath> findByAppName(String appName, AppPath.PathType pathType);
+
+    /**
+     * 取得 AppPath 的最後一筆資料，用以檢核 JCS5000 的資料是否正確。
+     * 
+     * @return
+     */
+    AppPath findLastestPath();
 
 }

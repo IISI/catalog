@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+<title>5300</title>
+</wicket:head>
+<wicket:extend>
+    <h1>5000 Folder Access Information Config</h1>
+    <table class="form">
+        <tr>
+            <td class="formLabel">
+                <label for="domain">Domain</label>
+            </td>
+            <td>
+                <input type="text" name="domain" id="domain" maxlength="64"/>
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="username">User Name</label>
+            </td>
+            <td>
+                <input type="text" name="username" id="username" maxlength="64" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="userpassword">User Password</label>
+            </td>
+            <td>
+                <input type="password" name="userpassword" id="userpassword" maxlength="64" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formLabel">
+                <label for="wins">WINS</label>
+            </td>
+            <td>
+                <input type="text" name="wins" id="wins" maxlength="20" />
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="button-bar">
+        <button id="verifyButton">Verify</button>
+        <button id="resetButton">Reset</button>
+    </div>
+    <script type="text/javascript">
+    <!--
+        $(function() {
+            var verifyButton = $('#verifyButton');
+            var resetButton = $('#resetButton');
+            var domain = $('#domain');
+            var username = $('#username');
+            var userpassword = $('#userpassword');
+            var wins = $('#wins');
+            
+            init();
+            
+            verifyButton.click(function() {
+                var payload = {};
+                payload.actionName = 'Verify';
+                payload.actionParams = JSON.stringify({
+                    domain: domain.val(),
+                    username: username.val(),
+                    userpassword: userpassword.val(),
+                    wins: wins.val()
+                });
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        dialog.html('Verify OK.').dialog('open');
+                        init();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                        init();
+                    }
+                });
+            });
+            
+            resetButton.click(function() {
+                init();
+            });
+            
+            var dialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Result',
+                buttons: {
+                    "Close": function(){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            var confirmDialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Confirm',
+                buttons: {
+                    'Yes' : function() {
+                        $(this).dialog("close");
+                        dualControl();
+                    },
+                    'Cancel' : function(){
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+            function init() {
+                var payload = {};
+                payload.actionName = 'Init';
+                $.ajax({
+                    url: __ajaxHandler,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: payload,
+                    success: function(data, textStatus, jqXHR) {
+                        domain.val(data.domain);
+                        username.val(data.username);
+                        wins.val(data.wins);
+                        userpassword.val('');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    }
+                });
+            }
+        });
+    //-->
+    </script>
+</wicket:extend>
+</html>

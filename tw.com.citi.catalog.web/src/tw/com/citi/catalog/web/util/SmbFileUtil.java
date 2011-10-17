@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.commons.vfs.FileFilter;
 import org.apache.commons.vfs.FileFilterSelector;
@@ -23,52 +22,39 @@ import org.apache.commons.vfs.provider.local.LocalFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.com.citi.catalog.conf.Settings;
+import tw.com.citi.catalog.conf.Jcifs;
 import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
 
 public class SmbFileUtil {
 
     static final Logger logger = LoggerFactory.getLogger(SmbFileUtil.class);
 
-    private static Settings settings;
     private static FileSystemManager fsManager;
     private static FileSystemOptions opts;
     private static final int BUFF_SIZE = 100000;
     private static final byte[] buffer = new byte[BUFF_SIZE];
-    private static boolean init = false;
 
-    static {
+    public static void init() {
         try {
-            settings = new Settings();
-            String functionalId = settings.getJcifs().getFunctionalId();
-            StringTokenizer st = new StringTokenizer(functionalId, ";");
-            String domain = null;
-            String id = "";
-            if (st.countTokens() == 2) {
-                // 代表有domain
-                domain = st.nextToken();
-                id = st.nextToken();
-            } else {
-                id = st.nextToken();
-            }
-            StaticUserAuthenticator auth = new StaticUserAuthenticator(domain, id, getPassword(settings.getJcifs()
-                    .getFunctionalPwd()));
+            String username = Jcifs.getUsername();
+            String domain = Jcifs.getDomain();
+            StaticUserAuthenticator auth = new StaticUserAuthenticator(domain, username, Jcifs.getUserpassword());
             opts = new FileSystemOptions();
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
             fsManager = new OSGiFileSystemManager();
             ((OSGiFileSystemManager) fsManager).init();
-            if (!"".equalsIgnoreCase(settings.getJcifs().getJcifsNetbiosWins())) {
-                jcifs.Config.setProperty("jcifs.netbios.wins", settings.getJcifs().getJcifsNetbiosWins());
+            if (!"".equalsIgnoreCase(Jcifs.getJcifsNetbiosWins())) {
+                jcifs.Config.setProperty("jcifs.netbios.wins", Jcifs.getJcifsNetbiosWins());
             }
-            init = true;
         } catch (Exception e) {
             e.printStackTrace();
             throw new SecurityException("Load folder settings error.", e);
         }
     }
 
-    private static String getPassword(String password) throws Exception {
-        return PasswordUtil.decodePwd(password);
+    public static List<FileObject> getFiles(String sourceFolder) throws FileSystemException {
+        FileObject source = fsManager.resolveFile("smb:" + replaceSlash(sourceFolder), opts);
+        return getFiles(source);
     }
 
     private static List<FileObject> getFiles(FileObject source) throws FileSystemException {
@@ -535,6 +521,11 @@ public class SmbFileUtil {
         return tf;
     }
 
+    public static boolean accessCheck(String filePath) throws FileSystemException {
+        FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
+        return folder.isWriteable();
+    }
+
     public static void renameTo(String oldPath, String oldName, String newPath, String newName)
             throws FileSystemException {
         if (oldName == null) {
@@ -554,13 +545,5 @@ public class SmbFileUtil {
 
     private static String replaceSlash(String path) {
         return path.replace("\\", "/");
-    }
-
-    public static void setInit(boolean init) {
-        SmbFileUtil.init = init;
-    }
-
-    public static boolean isInit() {
-        return init;
     }
 }

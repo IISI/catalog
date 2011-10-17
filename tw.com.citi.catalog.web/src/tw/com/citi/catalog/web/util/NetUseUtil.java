@@ -9,11 +9,10 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.com.citi.catalog.conf.Settings;
+import tw.com.citi.catalog.conf.Jcifs;
 
 public class NetUseUtil {
     private static Logger logger = LoggerFactory.getLogger(NetUseUtil.class);
-    private static Settings settings = new Settings();
 
     public static String mappingLocalPath(String netPath) {
         String localPath = "";
@@ -82,11 +81,10 @@ public class NetUseUtil {
         try {
             StringBuffer command = new StringBuffer();
             command.append("net use ").append(getFreeDriveLetter()).append(": ").append(netPath).append(" /user:");
-            if (!"".equals(settings.getJcifs().getDomain())) {
-                command.append(settings.getJcifs().getDomain()).append("\\");
+            if (!"".equals(Jcifs.getDomain())) {
+                command.append(Jcifs.getDomain()).append("\\");
             }
-            command.append(settings.getJcifs().getIdWithoutDomain()).append(" ")
-                    .append(PasswordUtil.decodePwd(settings.getJcifs().getFunctionalPwd()));
+            command.append(Jcifs.getUsername()).append(" ").append(Jcifs.getUserpassword());
             String[] cmd = new String[] { "cmd", "/C", command.toString() };
             process = Runtime.getRuntime().exec(cmd);
             bf = new BufferedReader(new InputStreamReader(process.getInputStream()));

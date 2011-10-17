@@ -73,9 +73,9 @@ public class AppPathDao extends AbstractGenericDao<AppPath, Long> implements IAp
         List<String> prodSourcePaths = new ArrayList<String>();
         List<String> prodExecutionPaths = new ArrayList<String>();
         for (AppPath appPath : appPaths) {
-            if(PathType.PROD_SOURCE == appPath.getPathType()) {
+            if (PathType.PROD_SOURCE == appPath.getPathType()) {
                 prodSourcePaths.add(appPath.getPath());
-            } else if(PathType.PROD_EXECUTION == appPath.getPathType()) {
+            } else if (PathType.PROD_EXECUTION == appPath.getPathType()) {
                 prodExecutionPaths.add(appPath.getPath());
             } else {
                 results.put(appPath.getPathType(), appPath.getPath());
@@ -92,6 +92,18 @@ public class AppPathDao extends AbstractGenericDao<AppPath, Long> implements IAp
         sql.append("SELECT * FROM ").append(getTableName());
         sql.append(" WHERE jc_app_id = (SELECT id FROM JC_APP WHERE app_id = ?) AND path_type = ?");
         return jdbcTemplate.query(sql.toString(), getRowMapper(), appName, pathType.ordinal());
+    }
+
+    @Override
+    public AppPath findLastestPath() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT TOP 1 * FROM ").append(getTableName()).append(" ORDER BY ID DESC");
+        List<AppPath> appPaths = jdbcTemplate.query(sql.toString(), getRowMapper());
+        if (appPaths != null) {
+            return appPaths.get(0);
+        } else {
+            return null;
+        }
     }
 
 }
