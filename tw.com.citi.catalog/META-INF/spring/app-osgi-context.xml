@@ -46,5 +46,7 @@
     <service ref="scrFileDao" interface="tw.com.citi.catalog.dao.IScrFileDao"></service>
 
     <service ref="userDao" interface="tw.com.citi.catalog.dao.IUserDao"></service>
+    
+    <service ref="paramsDao" interface="tw.com.citi.catalog.dao.IParamsDao"></service>
 
 </beans:beans>
