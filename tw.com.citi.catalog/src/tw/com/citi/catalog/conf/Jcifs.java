@@ -27,6 +27,13 @@ public class Jcifs {
     }
 
     public static String getUserpassword() {
+        if (userpassword == null || "".equals(userpassword.trim())) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
+        return userpassword;
+    }
+
+    public static String getUserpasswordWithoutCheck() {
         return userpassword;
     }
 

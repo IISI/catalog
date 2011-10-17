@@ -77,7 +77,7 @@ public class JCS5000 extends AbstractBasePage {
         String wins = (String) dataMap.get("wins");
         String oldDomain = Jcifs.getDomain();
         String oldUsername = Jcifs.getUsername();
-        String oldUserpassword = Jcifs.getUserpassword();
+        String oldUserpassword = Jcifs.getUserpasswordWithoutCheck();
         String oldWins = Jcifs.getJcifsNetbiosWins();
 
         AppPath appPath = appPathDao.findLastestPath();

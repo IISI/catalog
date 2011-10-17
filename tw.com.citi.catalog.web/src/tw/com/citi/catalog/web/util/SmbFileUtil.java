@@ -28,7 +28,7 @@ import tw.com.citi.catalog.web.vfs.OSGiFileSystemManager;
 public class SmbFileUtil {
 
     static final Logger logger = LoggerFactory.getLogger(SmbFileUtil.class);
-
+    private static boolean init = false;
     private static FileSystemManager fsManager;
     private static FileSystemOptions opts;
     private static final int BUFF_SIZE = 100000;
@@ -46,6 +46,7 @@ public class SmbFileUtil {
             if (!"".equalsIgnoreCase(Jcifs.getJcifsNetbiosWins())) {
                 jcifs.Config.setProperty("jcifs.netbios.wins", Jcifs.getJcifsNetbiosWins());
             }
+            init = true;
         } catch (Exception e) {
             e.printStackTrace();
             throw new SecurityException("Load folder settings error.", e);
@@ -53,6 +54,9 @@ public class SmbFileUtil {
     }
 
     public static List<FileObject> getFiles(String sourceFolder) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject source = fsManager.resolveFile("smb:" + replaceSlash(sourceFolder), opts);
         return getFiles(source);
     }
@@ -71,6 +75,9 @@ public class SmbFileUtil {
     }
 
     public static void copyFolder(String sourceFolder, String targetFolder) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject source = fsManager.resolveFile("smb:" + replaceSlash(sourceFolder), opts);
         List<FileObject> files = new ArrayList<FileObject>();
         FileObject[] objects = source.getChildren();
@@ -179,6 +186,9 @@ public class SmbFileUtil {
 
     public static void copyFile(String sourceFolder, String targetFolder, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         if (sourceFolder == null) {
             throw new IllegalArgumentException("input source folder is invalid.");
         }
@@ -197,6 +207,9 @@ public class SmbFileUtil {
 
     public static void copyLocalToSmb(String sourceFolder, String targetFolder, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         if (sourceFolder == null) {
             throw new IllegalArgumentException("input source folder is invalid.");
         }
@@ -297,6 +310,9 @@ public class SmbFileUtil {
 
     public static void copySmbToLocal(String sourceFolder, String targetFolder, String prefix, String suffix,
             String[] sourceFileNames) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         if (sourceFolder == null) {
             throw new IllegalArgumentException("input source folder is invalid.");
         }
@@ -399,6 +415,9 @@ public class SmbFileUtil {
     }
 
     public static void uploadFile(InputStream in, String path, String fileName) throws IOException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         FileObject file = fsManager.resolveFile(folder, fileName);
         file.createFile();
@@ -425,6 +444,9 @@ public class SmbFileUtil {
     }
 
     public static boolean exist(String path, String fileName) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         boolean tf = false;
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         if (fileName != null) {
@@ -443,6 +465,9 @@ public class SmbFileUtil {
      * @throws FileSystemException
      */
     public static void createFolder(String filePath) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         folder.createFolder();
     }
@@ -455,6 +480,9 @@ public class SmbFileUtil {
      * @throws FileSystemException
      */
     public static void createFile(String path, String fileName) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         FileObject file = fsManager.resolveFile(folder, fileName);
         if (exist(path, fileName)) {
@@ -464,6 +492,9 @@ public class SmbFileUtil {
     }
 
     public static void deleteFile(String path, String fileName) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(path), opts);
         if (fileName == null) {
             if (exist(path, null)) {
@@ -478,12 +509,18 @@ public class SmbFileUtil {
     }
 
     public static FileObject getFile(String filePath, String fileName) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         FileObject file = fsManager.resolveFile(folder, fileName);
         return file;
     }
 
     public static List<FileObject> listBatchFiles(String filePath) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         List<FileObject> files = new ArrayList<FileObject>();
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         FileObject[] allFiles = folder.getChildren();
@@ -498,6 +535,9 @@ public class SmbFileUtil {
     }
 
     public static List<FileObject> listFiles(String filePath) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         return Arrays.asList(folder.getChildren());
     }
@@ -510,6 +550,9 @@ public class SmbFileUtil {
      * @return 是否有權限寫入
      */
     public static boolean writeable(String filePath) {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         boolean tf = true;
         try {
             FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
@@ -522,12 +565,18 @@ public class SmbFileUtil {
     }
 
     public static boolean accessCheck(String filePath) throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(filePath), opts);
         return folder.isWriteable();
     }
 
     public static void renameTo(String oldPath, String oldName, String newPath, String newName)
             throws FileSystemException {
+        if (!init) {
+            throw new RuntimeException("Please config Folder Access Information in JCS5000.");
+        }
         if (oldName == null) {
             FileObject sourceFolder = fsManager.resolveFile("smb:" + replaceSlash(oldPath), opts);
             FileObject folder = fsManager.resolveFile("smb:" + replaceSlash(newPath), opts);
