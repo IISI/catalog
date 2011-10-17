@@ -143,7 +143,8 @@ public class JCS1600 extends AbstractBasePage {
         List<String[]> delFileNameList = new ArrayList<String[]>();
         for (Map<String, String> file : fileList) {
             String scrFileId = file.get("id");
-            String sqlCode = "select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId and file_type=0";
+            String sqlCode = "select * from JC_REGISTER_HISTORY where jc_scr_id= :scrId and jc_scr_file_id= :scrFileId and file_type=0 and register_count="
+                    + scr.getRegisterCount();
             Map<String, String> params = new HashMap<String, String>();
             params.put("scrId", sScrId);
             params.put("scrFileId", scrFileId);
@@ -152,8 +153,7 @@ public class JCS1600 extends AbstractBasePage {
             // String fileType=file.get("fileType");
             // /String fileStatus=file.get("fileStatus");
             // logger.debug("id="+fileId+", path="+filePath+", name="+fileName+", fileType="+fileType+",fileStatus="+fileStatus);
-            List<RegisterHistory> registerHistoryList = registerHistoryDao
-                    .query(sqlCode, RegisterHistory.class, params);
+            List<RegisterHistory> registerHistoryList = registerHistoryDao.query(sqlCode, params);
 
             if (registerHistoryList.size() > 0) {
                 RegisterHistory registerHistory = registerHistoryList.get(registerHistoryList.size() - 1);

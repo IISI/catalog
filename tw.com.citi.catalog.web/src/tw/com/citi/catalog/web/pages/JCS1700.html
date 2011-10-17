@@ -62,8 +62,8 @@
             var prodSourcePath = $('#prodSourcePath');
             var prodExecutionPath = $('#prodExecutionPath');
 
-            var checkerId = $('#checkerId');
-            var checkerPwd = $('#checkerPwd');
+            var checkerId = $('#checkId');
+            var checkerPwd = $('#checkPwd');
             var actionText;
             
             loadInitData();
@@ -124,8 +124,7 @@
                                     id: file.id,
                                     fileName: file.fileName,
                                     filePath: file.filePath,
-                                    fileType: file.fileType,
-                                    fileStatus: file.fileStatus ? file.fileStatus : 'UNKNOWN'
+                                    fileType: file.fileType == 0 ? 'SOURCE' : 'EXECUTION'
                                 };
                                 fileList.addRowData(file.id, scrFile);
                             }
@@ -144,13 +143,12 @@
                 autowidth: true,
                 mtype: 'POST',
                 width: $(window).width(),
-                colNames: ['Id', 'Path', 'Name', 'Type', 'Status'],
+                colNames: ['Id', 'Path', 'Name', 'Type'],
                 colModel: [
                     {name: 'id', index: 'id', hidden: true},
                     {name: 'filePath', index: 'filePath', align: 'left', sortable: true},
                     {name: 'fileName', index: 'fileName', align: 'left', sortable: true},
-                    {name: 'fileType', index: 'fileType', align: 'left', sortable: true},
-                    {name: 'fileStatus', index: 'fileStatus', align: 'left', sortable: false}
+                    {name: 'fileType', index: 'fileType', align: 'left', sortable: true}
                 ],
                 pager: '#pager',
                 pgbuttons: false,
