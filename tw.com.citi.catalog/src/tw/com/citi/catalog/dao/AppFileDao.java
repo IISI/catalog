@@ -4,13 +4,16 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
 
 import tw.com.citi.catalog.model.AppFile;
+import tw.com.citi.catalog.model.AppPath;
 
 public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAppFileDao {
 
@@ -100,8 +103,27 @@ public class AppFileDao extends AbstractGenericDao<AppFile, Long> implements IAp
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT AF.FILE_NAME fileName, AF.FILE_PATH filePath, AF.FILE_SIZE fileSize, AF.FILE_DATETIME fileDate, AF.FILE_MD5 hash, CASE AF.FILE_TYPE WHEN 0 THEN 'SOURCE' ELSE 'EXECUTION' END fileType ");
         sql.append("FROM JC_FILE_MOVE_DETAIL FMD, JC_APP_FILE AF ");
-        sql.append("WHERE FMD.JC_FUNCTION_LOG_ID = ? AND FMD.JC_APP_FILE_ID = AF.ID");
-        return jdbcTemplate.queryForList(sql.toString(), functionLogId);
+        sql.append("WHERE FMD.JC_FUNCTION_LOG_ID = :functionLogId AND FMD.JC_APP_FILE_ID = AF.ID AND FMD.PATH_TYPE IN (:pathType)");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("functionLogId", functionLogId);
+        Set<AppPath.PathType> pathTypes = new HashSet<AppPath.PathType>();
+        Collections.addAll(pathTypes, AppPath.PathType.PROD_SOURCE, AppPath.PathType.PROD_EXECUTION);
+        params.put("pathType", pathTypes);
+        return jdbcTemplate.queryForList(sql.toString(), params);
+    }
+
+    @Override
+    public List<Map<String, Object>> find1600BReportData(long functionLogId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT AF.FILE_NAME fileName, AF.FILE_PATH filePath, AF.FILE_SIZE fileSize, AF.FILE_DATETIME fileDate, AF.FILE_MD5 hash, CASE AF.FILE_TYPE WHEN 0 THEN 'SOURCE' ELSE 'EXECUTION' END fileType ");
+        sql.append("FROM JC_FILE_MOVE_DETAIL FMD, JC_APP_FILE AF ");
+        sql.append("WHERE FMD.JC_FUNCTION_LOG_ID = :functionLogId AND FMD.JC_APP_FILE_ID = AF.ID AND FMD.PATH_TYPE IN (:pathType)");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("functionLogId", functionLogId);
+        Set<AppPath.PathType> pathTypes = new HashSet<AppPath.PathType>();
+        Collections.addAll(pathTypes, AppPath.PathType.PROD_BACKUP);
+        params.put("pathType", pathTypes);
+        return jdbcTemplate.queryForList(sql.toString(), params);
     }
 
     @Override

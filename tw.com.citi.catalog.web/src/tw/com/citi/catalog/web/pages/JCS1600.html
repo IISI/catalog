@@ -374,6 +374,13 @@
                         form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
                         form.submit();
                         form.remove();
+                        
+                        var form2 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form2.append('<input type="hidden" name="reportName" value="Rpt1600B" />');
+                        form2.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                        form2.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                        form2.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                        setTimeout(function () {form2.submit(); form2.remove();}, 500);
                         payload.actionName = 'CheckIn';
                         $.ajax({
                             url: __ajaxHandler,
