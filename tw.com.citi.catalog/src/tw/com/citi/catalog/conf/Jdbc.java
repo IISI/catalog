@@ -1,14 +1,10 @@
 package tw.com.citi.catalog.conf;
 
 public class Jdbc {
-
-    private String driverClassName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-
-    private String url = "jdbc:sqlserver://127.0.0.1:1433;databaseName=citi_catalog";
-    
-    private String username = "sa";
-
-    private String password = "passw0rd";
+    private String driverClassName;
+    private String url;
+    private String username;
+    private String password;
 
     public String getDriverClassName() {
         return driverClassName;

@@ -100,8 +100,8 @@
             var removeAllButton = $('#removeAllButton');
             var moveButton = $('#moveButton');
 
-            var checkerId = $('#checkerId');
-            var checkerPwd = $('#checkerPwd');
+            var checkerId = $('#checkId');
+            var checkerPwd = $('#checkPwd');
             var actionText;
             
             $('.move-button').find('button').css('width', '100%');
@@ -367,28 +367,35 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
-                        form.append('<input type="hidden" name="reportName" value="Rpt1600" />');
-                        form.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
-                        form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
-                        form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
-                        form.submit();
-                        form.remove();
-                        
-                        var form2 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
-                        form2.append('<input type="hidden" name="reportName" value="Rpt1600B" />');
-                        form2.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
-                        form2.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
-                        form2.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
-                        setTimeout(function () {form2.submit(); form2.remove();}, 500);
                         payload.actionName = 'CheckIn';
+                        payload.actionParams = JSON.stringify({
+                            scrId: scrNo.val(),
+                            files: JSON.stringify(files), 
+                            pvcsId: $("#pvcsId").val(),
+                            pvcsPwd: $("#pvcsPwd").val(),
+                            functionLogId: data.functionLogId
+                        });
                         $.ajax({
                             url: __ajaxHandler,
                             type: 'POST',
                             dataType: 'json',
                             data: payload,
                             success: function(data, textStatus, jqXHR) {
-                                dialog.html('PVCS Check In OK.').dialog('open');
+                                dialog.html('PVCS Check In ' + data.PVCS).dialog('open');
+                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form.append('<input type="hidden" name="reportName" value="Rpt1600" />');
+                                form.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                                form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                                form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                                form.submit();
+                                form.remove();
+                                
+                                var form2 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form2.append('<input type="hidden" name="reportName" value="Rpt1600B" />');
+                                form2.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                                form2.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                                form2.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                                setTimeout(function () {form2.submit(); form2.remove();}, 500);
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
                                 var resp = JSON.parse(jqXHR.responseText);

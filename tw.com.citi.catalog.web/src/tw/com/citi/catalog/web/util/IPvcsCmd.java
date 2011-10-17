@@ -30,24 +30,8 @@ public interface IPvcsCmd {
      * @param files
      * @return
      */
-    int[] addFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String[] files);
+    int addFile(String projectDatabase, String projectPath, String username, String password, String label, String description, String files);
 
-    /**
-     * 新增檔案至 PVCS。
-     * 
-     * pcli AddFiles -pr"${projectDatabase}" -id"${username}:${password}" -pp"${projectPath}" -c -m"${description}" -t"${description}" -v"${label}" ${files}
-     * 
-     * @param projectDatabase
-     * @param projectPath
-     * @param username
-     * @param password
-     * @param label
-     * @param description
-     * @param files
-     * @return
-     */
-    int[] addFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String path);
-    
     /**
      * 將先前被 check out 的檔案，check in 回 PVCS。
      * 
@@ -62,10 +46,7 @@ public interface IPvcsCmd {
      * @param files
      * @return
      */
-    int[] putFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String[] files);
-
-    int[] putFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String path);
-
+    int putFile(String projectDatabase, String projectPath, String username, String password, String label, String description, String files);
     
     /**
      * 刪除 PVCS 中的檔案。
@@ -76,10 +57,10 @@ public interface IPvcsCmd {
      * @param projectPath
      * @param username
      * @param password
-     * @param files
+     * @param file
      * @return
      */
-    int[] deleteFiles(String projectDatabase, String projectPath, String username, String password, String[] files);
+    int deleteFile(String projectDatabase, String projectPath, String username, String password, String file);
 
     /**
      * 把檔案從 PVCS 中 check out 出來。
