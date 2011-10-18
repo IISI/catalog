@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="RabbitHQ" id="tw.com.iisi.rabbithq.product" application="tw.com.iisi.rabbithq.application" version="1.0.0" useFeatures="true" includeLaunchers="true">
+<product name="RabbitHQ" id="tw.com.citi.catalog.product" application="tw.com.citi.catalog.application" version="1.0.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="product_lg.gif"/>
