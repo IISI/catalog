@@ -213,10 +213,10 @@ public class JCS1100 extends AbstractBasePage {
         
         List<AppPath> appPaths = appPathDao.findByScrId(scrId, PathType.APP_BASE);
         String basePath = appPaths.get(0).getPath();
-        String rdPath = basePath + "//RD";
+        String rdPath = basePath + "RD";
         result += zipCmd.unzip(zipFile, rdPath, zipPassword);
         
-        String sourcePath = basePath + "//Source//" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String sourcePath = basePath + "Source\\" + new SimpleDateFormat("yyyyMMdd").format(new Date());
         result += zipCmd.unzip(zipFile, sourcePath, zipPassword);
         
         Map<String, Object> results = new HashMap<String, Object>();
