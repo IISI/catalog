@@ -86,8 +86,24 @@ public class JCS5000 extends AbstractBasePage {
         Jcifs.setUserpassword(userpassword);
         Jcifs.setJcifsNetbiosWins(wins);
         SmbFileUtil.init();
+        boolean save = false;
+        String status = "";
         try {
-            if (SmbFileUtil.accessCheck(appPath.getPath())) {
+            if (appPath == null || SmbFileUtil.accessCheck(appPath.getPath())) {
+                save = true;
+                if(appPath == null) {
+                    status = "There is no path to verify. JCS only saves the information.";
+                } else {
+                    status = "Verify OK.";
+                }
+            } else {
+                Jcifs.setDomain(oldDomain);
+                Jcifs.setUsername(oldUsername);
+                Jcifs.setUserpassword(oldUserpassword);
+                Jcifs.setJcifsNetbiosWins(oldWins);
+                SmbFileUtil.init();
+            }
+            if (save) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("PKEY", "DOMAIN");
                 params.put("PVALUE", domain);
@@ -110,12 +126,6 @@ public class JCS5000 extends AbstractBasePage {
                 } else {
                     paramsDao.create(params);
                 }
-            } else {
-                Jcifs.setDomain(oldDomain);
-                Jcifs.setUsername(oldUsername);
-                Jcifs.setUserpassword(oldUserpassword);
-                Jcifs.setJcifsNetbiosWins(oldWins);
-                SmbFileUtil.init();
             }
         } catch (FileSystemException e) {
             e.printStackTrace();
@@ -126,6 +136,8 @@ public class JCS5000 extends AbstractBasePage {
                 throw new RuntimeException("Failed to check access.");
             }
         }
-        return null;
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("status", status);
+        return gson.toJson(data);
     }
 }

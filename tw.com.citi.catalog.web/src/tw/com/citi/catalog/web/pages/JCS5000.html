@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
 <wicket:head>
-<title>5300</title>
+<title>5000</title>
 </wicket:head>
 <wicket:extend>
     <h1>5000 Folder Access Information Config</h1>
@@ -72,7 +72,7 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        dialog.html('Verify OK.').dialog('open');
+                        dialog.html(data.status).dialog('open');
                         init();
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
