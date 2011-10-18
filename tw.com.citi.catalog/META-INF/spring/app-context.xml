@@ -47,11 +47,11 @@
     </bean>
 
     <bean id="userDao" class="tw.com.citi.catalog.dao.UserDao">
-        <property name="dataSource" ref="secDataSourceProxy"></property>
+        <property name="dataSource" ref="dataSourceProxy"></property>
     </bean>
 
     <bean id="appFunctionDao" class="tw.com.citi.catalog.dao.AppFunctionDao">
-        <property name="dataSource" ref="secDataSourceProxy"></property>
+        <property name="dataSource" ref="dataSourceProxy"></property>
     </bean>
 
     <bean id="coordinatorDao" class="tw.com.citi.catalog.dao.CoordinatorDao">
