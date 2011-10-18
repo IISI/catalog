@@ -32,4 +32,6 @@ public interface IAppFileDao extends IGenericDao<AppFile, Long> {
 
     List<Map<String, Object>> find1600BReportData(long functionLogId);
 
+    List<Map<String, Object>> find1600PReportData(long functionLogId);
+
 }

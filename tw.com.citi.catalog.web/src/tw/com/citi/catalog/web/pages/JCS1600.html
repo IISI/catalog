@@ -396,6 +396,13 @@
                                 form2.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
                                 form2.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
                                 setTimeout(function () {form2.submit(); form2.remove();}, 500);
+                                
+                                var form3 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                                form3.append('<input type="hidden" name="reportName" value="Rpt1600P" />');
+                                form3.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                                form3.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                                form3.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                                setTimeout(function () {form3.submit(); form3.remove();}, 500);
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
                                 var resp = JSON.parse(jqXHR.responseText);
