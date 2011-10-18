@@ -99,7 +99,7 @@ public class AppPathDao extends AbstractGenericDao<AppPath, Long> implements IAp
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT TOP 1 * FROM ").append(getTableName()).append(" ORDER BY ID DESC");
         List<AppPath> appPaths = jdbcTemplate.query(sql.toString(), getRowMapper());
-        if (appPaths != null) {
+        if (appPaths != null && appPaths.size() > 0) {
             return appPaths.get(0);
         } else {
             return null;
