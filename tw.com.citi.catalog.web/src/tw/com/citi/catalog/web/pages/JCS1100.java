@@ -215,14 +215,6 @@ public class JCS1100 extends AbstractBasePage {
         List<AppPath> appPaths = appPathDao.findByScrId(scrId, PathType.APP_BASE);
         String basePath = appPaths.get(0).getPath();
         try {
-            String rdPath = basePath + "RD";
-            SmbFileUtil.copyLocalToSmb(tempDir.getAbsolutePath(), rdPath, null);
-        } catch (FileSystemException e) {
-            e.printStackTrace();
-            logger.error("Failed to unzip file to RD path.", e);
-            result = -1;
-        }
-        try {
             String sourcePath = basePath + "Source\\" + new SimpleDateFormat("yyyyMMdd").format(new Date());
             SmbFileUtil.copyLocalToSmb(tempDir.getAbsolutePath(), sourcePath, null);
         } catch (FileSystemException e) {
