@@ -207,19 +207,30 @@ public class JCS1100 extends AbstractBasePage {
     }
 
     private String unzipFile(String zipFile, String zipPassword, long scrId) {
+        Map<String, Object> results = new HashMap<String, Object>();
         File tempDir = FileUtil.prepareTempDirectory();
         IZipCmd zipCmd = new ZipCmd();
         int result = zipCmd.unzip(zipFile, tempDir.getAbsolutePath(), zipPassword);
         
         List<AppPath> appPaths = appPathDao.findByScrId(scrId, PathType.APP_BASE);
         String basePath = appPaths.get(0).getPath();
-        String rdPath = basePath + "RD";
-        result += zipCmd.unzip(zipFile, rdPath, zipPassword);
+        try {
+            String rdPath = basePath + "RD";
+            SmbFileUtil.copyLocalToSmb(tempDir.getAbsolutePath(), rdPath, null);
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+            logger.error("Failed to unzip file to RD path.", e);
+            result = -1;
+        }
+        try {
+            String sourcePath = basePath + "Source\\" + new SimpleDateFormat("yyyyMMdd").format(new Date());
+            SmbFileUtil.copyLocalToSmb(tempDir.getAbsolutePath(), sourcePath, null);
+        } catch (FileSystemException e) {
+            e.printStackTrace();
+            logger.error("Failed to unzip file to Source path.", e);
+            result = -1;
+        }
         
-        String sourcePath = basePath + "Source\\" + new SimpleDateFormat("yyyyMMdd").format(new Date());
-        result += zipCmd.unzip(zipFile, sourcePath, zipPassword);
-        
-        Map<String, Object> results = new HashMap<String, Object>();
         if (result == 0) {
             results.put("success", true);
         } else {
