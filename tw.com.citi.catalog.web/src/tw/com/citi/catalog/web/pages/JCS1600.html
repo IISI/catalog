@@ -84,6 +84,15 @@
     <!--
         $(function() {
         	
+            var nextDialog = $('<div></div>').dialog({
+                autoOpen: false,
+                modal: true,
+                title: 'Request In Progress',
+                closeOnEscape: false,
+                open: function(event, ui) {
+                    $('.ui-dialog-titlebar-close').hide();
+                }
+            });
         	pvcsDialog = $('#pvcsDialog').dialog({autoOpen: false, modal: true});
         	
             var scrNo = $('#scrNo');
@@ -367,6 +376,7 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
+                        nextDialog.html('Please wait ......').dialog('open');
                         payload.actionName = 'CheckIn';
                         payload.actionParams = JSON.stringify({
                             scrId: scrNo.val(),
@@ -381,6 +391,7 @@
                             dataType: 'json',
                             data: payload,
                             success: function(data, textStatus, jqXHR) {
+                                nextDialog.dialog('close');
                                 dialog.html('PVCS Check In ' + data.PVCS).dialog('open');
                                 var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
                                 form.append('<input type="hidden" name="reportName" value="Rpt1600" />');
@@ -405,6 +416,7 @@
                                 setTimeout(function () {form3.submit(); form3.remove();}, 2000);
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
+                                nextDialog.dialog('close');
                                 var resp = JSON.parse(jqXHR.responseText);
                                 dialog.html(resp.message).dialog('open');
                             }
