@@ -1,5 +1,7 @@
 package tw.com.citi.catalog.web.util;
 
+import java.util.Map;
+
 public interface IPvcsCmd {
 
     /**
@@ -30,8 +32,24 @@ public interface IPvcsCmd {
      * @param files
      * @return
      */
-    int addFile(String projectDatabase, String projectPath, String username, String password, String label, String description, String files);
+    int[] addFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String[] files);
 
+    /**
+     * 新增檔案至 PVCS。
+     * 
+     * pcli AddFiles -pr"${projectDatabase}" -id"${username}:${password}" -pp"${projectPath}" -c -m"${description}" -t"${description}" -v"${label}" ${files}
+     * 
+     * @param projectDatabase
+     * @param projectPath
+     * @param username
+     * @param password
+     * @param label
+     * @param description
+     * @param files
+     * @return
+     */
+    Map<String, Object> addFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String path);
+    
     /**
      * 將先前被 check out 的檔案，check in 回 PVCS。
      * 
@@ -46,7 +64,10 @@ public interface IPvcsCmd {
      * @param files
      * @return
      */
-    int putFile(String projectDatabase, String projectPath, String username, String password, String label, String description, String files);
+    int[] putFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String[] files);
+
+    Map<String, Object> putFiles(String projectDatabase, String projectPath, String username, String password, String label, String description, String path);
+
     
     /**
      * 刪除 PVCS 中的檔案。
@@ -57,10 +78,10 @@ public interface IPvcsCmd {
      * @param projectPath
      * @param username
      * @param password
-     * @param file
+     * @param files
      * @return
      */
-    int deleteFile(String projectDatabase, String projectPath, String username, String password, String file);
+    int[] deleteFiles(String projectDatabase, String projectPath, String username, String password, String[] files);
 
     /**
      * 把檔案從 PVCS 中 check out 出來。

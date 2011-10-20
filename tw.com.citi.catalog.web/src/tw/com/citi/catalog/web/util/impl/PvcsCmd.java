@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ public class PvcsCmd implements IPvcsCmd {
     @Override
     public String[] listVersionedFiles(String projectDatabase, String projectPath, String username, String password,
             String path) {
+        // TODO Auto-generated method stub
         ArrayList<String> versionedFilesArrayList = new ArrayList<String>();
         try {
 
@@ -54,6 +57,7 @@ public class PvcsCmd implements IPvcsCmd {
             bf.close();
 
         } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -76,25 +80,105 @@ public class PvcsCmd implements IPvcsCmd {
      * @param password
      * @param label
      * @param description
-     * @param file
+     * @param files
      * @return
      */
     @Override
-    public int addFile(String projectDatabase, String projectPath, String username, String password, String label,
-            String description, String file) {
-        String command = "pcli AddFiles -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password + "\" -pp\""
-                + projectPath + "\" -m\"" + description + "\" -t\"" + description + "\" -v\"" + label + "\" " + file;
-        logger.debug("command:" + command);
-        String[] cmd = new String[] { "cmd", "/C", command };
-        Process process;
+    public int[] addFiles(String projectDatabase, String projectPath, String username, String password, String label,
+            String description, String[] files) {
+        // TODO Auto-generated method stub
+        int[] rc = new int[files.length];
+
+        String addFileArray = "";
+        for (String file : files) {
+            addFileArray += " " + file;
+        }
+
+        ArrayList<String> addOkFileList = new ArrayList<String>();
+
         try {
-            process = Runtime.getRuntime().exec(cmd);
+            String command = "pcli AddFiles -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
+                    + "\" -pp\"" + projectPath + "\" -c -m\"" + description + "\" -t\"" + description + "\" -v\""
+                    + label + "\" " + addFileArray;
+            logger.debug("command:" + command);
+            String[] cmd = new String[] { "cmd", "/C", command };
+            Process process = Runtime.getRuntime().exec(cmd);
+            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String file = "";
+            while ((file = bf.readLine()) != null) {
+                addOkFileList.add(file);
+            }
+            bf.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // test
+        for (String s : addOkFileList) {
+            logger.debug("add file:" + s);
+        }
+
+        // 判斷每個source file是否成功新增
+        for (int i = 0; i < files.length; i++) {
+            String oriFile = files[i];
+            if (addOkFileList.contains(oriFile)) {
+                rc[i] = 0;
+            } else {
+                rc[i] = -1;
+            }
+        }
+
+        return rc;
+    }
+
+    /**
+     * 新增檔案至 PVCS。
+     * 
+     * pcli AddFiles -pr"${projectDatabase}" -id"${username}:${password}"
+     * -pp"${projectPath}" -c -m"${description}" -t"${description}" -v"${label}"
+     * ${files}
+     * 
+     * @param projectDatabase
+     * @param projectPath
+     * @param username
+     * @param password
+     * @param label
+     * @param description
+     * @param files
+     * @return
+     */
+    @Override
+    public Map<String, Object> addFiles(String projectDatabase, String projectPath, String username, String password,
+            String label, String description, String path) {
+        int rc = 0;
+        String result = "";
+        try {
+            String command = "pcli AddFiles -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
+                    + "\" -pp\"" + projectPath + "\" -z -m\"" + description + "\" -t\"" + description + "\" -v\""
+                    + label + "\" " + path;
+            logger.debug("command:" + command);
+            String[] cmd = new String[] { "cmd", "/C", command };
+            Process process = Runtime.getRuntime().exec(cmd);
+
+            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String file = "";
+            while ((file = bf.readLine()) != null) {
+                result += file;
+                logger.debug("file:" + file);
+            }
+            bf.close();
             process.waitFor();
-            return process.exitValue();
+            rc = process.exitValue();
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            rc = -1;
+
         }
+        Map<String, Object> out = new HashMap<String, Object>();
+        out.put("rc", rc);
+        out.put("result", result);
+        return out;
     }
 
     /**
@@ -109,24 +193,87 @@ public class PvcsCmd implements IPvcsCmd {
      * @param password
      * @param label
      * @param description
-     * @param file
+     * @param files
      * @return
      */
     @Override
-    public int putFile(String projectDatabase, String projectPath, String username, String password, String label,
-            String description, String file) {
+    public int[] putFiles(String projectDatabase, String projectPath, String username, String password, String label,
+            String description, String[] files) {
+
+        int[] rc = new int[files.length];
+
+        String addFileArray = "";
+        for (String file : files) {
+            addFileArray += " " + file;
+        }
+
+        ArrayList<String> addOkFileList = new ArrayList<String>();
+
         try {
-            String command = "pcli Put -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password + "\" -pp\""
-                    + projectPath + "\" -m\"" + description + "\" -v\"" + label + "\" " + file;
+            String command = "pcli AddFiles -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
+                    + "\" -pp\"" + projectPath + "\" -c -m\"" + description + "\" -t\"" + description + "\" -v\""
+                    + label + "\" " + addFileArray;
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
+            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String file = "";
+            while ((file = bf.readLine()) != null) {
+                addOkFileList.add(file);
+            }
+            bf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // test
+        for (String s : addOkFileList) {
+            logger.debug("add file:" + s);
+        }
+
+        // 判斷每個source file是否成功Check in
+        for (int i = 0; i < files.length; i++) {
+            String oriFile = files[i];
+            if (addOkFileList.contains(oriFile)) {
+                rc[i] = 0;
+            } else {
+                rc[i] = -1;
+            }
+        }
+
+        return rc;
+    }
+
+    @Override
+    public Map<String, Object> putFiles(String projectDatabase, String projectPath, String username, String password,
+            String label, String description, String path) {
+
+        int rc = 0;
+        String result = "";
+
+        try {
+            String command = "pcli AddFiles -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
+                    + "\" -pp\"" + projectPath + "\" -z -m\"" + description + "\" -t\"" + description + "\" -v\""
+                    + label + "\" " + path;
+            logger.debug("command:" + command);
+            String[] cmd = new String[] { "cmd", "/C", command };
+            Process process = Runtime.getRuntime().exec(cmd);
+            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String file = "";
+            while ((file = bf.readLine()) != null) {
+                result += file;
+            }
+            bf.close();
             process.waitFor();
-            return process.exitValue();
+            rc = process.exitValue();
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            rc = -1;
         }
+        Map<String, Object> out = new HashMap<String, Object>();
+        out.put("rc", rc);
+        out.put("result", result);
+        return out;
     }
 
     /**
@@ -139,24 +286,56 @@ public class PvcsCmd implements IPvcsCmd {
      * @param projectPath
      * @param username
      * @param password
-     * @param file
+     * @param files
      * @return
      */
     @Override
-    public int deleteFile(String projectDatabase, String projectPath, String username, String password, String file) {
+    public int[] deleteFiles(String projectDatabase, String projectPath, String username, String password,
+            String[] files) {
+
+        int[] rc = new int[files.length];
+
+        String delFileArray = "";
+        for (String file : files) {
+            delFileArray += " " + file;
+        }
+
+        ArrayList<String> delFileList = new ArrayList<String>();
 
         try {
             String command = "pcli Delete -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
-                    + "\" -pp\"" + projectPath + "\" " + file;
+                    + "\" -pp\"" + projectPath + "\" " + delFileArray;
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
-            process.waitFor();
-            return process.exitValue();
-        } catch (Exception e) {
+            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String file = "";
+            while ((file = bf.readLine()) != null) {
+                delFileList.add(file);
+            }
+            bf.close();
+            // int r = process.exitValue();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-            return -1;
         }
+
+        // test
+        for (String s : delFileList) {
+            logger.debug("del file:" + s);
+        }
+
+        // 判斷每個soirce file是否成功刪除
+        for (int i = 0; i < files.length; i++) {
+            String oriFile = files[i];
+            if (delFileList.contains(oriFile)) {
+                rc[i] = 0;
+            } else {
+                rc[i] = -1;
+            }
+        }
+
+        return rc;
     }
 
     /**

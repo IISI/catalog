@@ -2,12 +2,17 @@ package tw.com.citi.catalog.web.report;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.data.ListOfArrayDataSource;
 
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.protocol.http.WebRequest;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import tw.com.citi.catalog.dao.IAppFileDao;
 import tw.com.citi.catalog.dao.IFunctionLogDao;
@@ -42,8 +47,9 @@ public class Rpt1600P implements IReport {
     @Override
     public Object getReportData() {
         WebRequest req = ((WebRequest) RequestCycle.get().getRequest());
-        long functionLogId = Long.valueOf(req.getParameter("functionLogId"));
-        return new JRMapCollectionDataSource(appFileDao.find1600PReportData(functionLogId));
+        Gson gson = new Gson();
+        List<String[]> logs = gson.fromJson(req.getParameter("pvcsConsole"), new TypeToken<List<String[]>>() {}.getType());
+        return new ListOfArrayDataSource(logs, new String[] { "log" });
     }
 
     @Override

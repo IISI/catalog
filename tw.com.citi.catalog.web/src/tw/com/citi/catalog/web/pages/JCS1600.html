@@ -354,6 +354,7 @@
             }
             
             function moveFiles() {
+                var functionLogId;
                 var payload = {};
                 payload.actionName = 'Move';
                 var files = [];
@@ -376,6 +377,13 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
+                        functionLogId = data.functionLogId;
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        var resp = JSON.parse(jqXHR.responseText);
+                        dialog.html(resp.message).dialog('open');
+                    },
+                    complete: function(jqXHR, textStatus) {
                         nextDialog.html('Please wait ......').dialog('open');
                         payload.actionName = 'CheckIn';
                         payload.actionParams = JSON.stringify({
@@ -383,7 +391,7 @@
                             files: JSON.stringify(files), 
                             pvcsId: $("#pvcsId").val(),
                             pvcsPwd: $("#pvcsPwd").val(),
-                            functionLogId: data.functionLogId
+                            functionLogId: functionLogId
                         });
                         $.ajax({
                             url: __ajaxHandler,
@@ -413,6 +421,7 @@
                                 form3.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
                                 form3.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
                                 form3.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                                form3.append('<input type="hidden" name="pvcsConsole" value=\'' + data.PVCSConsole + '\' />');
                                 setTimeout(function () {form3.submit(); form3.remove();}, 2000);
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
@@ -421,10 +430,6 @@
                                 dialog.html(resp.message).dialog('open');
                             }
                         });
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        var resp = JSON.parse(jqXHR.responseText);
-                        dialog.html(resp.message).dialog('open');
                     }
                 });
             }
