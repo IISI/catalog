@@ -97,11 +97,8 @@
 			</textField>
 		</band>
 	</pageHeader>
-	<columnHeader>
-		<band height="20" splitType="Stretch"/>
-	</columnHeader>
 	<detail>
-		<band height="41" splitType="Prevent">
+		<band height="60" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="752" height="20"/>
 				<textElement/>
@@ -115,7 +112,4 @@
 	<pageFooter>
 		<band splitType="Stretch"/>
 	</pageFooter>
-	<summary>
-		<band height="40" splitType="Stretch"/>
-	</summary>
 </jasperReport>
