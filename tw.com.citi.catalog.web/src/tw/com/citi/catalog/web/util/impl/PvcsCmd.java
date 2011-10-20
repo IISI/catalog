@@ -164,11 +164,10 @@ public class PvcsCmd implements IPvcsCmd {
             BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String file = "";
             while ((file = bf.readLine()) != null) {
-                result += file;
+                result += file + "\n";
                 logger.debug("file:" + file);
             }
             bf.close();
-            process.waitFor();
             rc = process.exitValue();
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,10 +260,9 @@ public class PvcsCmd implements IPvcsCmd {
             BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String file = "";
             while ((file = bf.readLine()) != null) {
-                result += file;
+                result += file + "\n";
             }
             bf.close();
-            process.waitFor();
             rc = process.exitValue();
         } catch (Exception e) {
             e.printStackTrace();
