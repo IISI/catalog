@@ -3,6 +3,7 @@ package tw.com.citi.catalog.web;
 import org.apache.wicket.Page;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.util.lang.PackageName;
+import org.apache.wicket.util.time.Duration;
 
 import tw.com.citi.catalog.web.pages.Home;
 import tw.com.citi.catalog.web.report.PdfReportResource;
@@ -17,6 +18,7 @@ public class CatalogWebApplication extends AbstractAquariusWebApplication {
         getSharedResources().add("PDF_REPORT", new PdfReportResource());
         ResourceReference pdfRef = new ResourceReference("PDF_REPORT");
         mountSharedResource("/report/pdf", pdfRef.getSharedResourceKey());
+        getRequestCycleSettings().setTimeout(Duration.minutes(10));
     }
 
     @Override

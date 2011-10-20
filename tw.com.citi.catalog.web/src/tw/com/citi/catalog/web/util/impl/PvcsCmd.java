@@ -2,6 +2,7 @@ package tw.com.citi.catalog.web.util.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -161,14 +162,27 @@ public class PvcsCmd implements IPvcsCmd {
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
 
-            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            boolean isError = false;
+            BufferedReader bf = null;
+            InputStream success = process.getInputStream();
+            InputStream error = process.getErrorStream();
+            if (success.available() > 0) {
+                bf = new BufferedReader(new InputStreamReader(success));
+            } else {
+                bf = new BufferedReader(new InputStreamReader(error));
+                isError = true;
+            }
             String file = "";
             while ((file = bf.readLine()) != null) {
                 result += file + "\n";
                 logger.debug("file:" + file);
             }
             bf.close();
-            rc = process.exitValue();
+            if (isError) {
+                rc = -2;
+            } else {
+                rc = process.exitValue();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             rc = -1;
