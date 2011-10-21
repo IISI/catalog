@@ -31,14 +31,6 @@
                 <input type="password" name="userpassword" id="userpassword" maxlength="64" />
             </td>
         </tr>
-        <tr>
-            <td class="formLabel">
-                <label for="wins">WINS</label>
-            </td>
-            <td>
-                <input type="text" name="wins" id="wins" maxlength="20" />
-            </td>
-        </tr>
     </table>
     <br />
     <div class="button-bar">
@@ -53,7 +45,6 @@
             var domain = $('#domain');
             var username = $('#username');
             var userpassword = $('#userpassword');
-            var wins = $('#wins');
             
             init();
             
@@ -63,8 +54,7 @@
                 payload.actionParams = JSON.stringify({
                     domain: domain.val(),
                     username: username.val(),
-                    userpassword: userpassword.val(),
-                    wins: wins.val()
+                    userpassword: userpassword.val()
                 });
                 $.ajax({
                     url: __ajaxHandler,
@@ -124,7 +114,6 @@
                     success: function(data, textStatus, jqXHR) {
                         domain.val(data.domain);
                         username.val(data.username);
-                        wins.val(data.wins);
                         userpassword.val('');
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
