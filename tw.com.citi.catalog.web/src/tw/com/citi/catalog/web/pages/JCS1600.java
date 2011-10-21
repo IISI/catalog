@@ -198,9 +198,23 @@ public class JCS1600 extends AbstractBasePage {
         int rc = 0;
         boolean error = false;
         List<String[]> pvcsResult = new ArrayList<String[]>();
-        if (isAddFiles || isPutFiles) {
+        if (isAddFiles) {
             // 新增
             out = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, label, "Check In", rdPath + "*");
+            rc = (Integer) out.get("rc");
+            String res = "";
+            if (rc == 0) {
+                res = "pvcs add files done!";
+            } else {
+                res = "pvcs add files failed!";
+                error = true;
+            }
+            logger.debug(res);
+            pvcsResult.add(new String[] { res + "\n" + (String) out.get("result") });
+        }
+        if (isPutFiles) {
+            // 新增
+            out = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, label, "Check In", rdPath + "*");
             rc = (Integer) out.get("rc");
             String res = "";
             if (rc == 0) {
@@ -212,7 +226,6 @@ public class JCS1600 extends AbstractBasePage {
             logger.debug(res);
             pvcsResult.add(new String[] { res + "\n" + (String) out.get("result") });
         }
-
         if (isDelFiles) {
             // 有檔案要刪除
             logger.debug("pvcs del start!");
