@@ -48,7 +48,7 @@ public class CommCypt {
 		
 		try {
 			Process p;
-			String command = "C:\\Catalog\\configuration\\commutil.exe" +" "+ strSrc;
+			String command = "C:\\JCS\\configuration\\commutil.exe" +" "+ strSrc;
 			String[] cmd = new String[] { "cmd", "/C", command };
 			p=Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new   InputStreamReader(p.getInputStream()));
