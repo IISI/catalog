@@ -24,7 +24,7 @@ public class StreamHandler extends Thread {
         result = "";
         BufferedReader br;
         try {
-            br = new BufferedReader(new InputStreamReader(is));
+            br = new BufferedReader(new InputStreamReader(is, "MS950"));
             String line = "";
             while ((line = br.readLine()) != null) {
                 logger.debug(type + ": " + line);
