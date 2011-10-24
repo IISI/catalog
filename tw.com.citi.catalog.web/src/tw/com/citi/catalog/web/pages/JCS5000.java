@@ -50,7 +50,6 @@ public class JCS5000 extends AbstractBasePage {
     private String init(Map dataMap) {
         String domain = null;
         String username = null;
-        String wins = null;
         Map<String, Object> data = new HashMap<String, Object>();
         List<Params> params = paramsDao.findAll();
         if (params != null) {
@@ -59,14 +58,11 @@ public class JCS5000 extends AbstractBasePage {
                     domain = param.getpValue();
                 } else if ("username".equalsIgnoreCase(param.getpKey())) {
                     username = param.getpValue();
-                } else if ("wins".equalsIgnoreCase(param.getpKey())) {
-                    wins = param.getpValue();
                 }
             }
         }
         data.put("domain", domain);
         data.put("username", username);
-        data.put("wins", wins);
         return gson.toJson(data);
     }
 
@@ -74,24 +70,21 @@ public class JCS5000 extends AbstractBasePage {
         String domain = (String) dataMap.get("domain");
         String username = (String) dataMap.get("username");
         String userpassword = (String) dataMap.get("userpassword");
-        String wins = (String) dataMap.get("wins");
         String oldDomain = Jcifs.getDomain();
         String oldUsername = Jcifs.getUsername();
         String oldUserpassword = Jcifs.getUserpasswordWithoutCheck();
-        String oldWins = Jcifs.getJcifsNetbiosWins();
 
         AppPath appPath = appPathDao.findLastestPath();
         Jcifs.setDomain(domain);
         Jcifs.setUsername(username);
         Jcifs.setUserpassword(userpassword);
-        Jcifs.setJcifsNetbiosWins(wins);
         SmbFileUtil.init();
         boolean save = false;
         String status = "";
         try {
             if (appPath == null || SmbFileUtil.accessCheck(appPath.getPath())) {
                 save = true;
-                if(appPath == null) {
+                if (appPath == null) {
                     status = "There is no path to verify. JCS only saves the information.";
                 } else {
                     status = "Verify OK.";
@@ -100,7 +93,6 @@ public class JCS5000 extends AbstractBasePage {
                 Jcifs.setDomain(oldDomain);
                 Jcifs.setUsername(oldUsername);
                 Jcifs.setUserpassword(oldUserpassword);
-                Jcifs.setJcifsNetbiosWins(oldWins);
                 SmbFileUtil.init();
             }
             if (save) {
@@ -115,13 +107,6 @@ public class JCS5000 extends AbstractBasePage {
                 params.put("PKEY", "USERNAME");
                 params.put("PVALUE", username);
                 if (paramsDao.findByPKey("USERNAME") != null) {
-                    paramsDao.update(params);
-                } else {
-                    paramsDao.create(params);
-                }
-                params.put("PKEY", "WINS");
-                params.put("PVALUE", wins);
-                if (paramsDao.findByPKey("WINS") != null) {
                     paramsDao.update(params);
                 } else {
                     paramsDao.create(params);

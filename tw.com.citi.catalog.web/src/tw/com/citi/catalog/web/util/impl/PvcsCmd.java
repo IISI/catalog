@@ -260,19 +260,22 @@ public class PvcsCmd implements IPvcsCmd {
         String result = "";
 
         try {
-            String command = "pcli AddFiles -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
-                    + "\" -pp\"" + projectPath + "\" -z -m\"" + description + "\" -t\"" + description + "\" -v\""
-                    + label + "\" " + path;
+            String command = "pcli Put -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password + "\" -pp\""
+                    + projectPath + "\" -z -m\"" + description + "\" -v\"" + label + "\" -bp\"" + path + "\" *";
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
-            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String file = "";
-            while ((file = bf.readLine()) != null) {
-                result += file + "\n";
+            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT");
+            stdStream.start();
+            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR");
+            errStream.start();
+            process.waitFor();
+            result = errStream.getResult() + stdStream.getResult();
+            if ("".equals(errStream.getResult().trim())) {
+                rc = process.exitValue();
+            } else {
+                rc = -2;
             }
-            bf.close();
-            rc = process.exitValue();
         } catch (Exception e) {
             e.printStackTrace();
             rc = -1;

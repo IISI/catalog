@@ -1,9 +1,12 @@
 package tw.com.citi.catalog.web.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,9 +46,32 @@ public class SmbFileUtil {
             DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, auth);
             fsManager = new OSGiFileSystemManager();
             ((OSGiFileSystemManager) fsManager).init();
-            if (!"".equalsIgnoreCase(Jcifs.getJcifsNetbiosWins())) {
-                jcifs.Config.setProperty("jcifs.netbios.wins", Jcifs.getJcifsNetbiosWins());
+            // get "Primary WINS Server" & "Host Name"
+            Socket s = new Socket();
+            String hostName = s.getLocalAddress().getHostName();
+            String wins = "";
+            Process process = null;
+            BufferedReader bf = null;
+            String command = "ipconfig /all";
+            String[] cmd = new String[] { "cmd", "/C", command };
+            process = Runtime.getRuntime().exec(cmd);
+            bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = "";
+            while ((line = bf.readLine()) != null) {
+                if (line.indexOf("Primary WINS Server") >= 0) {
+                    wins = line.substring(line.lastIndexOf(":") + 1).trim();
+                }
+                if (line.indexOf("Host Name") >= 0) {
+                    hostName = line.substring(line.lastIndexOf(":") + 1).trim();
+                }
             }
+            bf.close();
+            logger.debug("Host Name : " + hostName);
+            logger.debug("WINS      : " + wins);
+            if (!"".equalsIgnoreCase(wins)) {
+                jcifs.Config.setProperty("jcifs.netbios.wins", wins);
+            }
+            jcifs.Config.setProperty("jcifs.netbios.hostname", hostName);
             init = true;
         } catch (Exception e) {
             e.printStackTrace();

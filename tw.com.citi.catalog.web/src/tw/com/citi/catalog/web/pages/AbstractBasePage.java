@@ -46,7 +46,7 @@ public abstract class AbstractBasePage extends AbstractAquariusPage {
     private String handleException(Exception e) {
         logger.error("Internal server error.", e);
         ((WebResponse) RequestCycle.get().getResponse()).getHttpServletResponse().setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return "{\"type\":\"" + e.getClass().getName() + "\",\"message\":\"" + e.getMessage() + "\"}";
+        return "{\"type\":\"" + e.getClass().getName() + "\",\"message\":\"" + e.getMessage().replace('\\', '/') + "\"}";
     }
 
     public IGridHandler getGridHandler(String handlerName) {

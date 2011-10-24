@@ -32,10 +32,10 @@ public class CommCypt {
 	public String run(String strSrc){
 		
 		String strDes="";
-		String jarFileSrc="c:\\Catalog\\plugins\\tw.com.citi.commcypt_1.0.0.jar";
+		String jarFileSrc="c:\\JCS\\plugins\\tw.com.citi.commcypt_1.0.0.jar";
 		String exeResJarPath="tw/com/citi/commcypt/resource/commutil";
 		String exePreName="commutil";
-		String runtimePath="C:\\Catalog\\configuration\\";
+		String runtimePath="C:\\JCS\\configuration\\";
 		
 		JarUtil.xfJarWithNoPath(jarFileSrc, exeResJarPath, runtimePath );
 
@@ -48,7 +48,7 @@ public class CommCypt {
 		
 		try {
 			Process p;
-			String command = "C:\\Catalog\\configuration\\commutil.exe" +" "+ strSrc;
+			String command = "C:\\JCS\\configuration\\commutil.exe" +" "+ strSrc;
 			String[] cmd = new String[] { "cmd", "/C", command };
 			p=Runtime.getRuntime().exec(cmd);
 			BufferedReader bf  = new BufferedReader(new   InputStreamReader(p.getInputStream()));

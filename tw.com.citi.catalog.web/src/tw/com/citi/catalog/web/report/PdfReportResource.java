@@ -51,7 +51,7 @@ public class PdfReportResource extends WebResource {
         }
 
         @Override
-        public void write(OutputStream output) {
+        synchronized public void write(OutputStream output) {
             try {
                 // It seems jasper reports and groovy has some issues when
                 // using under osgi environment, hence the following code is

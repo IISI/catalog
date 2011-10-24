@@ -139,6 +139,11 @@ public class JCS5100 extends AbstractBasePage {
         app.put("description", description);
         // app.put("app_base_path", appBasePath);
         app.put("pvcs_proj_db", pvcsProjDb);
+        if (pvcsProjPath.startsWith("/") || pvcsProjPath.startsWith("\\")) {
+            pvcsProjPath = pvcsProjPath.replace('\\', '/');
+        } else {
+            pvcsProjPath = "/" + pvcsProjPath;
+        }
         app.put("pvcs_proj_path", pvcsProjPath);
         Long jcAppId = appDao.create(app);
         // insert appPath
@@ -253,6 +258,11 @@ public class JCS5100 extends AbstractBasePage {
         app.put("appId", appId);
         app.put("description", description);
         app.put("pvcsProjDb", pvcsProjDb);
+        if (pvcsProjPath.startsWith("/") || pvcsProjPath.startsWith("\\")) {
+            pvcsProjPath = pvcsProjPath.replace('\\', '/');
+        } else {
+            pvcsProjPath = "/" + pvcsProjPath;
+        }
         app.put("pvcsProjPath", pvcsProjPath);
         appDao.update(app);
         return "";
