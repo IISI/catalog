@@ -18,7 +18,7 @@ public class CatalogWebApplication extends AbstractAquariusWebApplication {
         getSharedResources().add("PDF_REPORT", new PdfReportResource());
         ResourceReference pdfRef = new ResourceReference("PDF_REPORT");
         mountSharedResource("/report/pdf", pdfRef.getSharedResourceKey());
-        getRequestCycleSettings().setTimeout(Duration.minutes(10));
+        getRequestCycleSettings().setTimeout(Duration.minutes(60));
     }
 
     @Override
