@@ -1,15 +1,22 @@
 package tw.com.citi.catalog.web.util.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.FileCopyUtils;
 
+import tw.com.citi.catalog.web.util.FileUtil;
 import tw.com.citi.catalog.web.util.IPvcsCmd;
 
 public class PvcsCmd implements IPvcsCmd {
@@ -399,38 +406,75 @@ public class PvcsCmd implements IPvcsCmd {
      * 
      * vdiff ${file1} ${file2}
      * 
-     * @param file1
-     * @param file2
+     * @param path1
+     * @param path2
      * @return
      */
     @Override
-    public String diff(String file1, String file2) {
-
+    public String diff(String path1, String path2) {
         String diffResult = "";
+        InputStreamReader reader = null;
+        BufferedReader bf = null;
+        InputStreamReader errReader = null;
+        BufferedReader errBf = null;
         try {
-            String command = "vdiff " + file1 + " " + file2;
+            File temp = FileUtil.prepareTempDirectory();
+            Bundle b = Platform.getBundle("tw.com.citi.catalog.web");
+            
+            URL resourceUrl = b.getResource("tw/com/citi/catalog/web/util/impl/diff");
+            URL fileUrl = FileLocator.toFileURL(resourceUrl);
+            File hiddenFile = new File(fileUrl.toURI());
+            File realDiffFile = new File(temp, hiddenFile.getName() + ".exe");
+            FileCopyUtils.copy(hiddenFile, realDiffFile);
+            
+            resourceUrl = b.getResource("tw/com/citi/catalog/web/util/impl/msys-1.0.dll");
+            fileUrl = FileLocator.toFileURL(resourceUrl);
+            hiddenFile = new File(fileUrl.toURI());
+            File realMSysFile = new File(temp, hiddenFile.getName());
+            FileCopyUtils.copy(hiddenFile, realMSysFile);
+            
+            String command = realDiffFile.getAbsolutePath() + " -N -r " + path1 + " " + path2;
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
 
-            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            reader = new InputStreamReader(process.getInputStream());
+            bf = new BufferedReader(reader);
             String r = "";
             while ((r = bf.readLine()) != null) {
                 diffResult += r + "\n";
             }
-            bf.close();
 
             if (diffResult.trim().equals("")) {
-                BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                errReader = new InputStreamReader(process.getErrorStream());
+                errBf = new BufferedReader(errReader);
                 String err = "";
-                while ((err = errReader.readLine()) != null) {
+                while ((err = errBf.readLine()) != null) {
                     diffResult += err + "\n";
                 }
-                bf.close();
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("Failed to compare files.", e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (errBf != null) {
+                    errBf.close();
+                }
+                if (errReader != null) {
+                    errReader.close();
+                }
+                if (bf != null) {
+                    bf.close();
+                }
+                if (reader != null) {
+                    reader.close();
+                }
+                FileUtil.deleteTempDirectory();
+            } catch (IOException e) {
+                logger.error("Failed to close resources.", e);
+                throw new RuntimeException(e);
+            }
         }
 
         return diffResult;
