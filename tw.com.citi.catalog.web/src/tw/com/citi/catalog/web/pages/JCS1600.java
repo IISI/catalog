@@ -154,14 +154,20 @@ public class JCS1600 extends AbstractBasePage {
             Map<String, String> params = new HashMap<String, String>();
             params.put("scrId", sScrId);
             params.put("scrFileId", scrFileId);
-            String filePath = "\\".equals(file.get("filePath")) ? "" : file.get("filePath");
-            String fileName = file.get("fileName");
-            pvcsFiles.add(rdPath + filePath + fileName);
             List<RegisterHistory> registerHistoryList = registerHistoryDao.query(sqlCode, params);
 
             if (registerHistoryList.size() > 0) {
                 RegisterHistory registerHistory = registerHistoryList.get(registerHistoryList.size() - 1);
                 int registerAction = registerHistory.getRegisterAction();
+                String filePath = "\\".equals(file.get("filePath")) ? "" : file.get("filePath");
+                String fileName = file.get("fileName");
+                if (registerHistory.isCheckin()) {
+                    pvcsFiles.add(rdPath + filePath + fileName);
+                } else {
+                    // 移除不需要 check in 的檔案
+                    isDelFiles = true;
+                    delFileNameList.add(filePath + fileName);
+                }
                 if (registerAction == 0) {
                     // 新增
                     isAddFiles = true;
@@ -171,10 +177,8 @@ public class JCS1600 extends AbstractBasePage {
                 } else if (registerAction == 2) {
                     // 刪除
                     isDelFiles = true;
-                    String delFilePath = file.get("filePath");
-                    String delFileName = file.get("fileName");
-                    logger.debug("DEL: " + delFilePath + delFileName);
-                    delFileNameList.add(delFilePath + delFileName);
+                    logger.debug("DEL: " + filePath + fileName);
+                    delFileNameList.add(filePath + fileName);
                 }
                 logger.debug("id=" + scrFileId + ", action=" + registerAction);
             }
