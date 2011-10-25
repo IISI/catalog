@@ -50,11 +50,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         prepareDataSource();
         Dimension dim = java.awt.Toolkit.getDefaultToolkit().getScreenSize(); 
         configurer.setInitialSize(new Point((int)dim.getWidth(), (int)dim.getHeight())); 
-        //configurer.setInitialSize(new Point(600, 400));
-        configurer.setShowCoolBar(true);
+        configurer.setShowCoolBar(false);
         configurer.setShowStatusLine(false);
-        configurer.setShowPerspectiveBar(true);
-        
+        configurer.setShowPerspectiveBar(false);
+        configurer.setShowMenuBar(false);
+        configurer.setShowFastViewBars(false);
+        configurer.setShowProgressIndicator(false);
     }
     
    
