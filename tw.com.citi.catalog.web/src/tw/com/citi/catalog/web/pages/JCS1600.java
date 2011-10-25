@@ -3,8 +3,10 @@ package tw.com.citi.catalog.web.pages;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jcifs.smb.SmbAuthException;
 
@@ -130,8 +132,16 @@ public class JCS1600 extends AbstractBasePage {
         String fLogId = (String) dataMap.get("functionLogId");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
+        Set<String> pvcsFiles = new HashSet<String>();
         Long scrId = Long.parseLong(sScrId);
         Scr scr = scrDao.findById(scrId);
+        App appTmp = appDao.findById(scr.getJcAppId());
+        String prjDb = appTmp.getPvcsProjDb();
+        String prjPath = appTmp.getPvcsProjPath();
+        String label = scr.getScrNo() + scr.getRegisterCount();
+        AppPath appPath = appPathDao.findByScrId(scrId, PathType.APP_BASE).get(0);
+        String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat(
+                "RD\\") : appPath.getPath().concat("\\RD\\");
         // -----------------------------------calculate pvcs action /add/put/del
         boolean isAddFiles = false;
         boolean isPutFiles = false;
@@ -144,11 +154,9 @@ public class JCS1600 extends AbstractBasePage {
             Map<String, String> params = new HashMap<String, String>();
             params.put("scrId", sScrId);
             params.put("scrFileId", scrFileId);
-            // String filePath=file.get("filePath");
-            // String fileName=file.get("fileName");
-            // String fileType=file.get("fileType");
-            // /String fileStatus=file.get("fileStatus");
-            // logger.debug("id="+fileId+", path="+filePath+", name="+fileName+", fileType="+fileType+",fileStatus="+fileStatus);
+            String filePath = "\\".equals(file.get("filePath")) ? "" : file.get("filePath");
+            String fileName = file.get("fileName");
+            pvcsFiles.add(rdPath + filePath + fileName);
             List<RegisterHistory> registerHistoryList = registerHistoryDao.query(sqlCode, params);
 
             if (registerHistoryList.size() > 0) {
@@ -185,22 +193,13 @@ public class JCS1600 extends AbstractBasePage {
         String pvcsPwd = (String) dataMap.get("pvcsPwd");
         System.out.println("pvcs login:" + pvcsId + " ," + pvcsPwd);
 
-        String sId = (String) dataMap.get("scrId");
-        Scr scrTmp = scrDao.findById(Long.parseLong(sId));
-        App appTmp = appDao.findById(scr.getJcAppId());
-        String prjDb = appTmp.getPvcsProjDb();
-        String prjPath = appTmp.getPvcsProjPath();
-        String label = scrTmp.getScrNo() + scrTmp.getRegisterCount();
-        AppPath appPath = appPathDao.findByScrId(Long.parseLong(sId), PathType.APP_BASE).get(0);
-        String rdPath = appPath.getPath().endsWith("\\") || appPath.getPath().endsWith("/") ? appPath.getPath().concat(
-                "RD\\") : appPath.getPath().concat("\\RD\\");
         Map<String, Object> out = new HashMap<String, Object>();
         int rc = 0;
         boolean error = false;
         List<String[]> pvcsResult = new ArrayList<String[]>();
         if (isAddFiles) {
             // 新增
-            out = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, label, "Check In", rdPath + "*");
+            out = pvcsCmd.addFiles(prjDb, prjPath, pvcsId, pvcsPwd, label, "Check In", rdPath + "*", pvcsFiles);
             rc = (Integer) out.get("rc");
             String res = "";
             if (rc == 0) {
@@ -214,7 +213,7 @@ public class JCS1600 extends AbstractBasePage {
         }
         if (isPutFiles) {
             // 新增
-            out = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, label, "Check In", rdPath + "*");
+            out = pvcsCmd.putFiles(prjDb, prjPath, pvcsId, pvcsPwd, label, "Check In", rdPath + "*", pvcsFiles);
             rc = (Integer) out.get("rc");
             String res = "";
             if (rc == 0) {

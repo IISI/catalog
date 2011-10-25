@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -157,7 +158,7 @@ public class PvcsCmd implements IPvcsCmd {
      */
     @Override
     public Map<String, Object> addFiles(String projectDatabase, String projectPath, String username, String password,
-            String label, String description, String path) {
+            String label, String description, String path, Set<String> files) {
         int rc = 0;
         String result = "";
         try {
@@ -167,18 +168,17 @@ public class PvcsCmd implements IPvcsCmd {
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
-            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT");
+            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT", files);
             stdStream.start();
-            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR");
+            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR", files);
             errStream.start();
             process.waitFor();
-            result = errStream.getResult() + stdStream.getResult();
+            result = "\n\nERROR Detail:\n" + errStream.getResult() + "\n\nOUTPUT Detail:\n" + stdStream.getResult();
             if ("".equals(errStream.getResult().trim())) {
                 rc = process.exitValue();
             } else {
                 rc = -2;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             rc = -1;
@@ -254,7 +254,7 @@ public class PvcsCmd implements IPvcsCmd {
 
     @Override
     public Map<String, Object> putFiles(String projectDatabase, String projectPath, String username, String password,
-            String label, String description, String path) {
+            String label, String description, String path, Set<String> files) {
 
         int rc = 0;
         String result = "";
@@ -265,12 +265,12 @@ public class PvcsCmd implements IPvcsCmd {
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
-            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT");
+            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT", files);
             stdStream.start();
-            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR");
+            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR", files);
             errStream.start();
             process.waitFor();
-            result = errStream.getResult() + stdStream.getResult();
+            result = "\n\nERROR Detail:\n" + errStream.getResult() + "\n\nOUTPUT Detail:\n" + stdStream.getResult();
             if ("".equals(errStream.getResult().trim())) {
                 rc = process.exitValue();
             } else {
@@ -416,68 +416,38 @@ public class PvcsCmd implements IPvcsCmd {
     @Override
     public String diff(String path1, String path2) {
         String diffResult = "";
-        InputStreamReader reader = null;
-        BufferedReader bf = null;
-        InputStreamReader errReader = null;
-        BufferedReader errBf = null;
         try {
             File temp = FileUtil.prepareTempDirectory();
             Bundle b = Platform.getBundle("tw.com.citi.catalog.web");
-            
+
             URL resourceUrl = b.getResource("tw/com/citi/catalog/web/util/impl/diff");
             URL fileUrl = FileLocator.toFileURL(resourceUrl);
             File hiddenFile = new File(fileUrl.toURI());
             File realDiffFile = new File(temp, hiddenFile.getName() + ".exe");
             FileCopyUtils.copy(hiddenFile, realDiffFile);
-            
+
             resourceUrl = b.getResource("tw/com/citi/catalog/web/util/impl/msys-1.0.dll");
             fileUrl = FileLocator.toFileURL(resourceUrl);
             hiddenFile = new File(fileUrl.toURI());
             File realMSysFile = new File(temp, hiddenFile.getName());
             FileCopyUtils.copy(hiddenFile, realMSysFile);
-            
+
             String command = realDiffFile.getAbsolutePath() + " -N -r " + path1 + " " + path2;
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
 
-            reader = new InputStreamReader(process.getInputStream());
-            bf = new BufferedReader(reader);
-            String r = "";
-            while ((r = bf.readLine()) != null) {
-                diffResult += r + "\n";
-            }
-
-            if (diffResult.trim().equals("")) {
-                errReader = new InputStreamReader(process.getErrorStream());
-                errBf = new BufferedReader(errReader);
-                String err = "";
-                while ((err = errBf.readLine()) != null) {
-                    diffResult += err + "\n";
-                }
-            }
+            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT");
+            stdStream.start();
+            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR");
+            errStream.start();
+            process.waitFor();
+            diffResult = "\n\nERROR Detail:\n" + errStream.getResult() + "\n\nOUTPUT Detail:\n" + stdStream.getResult();
         } catch (Exception e) {
             logger.error("Failed to compare files.", e);
             throw new RuntimeException(e);
         } finally {
-            try {
-                if (errBf != null) {
-                    errBf.close();
-                }
-                if (errReader != null) {
-                    errReader.close();
-                }
-                if (bf != null) {
-                    bf.close();
-                }
-                if (reader != null) {
-                    reader.close();
-                }
-                FileUtil.deleteTempDirectory();
-            } catch (IOException e) {
-                logger.error("Failed to close resources.", e);
-                throw new RuntimeException(e);
-            }
+            FileUtil.deleteTempDirectory();
         }
 
         return diffResult;
