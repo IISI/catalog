@@ -23,7 +23,7 @@ public class NetUseUtil {
             String command = "net use";
             String[] cmd = new String[] { "cmd", "/C", command };
             process = Runtime.getRuntime().exec(cmd);
-            bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            bf = new BufferedReader(new InputStreamReader(process.getInputStream(), "MS950"));
             String line = "";
             String netServer = netPath.substring(0, netPath.indexOf("\\", 2));
             while ((line = bf.readLine()) != null) {
@@ -56,7 +56,7 @@ public class NetUseUtil {
             String command = "net use * /delete /y";
             String[] cmd = new String[] { "cmd", "/C", command };
             process = Runtime.getRuntime().exec(cmd);
-            bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            bf = new BufferedReader(new InputStreamReader(process.getInputStream(), "MS950"));
             String line = "";
             while ((line = bf.readLine()) != null) {
                 result += line + "\n";
@@ -87,7 +87,7 @@ public class NetUseUtil {
             command.append(Jcifs.getUsername()).append(" ").append(Jcifs.getUserpassword());
             String[] cmd = new String[] { "cmd", "/C", command.toString() };
             process = Runtime.getRuntime().exec(cmd);
-            bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            bf = new BufferedReader(new InputStreamReader(process.getInputStream(), "MS950"));
             String line = "";
             while ((line = bf.readLine()) != null) {
                 result += line + "\n";

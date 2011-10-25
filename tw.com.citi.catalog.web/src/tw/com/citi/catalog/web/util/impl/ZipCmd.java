@@ -32,7 +32,7 @@ public class ZipCmd implements IZipCmd{
 			logger.debug("command:"+command);
 			String[] cmd = new String[] { "cmd", "/C", command };
 			process = Runtime.getRuntime().exec(cmd);
-			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream(), "MS950"));
 			String r="";
 			while((r=bf.readLine()) !=  null){
 				result+=r+"\n";
@@ -78,7 +78,7 @@ public class ZipCmd implements IZipCmd{
 			String[] cmd = new String[] { "cmd", "/C", command };
 			process = Runtime.getRuntime().exec(cmd);
 			
-			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream(), "MS950"));
 			String r="";
 			while((r=bf.readLine())   !=   null){
 				result+=r+"\n";
@@ -108,7 +108,7 @@ public class ZipCmd implements IZipCmd{
 			String[] cmd = new String[] { "cmd", "/C", command };
 			process = Runtime.getRuntime().exec(cmd);
 			
-			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			BufferedReader bf  = new BufferedReader(new InputStreamReader(process.getInputStream(), "MS950"));
 			String r="";
 			while((r=bf.readLine())   !=   null){
 				result+=r+"\n";
