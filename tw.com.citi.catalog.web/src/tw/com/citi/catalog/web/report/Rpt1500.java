@@ -82,11 +82,15 @@ public class Rpt1500 implements IReport {
                     dto.setFileDate(new Date(file.getFileDatetime().getTime()));
                     dto.setFileName(file.getFileName());
                     dto.setFileSize(file.getFileSize());
-                    dto.setPathName(file.getFilePath());
-                    if (qaSourceFile.getContent().getSize() != prodSourceFile.getContent().getSize() || qaSourceFile.getContent().getLastModifiedTime() != prodSourceFile.getContent().getLastModifiedTime()) {
-                        dto.setDifferent(true);
+                    dto.setPathName(prodSourcePath.getPath() + file.getFilePath());
+                    if (qaSourceFile.exists() && prodSourceFile.exists()) {
+                        if (qaSourceFile.getContent().getSize() != prodSourceFile.getContent().getSize() || qaSourceFile.getContent().getLastModifiedTime() != prodSourceFile.getContent().getLastModifiedTime()) {
+                            dto.setDifferent(true);
+                        } else {
+                            dto.setDifferent(false);
+                        }
                     } else {
-                        dto.setDifferent(false);
+                        dto.setDifferent(true);
                     }
                     data.add(dto);
                 }

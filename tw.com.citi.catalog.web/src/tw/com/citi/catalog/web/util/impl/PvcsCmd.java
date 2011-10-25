@@ -414,7 +414,7 @@ public class PvcsCmd implements IPvcsCmd {
      * @return
      */
     @Override
-    public String diff(String path1, String path2) {
+    public String diff(String path1, String path2, String file) {
         String diffResult = "";
         try {
             File temp = FileUtil.prepareTempDirectory();
@@ -432,14 +432,14 @@ public class PvcsCmd implements IPvcsCmd {
             File realMSysFile = new File(temp, hiddenFile.getName());
             FileCopyUtils.copy(hiddenFile, realMSysFile);
 
-            String command = realDiffFile.getAbsolutePath() + " -N -r " + path1 + " " + path2;
+            String command = realDiffFile.getAbsolutePath() + " -N -r " + path1 + " " + path2 + " > C:\\Temp\\" + file + ".diff";
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
 
-            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT");
+            StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT", false);
             stdStream.start();
-            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR");
+            StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR", false);
             errStream.start();
             process.waitFor();
             diffResult = "\n\nERROR Detail:\n" + errStream.getResult() + "\n\nOUTPUT Detail:\n" + stdStream.getResult();

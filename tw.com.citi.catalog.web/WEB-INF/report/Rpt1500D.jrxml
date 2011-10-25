@@ -81,7 +81,7 @@
 		<band splitType="Stretch"/>
 	</columnHeader>
 	<detail>
-		<band height="60" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true">
 				<reportElement x="0" y="0" width="752" height="20"/>
 				<textElement/>

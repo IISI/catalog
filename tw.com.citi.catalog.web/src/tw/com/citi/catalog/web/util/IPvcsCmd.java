@@ -119,6 +119,6 @@ public interface IPvcsCmd {
      * @param file2
      * @return
      */
-    String diff(String file1, String file2);
+    String diff(String file1, String file2, String file);
 
 }
