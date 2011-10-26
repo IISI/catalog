@@ -303,48 +303,25 @@ public class PvcsCmd implements IPvcsCmd {
     public int[] deleteFiles(String projectDatabase, String projectPath, String username, String password,
             String[] files) {
 
-        int[] rc = new int[files.length];
-
-        String delFileArray = "";
-        for (String file : files) {
-            delFileArray += " " + file;
-        }
-
-        ArrayList<String> delFileList = new ArrayList<String>();
+        int[] rc = new int[1];
 
         try {
-            String command = "pcli Delete -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
-                    + "\" -pp\"" + projectPath + "\" " + delFileArray;
-            logger.debug("command:" + command);
-            String[] cmd = new String[] { "cmd", "/C", command };
-            Process process = Runtime.getRuntime().exec(cmd);
-            BufferedReader bf = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String file = "";
-            while ((file = bf.readLine()) != null) {
-                delFileList.add(file);
+            for (String file : files) {
+                String command = "pcli Delete -pr\"" + projectDatabase + "\" -id\"" + username + ":" + password
+                        + "\" -pp\"" + projectPath + "\" " + file.replace('\\', '/');
+                logger.debug("command:" + command);
+                String[] cmd = new String[] { "cmd", "/C", command };
+                Process process = Runtime.getRuntime().exec(cmd);
+                StreamHandler stdStream = new StreamHandler(process.getInputStream(), "STDOUT", false);
+                stdStream.start();
+                StreamHandler errStream = new StreamHandler(process.getErrorStream(), "ERROR", false);
+                errStream.start();
+                process.waitFor();
             }
-            bf.close();
-            // int r = process.exitValue();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+            rc[0] = 0;
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // test
-        for (String s : delFileList) {
-            logger.debug("del file:" + s);
-        }
-
-        // 判斷每個soirce file是否成功刪除
-        for (int i = 0; i < files.length; i++) {
-            String oriFile = files[i];
-            if (delFileList.contains(oriFile)) {
-                rc[i] = 0;
-            } else {
-                rc[i] = -1;
-            }
-        }
-
         return rc;
     }
 
@@ -432,7 +409,8 @@ public class PvcsCmd implements IPvcsCmd {
             File realMSysFile = new File(temp, hiddenFile.getName());
             FileCopyUtils.copy(hiddenFile, realMSysFile);
 
-            String command = realDiffFile.getAbsolutePath() + " -N -r " + path1 + " " + path2 + " > C:\\Temp\\" + file + ".diff";
+            String command = realDiffFile.getAbsolutePath() + " -N -r " + path1 + " " + path2 + " > C:\\Temp\\" + file
+                    + ".diff";
             logger.debug("command:" + command);
             String[] cmd = new String[] { "cmd", "/C", command };
             Process process = Runtime.getRuntime().exec(cmd);
