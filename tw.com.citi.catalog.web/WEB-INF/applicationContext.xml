@@ -93,8 +93,6 @@
     <osgi:service ref="rpt1600B" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>
 
     <bean id="rpt1600P" class="tw.com.citi.catalog.web.report.Rpt1600P">
-        <property name="functionLogDao" ref="functionLogDao"></property>
-        <property name="appFileDao" ref="appFileDao"></property>
     </bean>
 
     <osgi:service ref="rpt1600P" interface="tw.com.citi.catalog.web.report.IReport"></osgi:service>

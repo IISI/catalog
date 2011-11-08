@@ -64,6 +64,7 @@
     <br />
     <div class="button-bar">
         <button id="moveButton">Move</button>
+        <button id="checkinButton">Check In</button>
     </div>
     <br />
     
@@ -108,6 +109,7 @@
             var removeButton = $('#removeButton');
             var removeAllButton = $('#removeAllButton');
             var moveButton = $('#moveButton');
+            var checkinButton = $('#checkinButton');
 
             var checkerId = $('#checkId');
             var checkerPwd = $('#checkPwd');
@@ -187,6 +189,10 @@
                 } else {
                     dialog.html('Please add records to PROD path.').dialog('open');
                 }
+            });
+            
+            checkinButton.click(function() {
+                checkin();
             });
             
             scrNo.combobox({
@@ -334,19 +340,7 @@
 
             function dualControl() {
                 sendDualControl = function() {
-                	pvcsDialog.dialog('option', 'title', 'Enter PVCS id and password')
-                    .dialog('option', 'buttons', {
-                        Continue: function () {
-                        	moveFiles();
-                        	$(this).dialog('close');
-                        },
-                        Cancel: function () {
-                            $(this).dialog('close');
-                        }
-                    })
-                    .dialog('open');
-                	
-                    
+                    moveFiles();
                 };
                 cancelDualControl = function() {
                 };
@@ -354,7 +348,6 @@
             }
             
             function moveFiles() {
-                var functionLogId;
                 var payload = {};
                 payload.actionName = 'Move';
                 var files = [];
@@ -368,8 +361,6 @@
                     files: JSON.stringify(files), 
                     checkerId: checkerId.val(),
                     checkerPwd: checkerPwd.val(),
-                    pvcsId: $("#pvcsId").val(),
-                    pvcsPwd: $("#pvcsPwd").val()
                 });
                 $.ajax({
                     url: __ajaxHandler,
@@ -377,21 +368,45 @@
                     dataType: 'json',
                     data: payload,
                     success: function(data, textStatus, jqXHR) {
-                        functionLogId = data.functionLogId;
+                        var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form.append('<input type="hidden" name="reportName" value="Rpt1600" />');
+                        form.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                        form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                        form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                        form.submit();
+                        form.remove();
+                        
+                        var form2 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
+                        form2.append('<input type="hidden" name="reportName" value="Rpt1600B" />');
+                        form2.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
+                        form2.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
+                        form2.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                        setTimeout(function () {form2.submit(); form2.remove();}, 1000);
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         var resp = JSON.parse(jqXHR.responseText);
                         dialog.html(resp.message).dialog('open');
-                    },
-                    complete: function(jqXHR, textStatus) {
+                    }
+                });
+            }
+            
+            function checkin() {
+                pvcsDialog.dialog('option', 'title', 'Enter PVCS id and password').dialog('option', 'buttons', {
+                    Continue: function () {
+                        $(this).dialog('close');
                         nextDialog.html('Please wait ......').dialog('open');
+                        var payload = {};
                         payload.actionName = 'CheckIn';
+                        var files = [];
+                        var ids = copyTo.getDataIDs();
+                        for(var i in ids) {
+                            files.push(copyTo.getRowData(ids[i]));
+                        }
                         payload.actionParams = JSON.stringify({
                             scrId: scrNo.val(),
                             files: JSON.stringify(files), 
                             pvcsId: $("#pvcsId").val(),
                             pvcsPwd: $("#pvcsPwd").val(),
-                            functionLogId: functionLogId
                         });
                         $.ajax({
                             url: __ajaxHandler,
@@ -401,28 +416,15 @@
                             success: function(data, textStatus, jqXHR) {
                                 nextDialog.dialog('close');
                                 dialog.html('PVCS Check In ' + data.PVCS).dialog('open');
-                                var form = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
-                                form.append('<input type="hidden" name="reportName" value="Rpt1600" />');
-                                form.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
-                                form.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
-                                form.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
-                                form.submit();
-                                form.remove();
-                                
-                                var form2 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
-                                form2.append('<input type="hidden" name="reportName" value="Rpt1600B" />');
-                                form2.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
-                                form2.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
-                                form2.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
-                                setTimeout(function () {form2.submit(); form2.remove();}, 1000);
-                                
                                 var form3 = $('<form></form>', {action: '/catalog/report/pdf', method: 'post', target: '_blank'}).appendTo('body');
                                 form3.append('<input type="hidden" name="reportName" value="Rpt1600P" />');
                                 form3.append('<input type="hidden" name="scrNo" value="' + scrNo.children(':selected').text() + '" />');
-                                form3.append('<input type="hidden" name="functionLogId" value="' + data.functionLogId + '" />');
                                 form3.append('<input type="hidden" name="appId" value="' + appId.text() + '" />');
+                                form3.append('<input type="hidden" name="startTime" value="' + data.startTime + '" />');
+                                form3.append('<input type="hidden" name="endTime" value="' + data.endTime + '" />');
                                 form3.append('<input type="hidden" name="pvcsConsole" value=\'' + data.PVCSConsole + '\' />');
-                                setTimeout(function () {form3.submit(); form3.remove();}, 2000);
+                                form3.submit();
+                                form3.remove();
                             },
                             error: function(jqXHR, textStatus, errorThrown) {
                                 nextDialog.dialog('close');
@@ -430,8 +432,12 @@
                                 dialog.html(resp.message).dialog('open');
                             }
                         });
+                    },
+                    Cancel: function () {
+                        $(this).dialog('close');
                     }
-                });
+                })
+                .dialog('open');
             }
 
             function loadInitData() {

@@ -127,9 +127,9 @@ public class JCS1600 extends AbstractBasePage {
     }
 
     private String pvcsCheckIn(Map dataMap) {
+        Date startTime = new Date();
         String sScrId = (String) dataMap.get("scrId");
         String files = (String) dataMap.get("files");
-        String fLogId = (String) dataMap.get("functionLogId");
         List<Map<String, String>> fileList = gson.fromJson(files, new TypeToken<List<Map<String, String>>>() {
         }.getType());
         Set<String> pvcsFiles = new HashSet<String>();
@@ -245,10 +245,12 @@ public class JCS1600 extends AbstractBasePage {
             logger.debug(res);
             pvcsResult.add(new String[] { res });
         }
+        Date endTime = new Date();
         Map<String, Object> results = new HashMap<String, Object>();
         results.put("PVCS", error ? " Fail." : "OK.");
+        results.put("startTime", startTime);
+        results.put("endTime", endTime);
         results.put("PVCSConsole", gson.toJson(pvcsResult));
-        results.put("functionLogId", fLogId);
         return gson.toJson(results);
     }
 
