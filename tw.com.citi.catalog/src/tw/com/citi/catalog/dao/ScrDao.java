@@ -91,4 +91,22 @@ public class ScrDao extends AbstractGenericDao<Scr, Long> implements IScrDao {
         return jdbcTemplate.queryForMap(sql.toString(), jcScrId);
     }
 
+    @Override
+    public List<Scr> findActiveScr() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM ");
+        sql.append(getTableName());
+        sql.append(" WHERE DELETED = 0 AND STATUS <> ").append(Scr.Status.MOVE_TO_PROD.ordinal());
+        return jdbcTemplate.query(sql.toString(), getRowMapper());
+    }
+
+    @Override
+    public List<Scr> findClosedScr() {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT * FROM ");
+        sql.append(getTableName());
+        sql.append(" WHERE DELETED = 0 AND STATUS = ").append(Scr.Status.MOVE_TO_PROD.ordinal());
+        return jdbcTemplate.query(sql.toString(), getRowMapper());
+    }
+
 }

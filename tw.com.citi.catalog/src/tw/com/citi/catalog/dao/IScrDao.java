@@ -1,5 +1,6 @@
 package tw.com.citi.catalog.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import tw.com.citi.catalog.model.Scr;
@@ -33,5 +34,19 @@ public interface IScrDao extends IGenericDao<Scr, Long> {
     int update1100(Map<String, Object> params);
 
     Map<String, Object> queryScrInfo(long jcScrId);
+
+    /**
+     * 找出尚未被刪除，且尚未被 close 的 scr。
+     * 
+     * @return
+     */
+    List<Scr> findActiveScr();
+
+    /**
+     * 找出尚未被刪除，但已經被 close 的 scr。
+     * 
+     * @return
+     */
+    List<Scr> findClosedScr();
 
 }

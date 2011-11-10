@@ -88,9 +88,7 @@ public class JCS1200 extends AbstractBasePage {
     }
 
     private String init(Map<String, String> dataMap) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("deleted", "0");
-        List<Scr> scrList = scrDao.find(params, new String[] { "equal" }, "", "SCR_NO", 0, Long.MAX_VALUE);
+        List<Scr> scrList = scrDao.findActiveScr();
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("scrList", scrList);
         return gson.toJson(data);

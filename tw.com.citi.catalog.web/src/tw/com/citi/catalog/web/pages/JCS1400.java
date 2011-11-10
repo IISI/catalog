@@ -78,7 +78,7 @@ public class JCS1400 extends AbstractBasePage {
     }
 
     private String findScrNo() {
-        List<Scr> scrList = scrDao.findAll();
+        List<Scr> scrList = scrDao.findActiveScr();
         StringBuilder sb = new StringBuilder();
         for (Scr scr : scrList) {
             sb.append("<option value='").append(scr.getId()).append("'>");
